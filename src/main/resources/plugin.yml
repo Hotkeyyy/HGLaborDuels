@@ -1,0 +1,34 @@
+name: HGLaborDuels
+author: BestAuto
+version: 1.0.0
+
+main: de.hglabor.plugins.duels.Manager
+api-version: 1.16
+
+commands:
+  arena:
+  challenge:
+    aliases:
+      - c
+  setspawn:
+  spec:
+  stats:
+  dueloverview:
+  hub:
+    aliases:
+      - lobby
+      - l
+  leave:
+    aliases:
+      - giveup
+      - surrender
+  follow:
+  staffmode:
+    aliases:
+      - v
+      - vanish
+      - staff
+      - mod
+      - modmode
+  ban:
+  tempban:
