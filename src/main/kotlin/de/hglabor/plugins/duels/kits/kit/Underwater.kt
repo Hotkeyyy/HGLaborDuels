@@ -22,7 +22,7 @@ class Underwater : Kit(Kits.UNDERWATER) {
     override val itemInGUIs = Kits.guiItem(Material.TROPICAL_FISH_BUCKET, name, "Soup")
     override val arenaTag = ArenaTags.UNDERWATER
     override val type = KitType.SOUP
-    override val specials: Nothing? = null
+    override val specials = listOf(null)
 
     override fun giveKit(player: Player) {
         player.inventory.clear()

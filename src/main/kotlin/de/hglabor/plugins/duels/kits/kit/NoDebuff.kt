@@ -87,7 +87,7 @@ class NoDebuff : Kit(Kits.NODEBUFF) {
             if (it.action.isRightClick) {
                 if (player.isInFight()) {
                     val duel = Data.duelFromPlayer(player)
-                    if (kitMap[duel.kit]!!.specials!!.contains("pearlcd")) {
+                    if (kitMap[duel.kit]!!.specials.contains("pearlcd")) {
                         if (player.inventory.itemInMainHand.type == Material.ENDER_PEARL) {
                             player.sendMessage("pearlcd")
                             val jetzt: Long = System.currentTimeMillis()

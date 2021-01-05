@@ -15,7 +15,7 @@ class Onebar : Kit(Kits.ONEBAR) {
     override val itemInGUIs = Kits.guiItem(Material.WOODEN_SWORD, name, "Soup")
     override val arenaTag = ArenaTags.NONE
     override val type = KitType.SOUP
-    override val specials: Nothing? = null
+    override val specials = listOf(null)
 
     override fun giveKit(player: Player) {
         player.inventory.clear()

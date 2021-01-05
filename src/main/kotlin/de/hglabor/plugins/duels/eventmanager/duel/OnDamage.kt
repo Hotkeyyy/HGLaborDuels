@@ -26,12 +26,12 @@ object OnDamage {
                     if (!duel!!.hasEnded) {
                         var damage = it.damage
 
-                        if (!duel.kit.info.specials!!.contains("1.16")) {
+                        if (!duel.kit.info.specials.contains("1.16")) {
                             if (it.cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK)
                                 damage *= 0.55
                         }
 
-                        if (duel.kit.info.specials!!.contains("nodamage"))
+                        if (duel.kit.info.specials.contains("nodamage"))
                             it.damage = 0.0
 
                         if (player.health - damage <= 0.00) {
@@ -57,12 +57,14 @@ object OnDamage {
                     val damager = it.damager as Player
                     val duel = Data.duelFromPlayer(player)
 
-                    if (!duel.kit.info.specials!!.contains("1.16")) {
-                        it.damage *= 0.55
-                    }
+                    if (duel.kit.info.specials != null) {
+                        if (!duel.kit.info.specials!!.contains("1.16")) {
+                            it.damage *= 0.55
+                        }
 
-                    if (duel.kit.info.specials!!.contains("nodamage"))
-                        it.damage = 0.0
+                        if (duel.kit.info.specials!!.contains("nodamage"))
+                            it.damage = 0.0
+                    }
 
                     if (damager.inventory.itemInMainHand.type == Material.TRIDENT)
                         it.damage = 4.0

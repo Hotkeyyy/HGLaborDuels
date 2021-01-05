@@ -17,7 +17,7 @@ class Archer : Kit(Kits.ARCHER) {
     override val itemInGUIs = Kits.guiItem(Material.BOW, name, null)
     override val arenaTag = ArenaTags.NONE
     override val type = KitType.NONE
-    override val specials: Nothing? = null
+    override val specials = listOf(null)
 
     override fun giveKit(player: Player) {
         player.inventory.clear()

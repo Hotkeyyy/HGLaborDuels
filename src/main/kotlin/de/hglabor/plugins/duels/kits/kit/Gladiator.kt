@@ -15,7 +15,7 @@ class Gladiator : Kit(Kits.GLADIATOR) {
     override val itemInGUIs = Kits.guiItem(Material.IRON_BARS, name, "Soup")
     override val arenaTag = ArenaTags.NONE
     override val type = KitType.SOUP
-    override val specials: Nothing? = null
+    override val specials = listOf(null)
 
     override fun giveKit(player: Player) {
         player.inventory.clear()

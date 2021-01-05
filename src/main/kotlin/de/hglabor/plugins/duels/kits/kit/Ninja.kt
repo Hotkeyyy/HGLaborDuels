@@ -4,6 +4,7 @@ import de.hglabor.plugins.duels.Manager
 import de.hglabor.plugins.duels.arenas.ArenaTags
 import de.hglabor.plugins.duels.guis.ChooseKitGUI
 import de.hglabor.plugins.duels.kits.*
+import de.hglabor.plugins.duels.kits.Kits.Companion.info
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.duel
@@ -52,7 +53,7 @@ class Ninja : Kit(Kits.NINJA) {
             if (player.isInFight()) {
                 val duel = Data.duelFromPlayer(player)
                 if (duel.hasBegan) {
-                    if (kitMap[duel.kit]!!.specials!!.contains("ninja")) {
+                    if (kitMap[duel.kit]!!.specials.contains("ninja")) {
                         if (player.isSneaking) {
                             val jetzt: Long = System.currentTimeMillis()
                             if (Kits.cooldown.containsKey(player)) {

@@ -12,7 +12,7 @@ abstract class Kit(val kits: Kits) {
     abstract val itemInGUIs: ItemStack
     abstract val arenaTag: ArenaTags
     abstract val type: KitType
-    abstract val specials: List<String>?
+    abstract val specials: List<String?>
 
     abstract fun giveKit(player: Player)
     abstract fun enable()
