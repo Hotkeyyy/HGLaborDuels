@@ -4,6 +4,7 @@ import de.hglabor.plugins.duels.Manager
 import de.hglabor.plugins.duels.utils.PlayerFunctions.getStats
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
 import de.hglabor.plugins.staff.utils.StaffData
+import de.hglabor.plugins.staff.utils.StaffData.isStaff
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.onlineSenders
@@ -17,10 +18,11 @@ object OnPlayerJoin {
         listen<PlayerJoinEvent>(EventPriority.HIGHEST) {
             it.joinMessage = null
             val player = it.player
-            if(!player.getStats().exist())
+            if (!player.getStats().exist())
                 player.getStats().create()
 
-            StaffData.vanishedPlayers.forEach { vanished ->  player.hidePlayer(Manager.INSTANCE, vanished) }
+            if (!player.isStaff)
+                StaffData.vanishedPlayers.forEach { vanished -> player.hidePlayer(Manager.INSTANCE, vanished) }
 
             player.reset()
             player.setPlayerListHeaderFooter(header, footer)

@@ -83,6 +83,7 @@ object Soupsimulator {
             0,
             itemStack(Material.STONE_SWORD) { meta { name = "${KColors.DEEPSKYBLUE}Soupsimulator" } })
         giveNextTask(player)
+        player.sendTitle("${KColors.CORNSILK}/Leave", "${KColors.GRAY}To leave", 1, 15, 1)
 
         runTimer(player)
     }
@@ -154,8 +155,10 @@ object Soupsimulator {
                 val s = timer[player]!! / 10
                 val ms = timer[player]!! % 10
 
-                player.sendTitle("${KColors.CORNSILK}/Leave", "${KColors.GRAY}To leave", 1, 15, 1)
-
+                player.spigot().sendMessage(
+                    ChatMessageType.ACTION_BAR,
+                    *TextComponent.fromLegacyText("${KColors.DODGERBLUE}$s.$ms ${KColors.GRAY}Sec ${KColors.DARKGRAY}| ${KColors.DEEPSKYBLUE}${score[player]}")
+                )
 
                 if (level[player]!!.endsAfterTime) {
                     if (s == 30) {

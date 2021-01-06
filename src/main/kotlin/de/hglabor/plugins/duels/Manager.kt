@@ -115,6 +115,7 @@ class Manager : KSpigot() {
         getCommand("dueloverview")!!.setExecutor(DuelOverviewCommand)
         getCommand("hub")!!.setExecutor(HubCommand)
         getCommand("leave")!!.setExecutor(LeaveCommand)
+        getCommand("party")!!.setExecutor(PartyCommand)
 
         StaffOnItemDrop.enable()
         StaffOnInteract.enable()
