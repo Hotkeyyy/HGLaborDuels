@@ -29,11 +29,9 @@ object MongoManager {
     fun createPlayerStats(player: Player) {
         val document = Document("uuid", player.uniqueId.toString())
             .append("lastPlayerName", player.name)
-            .append("elo", 1000)
             .append("kills", 0)
             .append("deaths", 0)
             .append("soupsEaten", 0)
-            .append("soupAccuracy", 0) //prozent
             .append("totalHits", 0)
             .append("soupsimulatorHighscore", 0)
         collection.insertOne(document)
