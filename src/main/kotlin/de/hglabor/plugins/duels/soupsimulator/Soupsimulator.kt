@@ -83,14 +83,15 @@ object Soupsimulator {
             0,
             itemStack(Material.STONE_SWORD) { meta { name = "${KColors.DEEPSKYBLUE}Soupsimulator" } })
         giveNextTask(player)
-        player.sendTitle("${KColors.CORNSILK}/Leave", "${KColors.GRAY}To leave", 1, 15, 1)
+        if (level[player] == SoupsimulatorLevel.EASY)
+            player.sendTitle("${KColors.CORNSILK}/Leave", "${KColors.GRAY}To leave", 5, 25, 5)
 
         runTimer(player)
     }
 
     fun giveNextTask(player: Player) {
         player.closeInventory()
-        //player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 3f, 1f)
+        player.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_PLING, 3f, 1f)
         if (level[player] == SoupsimulatorLevel.BONUS) {
             for (i in 1..player.inventory.size) {
                 player.inventory.setItem(i, ItemStack(Material.AIR))
@@ -178,7 +179,7 @@ object Soupsimulator {
     }
 
     fun end(player: Player) {
-        player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}-------------------")
+        player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
         if (player.localization("de"))
             player.sendMessage(Localization.SOUPSIMULATOR_END_SCORE_DE.replace("%score%", score[player].toString()))
         else
@@ -209,7 +210,7 @@ object Soupsimulator {
                 )
             )
 
-        player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}-------------------")
+        player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
         inSoupsimulator.remove(player)
         timer.remove(player)
         score.remove(player)

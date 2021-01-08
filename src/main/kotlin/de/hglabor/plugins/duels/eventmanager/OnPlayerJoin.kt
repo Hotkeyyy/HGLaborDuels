@@ -1,8 +1,11 @@
 package de.hglabor.plugins.duels.eventmanager
 
 import de.hglabor.plugins.duels.Manager
+import de.hglabor.plugins.duels.settings.Settings
 import de.hglabor.plugins.duels.utils.PlayerFunctions.getStats
+import de.hglabor.plugins.duels.utils.PlayerFunctions.hasRank
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
+import de.hglabor.plugins.duels.utils.Ranks
 import de.hglabor.plugins.staff.utils.StaffData
 import de.hglabor.plugins.staff.utils.StaffData.isStaff
 import net.axay.kspigot.chat.KColors
@@ -20,12 +23,16 @@ object OnPlayerJoin {
             val player = it.player
             if (!player.getStats().exist())
                 player.getStats().create()
+            if (!player.hasRank())
+                Ranks.setRank(player, Ranks.Rank.NORMIE)
 
             if (!player.isStaff)
                 StaffData.vanishedPlayers.forEach { vanished -> player.hidePlayer(Manager.INSTANCE, vanished) }
 
             player.reset()
             player.setPlayerListHeaderFooter(header, footer)
+
+            Settings.setPlayerSettings(player)
 
             async {
                 val joinMessage = "${KColors.CHARTREUSE}→ ${KColors.POWDERBLUE}${player.name}"

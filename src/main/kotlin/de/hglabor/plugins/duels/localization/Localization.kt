@@ -120,12 +120,14 @@ object Localization {
     val STATS_COMMAND_KD = " ${KColors.DARKGRAY}| ${KColors.GRAY}K/D ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}%kd%"
     val STATS_COMMAND_SOUPS_EATEN_EN = " ${KColors.DARKGRAY}| ${KColors.GRAY}Soups eaten ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}%soupsEaten%"
     val STATS_COMMAND_SOUPS_EATEN_DE = " ${KColors.DARKGRAY}| ${KColors.GRAY}Gegessene Suppen ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}%soupsEaten%"
-    val STATS_COMMAND_TOTAL_HITS_EN = " ${KColors.DARKGRAY}| ${KColors.GRAY}Gesamte Hits ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}%totalHits%"
-    val STATS_COMMAND_TOTAL_HITS_DE = " ${KColors.DARKGRAY}| ${KColors.GRAY}Total hits ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}%totalHits%"
+    val STATS_COMMAND_TOTAL_HITS_EN = " ${KColors.DARKGRAY}| ${KColors.GRAY}Total Hits ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}%totalHits%"
+    val STATS_COMMAND_TOTAL_HITS_DE = " ${KColors.DARKGRAY}| ${KColors.GRAY}Gesamte hits ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}%totalHits%"
 
     // ChallengeCommand
     val CHALLENGE_COMMAND_ACCEPT_PLAYER_IN_FIGHT_EN = "${PREFIX}${KColors.TOMATO}%playerName% is already in fight."
     val CHALLENGE_COMMAND_ACCEPT_PLAYER_IN_FIGHT_DE = "${PREFIX}${KColors.TOMATO}%playerName% ist bereits im Kampf."
+    val CHALLENGE_COMMAND_ACCEPT_CANT_DUEL_SELF_EN = "${PREFIX}${KColors.TOMATO}You can't challenge yourself."
+    val CHALLENGE_COMMAND_ACCEPT_CANT_DUEL_SELF_DE = "${PREFIX}${KColors.TOMATO}Du kannst dich nicht selbst herrausfordern."
     val CHALLENGE_COMMAND_HELP = "${PREFIX}${KColors.TOMATO}/Challenge ${KColors.DARKGRAY}[${KColors.RED}${KColors.DARKGRAY}]"
 
     // DuelOverviewCommand
@@ -160,6 +162,8 @@ object Localization {
     val MAIN_INVENTORY_SOUPSIMULATOR_ITEM_NAME_DE = "${KColors.DEEPSKYBLUE}Soupsimulator ${KColors.DARKGRAY}* ${KColors.GRAY}Rechtsklick"
     val MAIN_INVENTORY_QUEUE_ITEM_NAME_EN = "${KColors.DEEPSKYBLUE}Queue ${KColors.DARKGRAY}* ${KColors.GRAY}Right click"
     val MAIN_INVENTORY_QUEUE_ITEM_NAME_DE = "${KColors.DEEPSKYBLUE}Queue ${KColors.DARKGRAY}* ${KColors.GRAY}Rechtsklick"
+    val MAIN_INVENTORY_SETTINGS_ITEM_NAME_EN = "${KColors.DEEPSKYBLUE}Settings ${KColors.DARKGRAY}* ${KColors.GRAY}Right click"
+    val MAIN_INVENTORY_SETTINGS_ITEM_NAME_DE = "${KColors.DEEPSKYBLUE}Einstellungen ${KColors.DARKGRAY}* ${KColors.GRAY}Rechtsklick"
 
     // SoupsimulatorGUI
     val SOUPSIMULATOR_GUI_EASY_NAME_EN = "${KColors.LIMEGREEN}EASY"
@@ -259,4 +263,13 @@ object Localization {
     val TEMPBAN_COMMAND_TIMEUNITS_DE = "${STAFFPREFIX} ${KColors.GRAY}Zeiteinheiten ${KColors.DARKGRAY}» ${KColors.MEDIUMPURPLE}h ${KColors.DARKGRAY}- ${KColors.LIGHTPURPLE}Stunden ${KColors.DARKGRAY}, ${KColors.MEDIUMPURPLE}d ${KColors.DARKGRAY}- ${KColors.LIGHTPURPLE}Tage ${KColors.DARKGRAY}, ${KColors.MEDIUMPURPLE}w ${KColors.DARKGRAY}- ${KColors.LIGHTPURPLE}Wochen ${KColors.DARKGRAY}, ${KColors.MEDIUMPURPLE}m ${KColors.DARKGRAY}- ${KColors.LIGHTPURPLE}Monate"
     val PLAYER_WAS_TEMPBANNED_EN = "$STAFFPREFIX${KColors.DARKPURPLE}%playerName% ${KColors.GRAY}has been ${KColors.RED}temporarily banned${KColors.GRAY}."
     val PLAYER_WAS_TEMPBANNED_DE = "$STAFFPREFIX${KColors.DARKPURPLE}%playerName% ${KColors.GRAY}wurde ${KColors.RED}temporär gebannt${KColors.GRAY}."
+
+    // SettingsGUI
+    val SETTINGSGUI_NAME_EN = "${KColors.DODGERBLUE}Settings"
+    val SETTINGSGUI_NAME_DE = "${KColors.DODGERBLUE}Einstellungen"
+    val SETTINGSGUI_KNOCKBACK_NAME_EN = "${KColors.DODGERBLUE}Knockback"
+    val SETTINGSGUI_KNOCKBACK_NAME_DE = "${KColors.DODGERBLUE}Rückstoß"
+    val SETTINGSGUI_HITSOUND_NAME_EN = "${KColors.DODGERBLUE}Damagesound"
+    val SETTINGSGUI_HITSOUND_NAME_DE = "${KColors.DODGERBLUE}Schaden Sound"
+    val SETTINGSGUI_CHAT_NAME = "${KColors.DODGERBLUE}Chat"
 }

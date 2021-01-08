@@ -17,38 +17,11 @@ import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Scoreboard
 import org.bukkit.scoreboard.Team
 
-object LobbyScoreboard {
+object FightScoreboard {
     val hasScoreboard = arrayListOf<Player>()
 
     fun setScoreboard(player: Player) {
         val sb = Bukkit.getScoreboardManager().newScoreboard
-        var obj = sb.getObjective("aaa")
-
-        if (obj == null) {
-            obj = sb.registerNewObjective("aaa", "bbb", "${KColors.DEEPSKYBLUE}${KColors.BOLD}Duels")
-        }
-
-        obj.displayName = "${KColors.DEEPSKYBLUE}${KColors.BOLD}Duels"
-        obj.displaySlot = DisplaySlot.SIDEBAR
-
-        val inFight = Data.inFight.size
-        val online = Bukkit.getOnlinePlayers().size
-
-        obj.getScore(updateTeam(sb, "lineone", "${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                  §a",
-                "", ChatColor.DARK_GRAY)).score = 4
-
-        obj.getScore(updateTeam(sb, "online", " ${KColors.CORNSILK}Online ${KColors.DARKGRAY}» ",
-            "${KColors.DODGERBLUE}$online", ChatColor.AQUA)).score = 3
-
-        obj.getScore(updateTeam(sb, "infight", " ${KColors.CORNSILK}In Fight ${KColors.DARKGRAY}» ",
-            "${KColors.DODGERBLUE}$inFight", ChatColor.RED)).score = 2
-
-        obj.getScore(updateTeam(sb, "linetwo", "${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                  §a",
-            "", ChatColor.GRAY)).score = 1
-
-        obj.getScore(updateTeam(sb, "hglabor", "${KColors.GRAY}${KColors.ITALIC}HGLabor.de",
-            "", ChatColor.WHITE)).score = 0
-
 
         val owner: Team = getTeam(sb, "0001owner", Ranks.Rank.OWNER)
         val admin: Team = getTeam(sb, "0002admin", Ranks.Rank.ADMIN)
@@ -71,13 +44,7 @@ object LobbyScoreboard {
         player.scoreboard = sb
     }
 
-    private fun setEmptyScoreBoard(player: Player) {
-        val sb = Bukkit.getScoreboardManager().newScoreboard
-
-        player.scoreboard = sb
-    }
-
-    private fun updateScoreboard(player: Player) {
+    fun updateScoreboard(player: Player) {
         val sb = player.scoreboard
         var obj = sb.getObjective("aaa")
 
@@ -102,27 +69,6 @@ object LobbyScoreboard {
                 else -> normie.addEntry(on.name)
             }
         }
-
-        val inFight = Data.inFight.size
-        val online: Int = if (!player.isStaff)
-            Bukkit.getOnlinePlayers().size - StaffData.vanishedPlayers.size
-        else
-            Bukkit.getOnlinePlayers().size
-
-        obj.getScore(updateTeam(sb, "lineone", "${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                  §a",
-                "", ChatColor.DARK_GRAY)).score = 4
-
-        obj.getScore(updateTeam(sb, "online", " ${KColors.CORNSILK}Online ${KColors.DARKGRAY}» ",
-            "${KColors.DODGERBLUE}$online", ChatColor.AQUA)).score = 3
-
-        obj.getScore(updateTeam(sb, "infight", " ${KColors.CORNSILK}In Fight ${KColors.DARKGRAY}» ",
-            "${KColors.DODGERBLUE}$inFight", ChatColor.RED)).score = 2
-
-        obj.getScore(updateTeam(sb, "linetwo", "${KColors.DARKGRAY}${KColors.STRIKETHROUGH} " +
-                "                 §a", "", ChatColor.GRAY)).score = 1
-
-        obj.getScore(updateTeam(sb, "hglabor", "${KColors.GRAY}${KColors.ITALIC}HGLabor.de",
-            "", ChatColor.WHITE)).score = 0
     }
 
 
@@ -149,24 +95,5 @@ object LobbyScoreboard {
         team.suffix = suffix
         team.addEntry(entry.toString())
         return entry.toString()
-    }
-
-    fun startRunnable() {
-        Bukkit.getServer().scheduler.scheduleSyncRepeatingTask(Manager.INSTANCE, {
-            for (all in Bukkit.getOnlinePlayers()) {
-                if (all.isInStaffMode)
-                    if (StaffScoreboard.hasScoreboard.contains(all))
-                        StaffScoreboard.updateScoreboard(all)
-                    else
-                        StaffScoreboard.setScoreboard(all)
-                else if (all.isInFight())
-                    if (FightScoreboard.hasScoreboard.contains(all))
-                        FightScoreboard.updateScoreboard(all)
-                    else
-                        FightScoreboard.setScoreboard(all)
-                else
-                    updateScoreboard(all)
-            }
-        }, 10, 20)
     }
 }

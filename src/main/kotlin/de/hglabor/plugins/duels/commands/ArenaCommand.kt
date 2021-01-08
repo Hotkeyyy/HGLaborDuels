@@ -18,6 +18,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import java.io.File
+import java.util.ArrayList
 
 object ArenaCommand : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
@@ -86,6 +87,20 @@ object ArenaCommand : CommandExecutor {
             }
         }
         return false
+    }
+
+    fun onTabComplete(sender: CommandSender?, command: Command, alias: String?, args: Array<String?>): List<String>? {
+        if (command.name.equals("arena", true)) {
+            val l: MutableList<String> = ArrayList()
+            if (args.size == 1) {
+                l.add("create")
+                l.add("arenaworld")
+                l.add("buildworld")
+                l.add("list")
+            }
+            return l
+        }
+        return null
     }
 }
 

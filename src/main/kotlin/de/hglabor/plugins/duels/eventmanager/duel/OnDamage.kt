@@ -2,6 +2,7 @@ package de.hglabor.plugins.duels.eventmanager.duel
 
 import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.kits.Kits.Companion.info
+import de.hglabor.plugins.duels.kits.Specials
 import de.hglabor.plugins.duels.soupsimulator.isInSoupsimulator
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.getStats
@@ -26,12 +27,12 @@ object OnDamage {
                     if (!duel!!.hasEnded) {
                         var damage = it.damage
 
-                        if (!duel.kit.info.specials.contains("1.16")) {
+                        if (!duel.kit.info.specials.contains(Specials.HITCOOLDOWN)) {
                             if (it.cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK)
                                 damage *= 0.55
                         }
 
-                        if (duel.kit.info.specials.contains("nodamage"))
+                        if (duel.kit.info.specials.contains(Specials.NODAMAGE))
                             it.damage = 0.0
 
                         if (player.health - damage <= 0.00) {
@@ -57,30 +58,30 @@ object OnDamage {
                     val damager = it.damager as Player
                     val duel = Data.duelFromPlayer(player)
 
-                    if (duel.kit.info.specials != null) {
-                        if (!duel.kit.info.specials!!.contains("1.16")) {
-                            it.damage *= 0.55
-                        }
-
-                        if (duel.kit.info.specials!!.contains("nodamage"))
-                            it.damage = 0.0
+                    if (!duel.kit.info.specials.contains(Specials.HITCOOLDOWN)) {
+                        it.damage *= 0.55
                     }
+
+                    if (duel.kit.info.specials.contains(Specials.NODAMAGE))
+                        it.damage = 0.0
 
                     if (damager.inventory.itemInMainHand.type == Material.TRIDENT)
                         it.damage = 4.0
 
 
                     if (!duel.hasEnded) {
-                        val entity = it.entity as Player
-                        duel.hits[damager] = duel.hits[it.damager]!! + 1
+                        if (!it.isCancelled) {
+                            val entity = it.entity as Player
+                            duel.hits[damager] = duel.hits[it.damager]!! + 1
 
-                        duel.currentCombo[damager] = duel.currentCombo[it.damager]!! + 1
-                        duel.currentCombo[entity] = 0
-                        if (duel.longestCombo[damager]!! < duel.currentCombo[damager]!!) {
-                            duel.longestCombo[damager] = duel.currentCombo[damager]!!
+                            duel.currentCombo[damager] = duel.currentCombo[it.damager]!! + 1
+                            duel.currentCombo[entity] = 0
+                            if (duel.longestCombo[damager]!! < duel.currentCombo[damager]!!) {
+                                duel.longestCombo[damager] = duel.currentCombo[damager]!!
+                            }
+
+                            damager.getStats().addTotalHit()
                         }
-
-                        damager.getStats().addTotalHit()
                     } else {
                         it.isCancelled = true
                     }

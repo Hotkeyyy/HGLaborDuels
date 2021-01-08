@@ -9,6 +9,8 @@ object CreateFiles {
         arenasFile()
         mongoDBFile()
         statsFile()
+        playerSettingsFile()
+        ranksFile()
     }
 
     private fun arenasFile() {
@@ -63,6 +65,42 @@ object CreateFiles {
                 e.printStackTrace()
             }
             yamlConfiguration["totalPlayers"] = 0
+        }
+
+        try {
+            yamlConfiguration.save(file)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun playerSettingsFile() {
+        val file = File("plugins//HGLaborDuels//playerSettings.yml")
+        val yamlConfiguration = YamlConfiguration.loadConfiguration(file)
+        if (!file.exists()) {
+            try {
+                file.createNewFile()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+
+        try {
+            yamlConfiguration.save(file)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun ranksFile() {
+        val file = File("plugins//HGLaborDuels//ranks.yml")
+        val yamlConfiguration = YamlConfiguration.loadConfiguration(file)
+        if (!file.exists()) {
+            try {
+                file.createNewFile()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
         }
 
         try {

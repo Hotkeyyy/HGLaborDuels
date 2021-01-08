@@ -25,7 +25,7 @@ class Ninja : Kit(Kits.NINJA) {
     override val itemInGUIs = Kits.guiItem(Material.INK_SAC, name, "Soup")
     override val arenaTag = ArenaTags.NONE
     override val type = KitType.SOUP
-    override val specials = listOf("ninja")
+    override val specials = listOf(Specials.NINJA)
 
     override fun giveKit(player: Player) {
         player.inventory.clear()
@@ -53,7 +53,7 @@ class Ninja : Kit(Kits.NINJA) {
             if (player.isInFight()) {
                 val duel = Data.duelFromPlayer(player)
                 if (duel.hasBegan) {
-                    if (kitMap[duel.kit]!!.specials.contains("ninja")) {
+                    if (kitMap[duel.kit]!!.specials.contains(Specials.NINJA)) {
                         if (player.isSneaking) {
                             val jetzt: Long = System.currentTimeMillis()
                             if (Kits.cooldown.containsKey(player)) {

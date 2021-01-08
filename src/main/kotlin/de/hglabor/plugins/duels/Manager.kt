@@ -13,6 +13,7 @@ import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.protection.Protection
 import de.hglabor.plugins.duels.scoreboard.LobbyScoreboard
+import de.hglabor.plugins.duels.settings.Settings
 import de.hglabor.plugins.duels.spawn.SetSpawnCommand
 import de.hglabor.plugins.duels.utils.CreateFiles
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
@@ -32,6 +33,7 @@ import net.axay.kspigot.extensions.console
 import net.axay.kspigot.extensions.onlinePlayers
 import net.axay.kspigot.main.KSpigot
 import net.axay.kspigot.sound.sound
+import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Sound
 import java.io.File
@@ -51,6 +53,7 @@ class Manager : KSpigot() {
 
         onlinePlayers.forEach {
             it.sound(Sound.BLOCK_BEACON_ACTIVATE)
+            Settings.setPlayerSettings(it)
         }
 
         WorldManager.deleteFightWorld()
@@ -64,6 +67,7 @@ class Manager : KSpigot() {
     }
 
     override fun startup() {
+        Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord")
         registerEventsAndCommands()
         SoupRecipes.register()
         LobbyScoreboard.startRunnable()
@@ -99,6 +103,7 @@ class Manager : KSpigot() {
         OnBuild.enable()
         OnPlayerCommandPreprocess.enable()
         OnInteractAtEntity.enable()
+        OnDropItem.enable()
         OnWorldLoad.enable()
         OnPotionSplash.enable()
         Protection.enable()
@@ -115,6 +120,7 @@ class Manager : KSpigot() {
         getCommand("dueloverview")!!.setExecutor(DuelOverviewCommand)
         getCommand("hub")!!.setExecutor(HubCommand)
         getCommand("leave")!!.setExecutor(LeaveCommand)
+        getCommand("rank")!!.setExecutor(RankCommand)
         getCommand("party")!!.setExecutor(PartyCommand)
 
         StaffOnItemDrop.enable()

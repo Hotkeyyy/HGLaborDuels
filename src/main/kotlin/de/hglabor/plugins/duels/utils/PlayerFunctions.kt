@@ -8,6 +8,7 @@ import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.kits.Kits.Companion.info
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.scoreboard.LobbyScoreboard
+import de.hglabor.plugins.duels.settings.Settings
 import de.hglabor.plugins.duels.spawn.SpawnUtils
 import de.hglabor.plugins.staff.utils.StaffData.isVanished
 import net.axay.kspigot.chat.KColors
@@ -23,9 +24,13 @@ import net.md_5.bungee.api.chat.HoverEvent
 import net.md_5.bungee.api.chat.TextComponent
 import net.md_5.bungee.api.chat.hover.content.Text
 import org.bukkit.*
+import org.bukkit.attribute.Attribute
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
+import org.bukkit.scoreboard.Team
+import java.io.File
 
 
 object PlayerFunctions {
@@ -40,6 +45,10 @@ object PlayerFunctions {
 
     fun Player.duel(target: Player, kit: Kits) {
         val player: Player = player!!
+//        if (player == target) {
+//            player.sendLocalizedMessage(Localization.CHALLENGE_COMMAND_ACCEPT_CANT_DUEL_SELF_DE, Localization.CHALLENGE_COMMAND_ACCEPT_CANT_DUEL_SELF_EN)
+//            return
+//        }
 
         if (!Arenas.arenaWithTagExists(kit.info.arenaTag)) {
             player.sendLocalizedMessage(
@@ -88,6 +97,9 @@ object PlayerFunctions {
         player.fireTicks = 0
         player.exp = 0f
         player.level = 0
+        player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = 20.0
+        player.health = 20.0
+        player.absorptionAmount = 0.0
         player.isFlying = false
         player.allowFlight = false
         player.feedSaturate()
@@ -152,6 +164,7 @@ object PlayerFunctions {
         val duel = Data.duelFromID[Data.duelIDFromSpec[player]]
         player.reset()
         duel!!.specs.remove(player)
+        duel.involvedInDuel.remove(player)
         if (!forced)
             if (player.localization("de"))
                 duel.sendMessage(
@@ -173,5 +186,11 @@ object PlayerFunctions {
             player!!.sendMessage(germanMessage)
         else
             player!!.sendMessage(englishMessage)
+    }
+
+    fun Player.hasRank(): Boolean {
+        val file = File("plugins//HGLaborDuels//ranks.yml")
+        val yamlConfiguration = YamlConfiguration.loadConfiguration(file)
+        return yamlConfiguration.contains(player!!.uniqueId.toString())
     }
 }

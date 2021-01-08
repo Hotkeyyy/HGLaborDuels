@@ -8,7 +8,7 @@ import net.axay.kspigot.extensions.broadcast
 import org.bukkit.Material
 
 enum class ArenaTags(val material: Material) {
-    NONE(Material.BARRIER), SUMO(Material.LEAD), GLADIATOR(Material.IRON_BARS), UNDERWATER(Material.WATER_BUCKET);
+    NONE(Material.BARRIER), SUMO(Material.LEAD), GLADIATOR(Material.IRON_BARS), UNDERWATER(Material.WATER_BUCKET), ICEFISHING(Material.ICE);
 
     companion object {
         fun enable() {

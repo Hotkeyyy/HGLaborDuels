@@ -5,11 +5,14 @@ version: 1.0.0
 main: de.hglabor.plugins.duels.Manager
 api-version: 1.16
 
+depend:
+  - FastAsyncWorldEdit
 commands:
   arena:
   challenge:
     aliases:
       - c
+      - duel
   setspawn:
   spec:
   stats:
@@ -33,3 +36,4 @@ commands:
   ban:
   tempban:
   party:
+  rank:

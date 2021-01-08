@@ -18,10 +18,13 @@ object OnPlayerQuit {
             broadcast("${KColors.PALEVIOLETRED}← ${KColors.GRAY}${player.name}")
 
             if(player.isInFight()) {
-                val duel = Data.duelFromID[Data.duelIDFromPlayer[player]]
-                duel!!.winner = duel.getOtherPlayer(player)
-                duel.loser = player
-                duel.stop()
+                if(Data.duelIDFromPlayer.containsKey(player)) {
+                    val duel = Data.duelFromPlayer(player)
+                    duel.loser = player
+                    duel.winner = duel.getOtherPlayer(player)
+                    duel.stop()
+                    Data.challenged.remove(player)
+                }
             }
         }
     }

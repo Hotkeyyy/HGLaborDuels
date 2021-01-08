@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
 enum class KitType { SOUP, POT, NONE }
+enum class Specials { NINJA, NODAMAGE, DEADINWATER, PEARLCOOLDOWN, HITCOOLDOWN }
 
 enum class Kits {
     ANCHOR,
@@ -19,10 +20,11 @@ enum class Kits {
     EHG,
     FEAST,
     GLADIATOR,
+    ICEFISHING,
     NINJA,
-    NODAMAGE,
     NODEBUFF,
     ONEBAR,
+    ONLYSWORD,
     SPEED,
     SUMO,
     UNDERWATER;
@@ -49,8 +51,9 @@ enum class Kits {
             EHG().enable()
             Feast().enable()
             Gladiator().enable()
+            IceFishing().enable()
             Ninja().enable()
-            NoDamage().enable()
+            OnlySword().enable()
             NoDebuff().enable()
             Onebar().enable()
             Speed().enable()

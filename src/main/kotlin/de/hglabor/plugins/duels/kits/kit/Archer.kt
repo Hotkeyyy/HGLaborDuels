@@ -1,16 +1,20 @@
 package de.hglabor.plugins.duels.kits.kit
 
+import de.hglabor.plugins.duels.Manager
 import de.hglabor.plugins.duels.arenas.ArenaTags
 import de.hglabor.plugins.duels.guis.ChooseKitGUI
 import de.hglabor.plugins.duels.kits.*
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.duel
+import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.items.itemStack
 import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.scheduler.BukkitRunnable
 
 class Archer : Kit(Kits.ARCHER) {
     override val name = "Archer"
@@ -28,7 +32,13 @@ class Archer : Kit(Kits.ARCHER) {
             addEnchantment(Enchantment.ARROW_INFINITE, 1) })
 
         player.inventory.setItem(1, ItemStack(Material.GOLDEN_APPLE, 8))
-        player.inventory.setItem(9, ItemStack(Material.ARROW))
+
+        object : BukkitRunnable() {
+            override fun run() {
+                player.inventory.setItem(9, ItemStack(Material.ARROW))
+            }
+        }.runTaskLater(Manager.INSTANCE, 20*3)
+
 
         player.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)?.baseValue = 0.0
         player.getAttribute(Attribute.GENERIC_ATTACK_SPEED)?.baseValue = 100.0

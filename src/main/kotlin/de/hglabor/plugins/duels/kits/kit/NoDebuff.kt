@@ -40,11 +40,11 @@ class NoDebuff : Kit(Kits.NODEBUFF) {
         }
     }
 
-    override val name = "NoDamage"
+    override val name = "NoDebuff"
     override val itemInGUIs = Kits.guiItem(Material.SPLASH_POTION, name, "PotPvP")
     override val arenaTag = ArenaTags.NONE
     override val type = KitType.NONE
-    override val specials = listOf("pearlcd")
+    override val specials = listOf(Specials.PEARLCOOLDOWN)
 
     override fun giveKit(player: Player) {
         player.inventory.clear()
@@ -87,9 +87,8 @@ class NoDebuff : Kit(Kits.NODEBUFF) {
             if (it.action.isRightClick) {
                 if (player.isInFight()) {
                     val duel = Data.duelFromPlayer(player)
-                    if (kitMap[duel.kit]!!.specials.contains("pearlcd")) {
+                    if (kitMap[duel.kit]!!.specials.contains(Specials.PEARLCOOLDOWN)) {
                         if (player.inventory.itemInMainHand.type == Material.ENDER_PEARL) {
-                            player.sendMessage("pearlcd")
                             val jetzt: Long = System.currentTimeMillis()
                             if (Kits.cooldown.containsKey(player)) {
                                 val be = Kits.cooldown[player]
@@ -103,19 +102,20 @@ class NoDebuff : Kit(Kits.NODEBUFF) {
                                     else
                                         player.sendMessage("${Localization.PREFIX}You still have to wait ${KColors.DODGERBLUE}$second${KColors.DARKGRAY}:${KColors.DODGERBLUE}$ms ${(if (second == 1) " second" else " seconds")}${KColors.GRAY}.")
                                     it.isCancelled = true
+                                    return@listen
                                 }
-                            } else {
-                                Kits.cooldown[player] = jetzt
-
-                                object : BukkitRunnable() {
-                                    override fun run() {
-                                        if (player.localization("de"))
-                                            player.sendMessage(Localization.CAN_USE_KIT_AGAIN_DE)
-                                        else
-                                            player.sendMessage(Localization.CAN_USE_KIT_AGAIN_EN)
-                                    }
-                                }.runTaskLater(Manager.INSTANCE, 20 * 5)
                             }
+                            Kits.cooldown[player] = jetzt
+
+                            object : BukkitRunnable() {
+                                override fun run() {
+                                    if (player.localization("de"))
+                                        player.sendMessage(Localization.CAN_USE_KIT_AGAIN_DE)
+                                    else
+                                        player.sendMessage(Localization.CAN_USE_KIT_AGAIN_EN)
+                                }
+                            }.runTaskLater(Manager.INSTANCE, 20 * 8)
+
                         }
                     }
                 }

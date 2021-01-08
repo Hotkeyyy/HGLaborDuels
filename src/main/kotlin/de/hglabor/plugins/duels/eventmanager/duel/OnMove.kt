@@ -1,6 +1,8 @@
 package de.hglabor.plugins.duels.eventmanager.duel
 
 import de.hglabor.plugins.duels.kits.Kits
+import de.hglabor.plugins.duels.kits.Kits.Companion.info
+import de.hglabor.plugins.duels.kits.Specials
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import net.axay.kspigot.event.listen
@@ -13,7 +15,7 @@ object OnMove {
             val player = it.player
             if (player.isInFight()) {
                 val duel = Data.duelFromPlayer(player)
-                if (duel.kit == Kits.SUMO) {
+                if (duel.kit.info.specials.contains(Specials.DEADINWATER)) {
                     if (!duel.hasEnded) {
                         if (player.isFeetInWater) {
                             duel.winner = duel.getOtherPlayer(player)

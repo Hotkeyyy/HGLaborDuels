@@ -62,8 +62,8 @@ dependencies {
     implementation("com.intellectualsites.fawe:FAWE-Bukkit:1.16-462")
 
     // KMONGO and MONGODB
-    // implementation("org.litote.kmongo", "kmongo-core", "4.2.3")
-    // implementation("org.litote.kmongo", "kmongo-serialization-mapping", "4.2.3")
+    implementation("org.litote.kmongo", "kmongo-core", "4.2.3")
+    implementation("org.litote.kmongo", "kmongo-serialization-mapping", "4.2.3")
 }
 
 /*

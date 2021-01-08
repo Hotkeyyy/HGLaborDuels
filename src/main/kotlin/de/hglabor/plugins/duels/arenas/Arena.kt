@@ -66,6 +66,7 @@ class Arena(var loc: Pair<Int, Int>, val arenaName: String) {
                 .createPaste(editSession)
                 .to(BlockVector3.at(loc.first * Data.locationMultiplier, 100.0, loc.second * Data.locationMultiplier))
                 .ignoreAirBlocks(true)
+                .copyEntities(true)
                 .build()
             Operations.complete(operation)
         }

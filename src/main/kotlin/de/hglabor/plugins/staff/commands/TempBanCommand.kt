@@ -32,8 +32,8 @@ object TempBanCommand: CommandExecutor {
 
                     for (i in 3 until args.size) reason += args[i] + " "
                     tempbanPlayer(args[0], player, amount.toInt(), timeunit, reason)
-                    player.sendLocalizedMessage(Localization.PLAYER_WAS_BANNED_DE.replace("%playerName%", args[0]),
-                        Localization.PLAYER_WAS_BANNED_EN.replace("%playerName%", args[0]))
+                    player.sendLocalizedMessage(Localization.PLAYER_WAS_TEMPBANNED_DE.replace("%playerName%", args[0]),
+                        Localization.PLAYER_WAS_TEMPBANNED_EN.replace("%playerName%", args[0]))
                 } else {
                     player.sendLocalizedMessage(Localization.COMMAND_WRONG_ARGUMENTS_DE,
                         Localization.COMMAND_WRONG_ARGUMENTS_EN)

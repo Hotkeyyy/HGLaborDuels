@@ -1,8 +1,11 @@
 package de.hglabor.plugins.staff.utils
 
+import de.hglabor.plugins.duels.scoreboard.LobbyScoreboard
 import de.hglabor.plugins.duels.utils.Data
+import de.hglabor.plugins.duels.utils.Ranks
 import de.hglabor.plugins.staff.utils.StaffData.isStaff
 import net.axay.kspigot.chat.KColors
+import net.axay.kspigot.extensions.onlinePlayers
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
@@ -11,6 +14,7 @@ import org.bukkit.scoreboard.Scoreboard
 import org.bukkit.scoreboard.Team
 
 object StaffScoreboard {
+    val hasScoreboard = arrayListOf<Player>()
     fun setScoreboard(player: Player) {
         val sb = Bukkit.getScoreboardManager().newScoreboard
         var obj = sb.getObjective("aaa")
@@ -27,21 +31,33 @@ object StaffScoreboard {
         val following = if (StaffData.followedPlayerFromStaff.containsKey(player)) "${KColors.DODGERBLUE}${StaffData.followedPlayerFromStaff[player]!!.name}"
                 else "${KColors.GRAY}None"
 
-        obj.getScore("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}----------§a").score = 4
+        obj.getScore("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                  §a").score = 4
         obj.getScore(updateTeam(sb, "vanished", " ${KColors.CORNSILK}Vanished ${KColors.DARKGRAY}» ",
             vanished, ChatColor.AQUA)).score = 3
 
         obj.getScore(updateTeam(sb, "following", " ${KColors.CORNSILK}Following ${KColors.DARKGRAY}» ",
                 following, ChatColor.RED)).score = 2
 
-        obj.getScore("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}----------§b").score = 1
+        obj.getScore("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                  §b").score = 1
         obj.getScore("${KColors.GRAY}${KColors.ITALIC}HGLabor.de").score = 0
 
-        player.scoreboard = sb
-    }
+        val owner: Team = LobbyScoreboard.getTeam(sb, "0001owner", Ranks.Rank.OWNER)
+        val admin: Team = LobbyScoreboard.getTeam(sb, "0002admin", Ranks.Rank.ADMIN)
+        val mod: Team = LobbyScoreboard.getTeam(sb, "0003mod", Ranks.Rank.MOD)
+        val helper: Team = LobbyScoreboard.getTeam(sb, "0004helper", Ranks.Rank.HELPER)
+        val normieplus: Team = LobbyScoreboard.getTeam(sb, "0005normieplus", Ranks.Rank.NORMIEPLUS)
+        val normie: Team = LobbyScoreboard.getTeam(sb, "0006normie", Ranks.Rank.NORMIE)
 
-    fun setEmptyScoreBoard(player: Player) {
-        val sb = Bukkit.getScoreboardManager().newScoreboard
+        onlinePlayers.forEach { on ->
+            when (Ranks.getRank(on)) {
+                Ranks.Rank.OWNER -> owner.addEntry(on.name)
+                Ranks.Rank.ADMIN -> admin.addEntry(on.name)
+                Ranks.Rank.MOD -> mod.addEntry(on.name)
+                Ranks.Rank.HELPER -> helper.addEntry(on.name)
+                Ranks.Rank.NORMIEPLUS -> normieplus.addEntry(on.name)
+                else -> normie.addEntry(on.name)
+            }
+        }
 
         player.scoreboard = sb
     }
@@ -54,6 +70,23 @@ object StaffScoreboard {
             obj = sb.registerNewObjective("aaa", "bbb", "${KColors.DEEPSKYBLUE}${KColors.BOLD}Duels")
         }
 
+        val owner: Team = LobbyScoreboard.getTeam(sb, "0001owner", Ranks.Rank.OWNER)
+        val admin: Team = LobbyScoreboard.getTeam(sb, "0002admin", Ranks.Rank.ADMIN)
+        val mod: Team = LobbyScoreboard.getTeam(sb, "0003mod", Ranks.Rank.MOD)
+        val helper: Team = LobbyScoreboard.getTeam(sb, "0004helper", Ranks.Rank.HELPER)
+        val normieplus: Team = LobbyScoreboard.getTeam(sb, "0005normieplus", Ranks.Rank.NORMIEPLUS)
+        val normie: Team = LobbyScoreboard.getTeam(sb, "0006normie", Ranks.Rank.NORMIE)
+
+        onlinePlayers.forEach { on ->
+            when (Ranks.getRank(on)) {
+                Ranks.Rank.OWNER -> owner.addEntry(on.name)
+                Ranks.Rank.ADMIN -> admin.addEntry(on.name)
+                Ranks.Rank.MOD -> mod.addEntry(on.name)
+                Ranks.Rank.HELPER -> helper.addEntry(on.name)
+                Ranks.Rank.NORMIEPLUS -> normieplus.addEntry(on.name)
+                else -> normie.addEntry(on.name)
+            }
+        }
 
         val inFight = Data.inFight.size
         val online: Int = if (!player.isStaff)
@@ -61,7 +94,6 @@ object StaffScoreboard {
         else
             Bukkit.getOnlinePlayers().size
 
-        obj.getScore("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}----------§a").score = 4
         obj.getScore(
             updateTeam(
                 sb, "online", " ${KColors.CORNSILK}Online ${KColors.DARKGRAY}» ",

@@ -47,19 +47,6 @@ object MainInventory {
             mark("duelitem")
         })
 
-        if (p.uniqueId.toString() == "5e492d5e-b610-4351-8fcb-b2fc4bdd3245") {
-            p.inventory.setItem(6, itemStack(Material.CLOCK) {
-                amount = 1
-                meta {
-                    name = if (p.localization("de"))
-                        Localization.MAIN_INVENTORY_QUEUE_ITEM_NAME_DE
-                    else
-                        Localization.MAIN_INVENTORY_QUEUE_ITEM_NAME_EN
-                }
-                mark("queue")
-            })
-        }
-
         p.inventory.setItem(6, itemStack(Material.SUSPICIOUS_STEW) {
             amount = 1
             meta {
@@ -69,6 +56,17 @@ object MainInventory {
                     Localization.MAIN_INVENTORY_SOUPSIMULATOR_ITEM_NAME_EN
             }
             mark("soupsim")
+        })
+
+        p.inventory.setItem(8, itemStack(Material.REPEATER) {
+            amount = 1
+            meta {
+                name = if (p.localization("de"))
+                    Localization.MAIN_INVENTORY_SETTINGS_ITEM_NAME_DE
+                else
+                    Localization.MAIN_INVENTORY_SETTINGS_ITEM_NAME_EN
+            }
+            mark("settings")
         })
 
 

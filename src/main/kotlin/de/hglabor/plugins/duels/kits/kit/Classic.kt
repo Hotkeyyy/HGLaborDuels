@@ -15,7 +15,7 @@ class Classic : Kit(Kits.CLASSIC) {
     override val itemInGUIs = Kits.guiItem(Material.DIAMOND_CHESTPLATE, name, "1.16 Cooldown")
     override val arenaTag = ArenaTags.NONE
     override val type = KitType.NONE
-    override val specials = listOf("1.16")
+    override val specials = listOf(Specials.HITCOOLDOWN)
 
     override fun giveKit(player: Player) {
         player.inventory.clear()

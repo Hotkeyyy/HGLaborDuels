@@ -38,16 +38,17 @@ object ChallengeCommand : CommandExecutor {
                     val target = Bukkit.getPlayer(args[1])
                     if (target != null) {
                         if (target.isInFight()) {
-                            player.sendLocalizedMessage(Localization.CHALLENGE_COMMAND_ACCEPT_PLAYER_IN_FIGHT_DE.replace("%playerName%", target.name),
-                                Localization.CHALLENGE_COMMAND_ACCEPT_PLAYER_IN_FIGHT_EN.replace("%playerName%", target.name),)
-                            return false
-                        }
+                                player.sendLocalizedMessage(
+                                    Localization.CHALLENGE_COMMAND_ACCEPT_PLAYER_IN_FIGHT_DE.replace("%playerName%", target.name),
+                                    Localization.CHALLENGE_COMMAND_ACCEPT_PLAYER_IN_FIGHT_EN.replace("%playerName%", target.name))
+                                return false
+                            }
                         if (Data.challenged[target] == sender) {
                             Duel(sender, target, Data.challengeKit[target]!!, Data.getFreeGameID()).start()
                         }
                     } else {
-                        player.sendLocalizedMessage(Localization.PLAYER_NOT_ONLINE_DE.replace("%playerName%", args[2]),
-                            Localization.PLAYER_NOT_ONLINE_EN.replace("%playerName%", args[2]))
+                        player.sendLocalizedMessage(Localization.PLAYER_NOT_ONLINE_DE.replace("%playerName%", args[1]),
+                            Localization.PLAYER_NOT_ONLINE_EN.replace("%playerName%", args[1]))
                     }
                 } else {
                     player.sendLocalizedMessage(Localization.COMMAND_WRONG_ARGUMENTS_DE, Localization.COMMAND_WRONG_ARGUMENTS_EN)
@@ -61,5 +62,4 @@ object ChallengeCommand : CommandExecutor {
         }
         return false
     }
-
 }

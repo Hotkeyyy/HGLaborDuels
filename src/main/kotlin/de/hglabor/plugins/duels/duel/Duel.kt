@@ -24,6 +24,7 @@ import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Sound
+import org.bukkit.attribute.Attribute
 import org.bukkit.block.Block
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
@@ -62,6 +63,8 @@ class Duel(val p1: Player, val p2: Player, val kit: Kits, private val ID: String
     val path = File("plugins//HGLaborDuels//temp//duels//$ID//")
 
     fun start() {
+        setPlayersInLists()
+
         p1.inventory.clear()
         p2.inventory.clear()
         p1.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 40, 200))
@@ -71,15 +74,13 @@ class Duel(val p1: Player, val p2: Player, val kit: Kits, private val ID: String
 
         object : BukkitRunnable() {
             override fun run() {
-                p1.getStats().addGame()
-                p2.getStats().addGame()
-                p1.isGlowing = false
-                p2.isGlowing = false
-                p1.inventory.clear()
-                p2.inventory.clear()
-                p1.gameMode = GameMode.SURVIVAL
-                p2.gameMode = GameMode.SURVIVAL
-                setPlayersInLists()
+                players.forEach {
+                    setPlayersInLists()
+                    it.getStats().addGame()
+                    it.isGlowing = false
+                    it.inventory.clear()
+                    it.gameMode = GameMode.SURVIVAL
+                }
                 giveKit()
                 teleportPlayersToSpawns()
                 countdown()
@@ -88,6 +89,7 @@ class Duel(val p1: Player, val p2: Player, val kit: Kits, private val ID: String
                     override fun run() {
                         Data.frozenBecauseCountdown.remove(p1)
                         Data.frozenBecauseCountdown.remove(p2)
+
                     }
                 }.runTaskLater(Manager.INSTANCE, 60)
 
@@ -95,63 +97,70 @@ class Duel(val p1: Player, val p2: Player, val kit: Kits, private val ID: String
                     StaffData.followingStaffFromPlayer[p1]!!.forEach {
                         it.teleportToFollowedPlayer()
                     }
+                if (p1.localization("de"))
+                    p1.spigot()
+                        .sendMessage(ChatMessageType.ACTION_BAR, TextComponent(Localization.LEAVE_COMMAND_TO_LEAVE_DE))
+                else
+                    p1.spigot()
+                        .sendMessage(ChatMessageType.ACTION_BAR, TextComponent(Localization.LEAVE_COMMAND_TO_LEAVE_EN))
 
                 if (StaffData.followingStaffFromPlayer[p2]?.isNotEmpty() == true)
                     StaffData.followingStaffFromPlayer[p2]!!.forEach {
                         it.teleportToFollowedPlayer()
                     }
-
-                if (p1.localization("de"))
-                    p1.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent(Localization.LEAVE_COMMAND_TO_LEAVE_DE))
-                else
-                    p1.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent(Localization.LEAVE_COMMAND_TO_LEAVE_EN))
-
                 if (p2.localization("de"))
-                    p2.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent(Localization.LEAVE_COMMAND_TO_LEAVE_DE))
+                    p2.spigot()
+                        .sendMessage(ChatMessageType.ACTION_BAR, TextComponent(Localization.LEAVE_COMMAND_TO_LEAVE_DE))
                 else
-                    p2.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent(Localization.LEAVE_COMMAND_TO_LEAVE_EN))
+                    p2.spigot()
+                        .sendMessage(ChatMessageType.ACTION_BAR, TextComponent(Localization.LEAVE_COMMAND_TO_LEAVE_EN))
+
             }
         }.runTaskLater(Manager.INSTANCE, 30)
     }
 
     fun countdown() {
-        p1.sendTitle("${KColors.LIMEGREEN}3", "§a", 3, 13, 3)
-        p2.sendTitle("${KColors.LIMEGREEN}3", "§a", 3, 13, 3)
-        p1.playSound(p1.location, Sound.BLOCK_NOTE_BLOCK_PLING, 3f, 5f)
-        p2.playSound(p2.location, Sound.BLOCK_NOTE_BLOCK_PLING, 3f, 5f)
+        p1.sendTitle("${KColors.GREEN}3", "§c", 3, 13, 3)
+        p1.playSound(p1.location, Sound.BLOCK_NOTE_BLOCK_BASS, 3f, 5f)
+        p2.sendTitle("${KColors.GREEN}3", "§c", 3, 13, 3)
+        p2.playSound(p2.location, Sound.BLOCK_NOTE_BLOCK_BASS, 3f, 5f)
         object : BukkitRunnable() {
             override fun run() {
-                p1.sendTitle("${KColors.YELLOW}2", "§e", 3, 13, 3)
-                p2.sendTitle("${KColors.YELLOW}2", "§e", 3, 13, 3)
-                p1.playSound(p1.location, Sound.BLOCK_NOTE_BLOCK_PLING, 3f, 3f)
-                p2.playSound(p2.location, Sound.BLOCK_NOTE_BLOCK_PLING, 3f, 3f)
+                p1.sendTitle("${KColors.YELLOW}2", "§c", 3, 13, 3)
+                p1.playSound(p1.location, Sound.BLOCK_NOTE_BLOCK_BASS, 3f, 3f)
+                p2.sendTitle("${KColors.YELLOW}2", "§c", 3, 13, 3)
+                p2.playSound(p2.location, Sound.BLOCK_NOTE_BLOCK_BASS, 3f, 3f)
             }
         }.runTaskLater(Manager.INSTANCE, 20)
 
         object : BukkitRunnable() {
             override fun run() {
                 p1.sendTitle("${KColors.RED}1", "§c", 3, 13, 3)
+                p1.playSound(p1.location, Sound.BLOCK_NOTE_BLOCK_BASS, 3f, 2f)
                 p2.sendTitle("${KColors.RED}1", "§c", 3, 13, 3)
-                p1.playSound(p1.location, Sound.BLOCK_NOTE_BLOCK_PLING, 3f, 2f)
-                p2.playSound(p2.location, Sound.BLOCK_NOTE_BLOCK_PLING, 3f, 2f)
+                p2.playSound(p2.location, Sound.BLOCK_NOTE_BLOCK_BASS, 3f, 2f)
+
             }
         }.runTaskLater(Manager.INSTANCE, 40)
 
         object : BukkitRunnable() {
             override fun run() {
+
                 if (p1.localization("de"))
                     p1.sendTitle(Localization.DUEL_STARTING_TITLE_DE, "§b", 3, 13, 3)
                 else
                     p1.sendTitle(Localization.DUEL_STARTING_TITLE_EN, "§b", 3, 13, 3)
+                p1.closeInventory()
+                p1.playSound(p1.location, Sound.EVENT_RAID_HORN, 4f, 1f)
+
                 if (p2.localization("de"))
                     p2.sendTitle(Localization.DUEL_STARTING_TITLE_DE, "§b", 3, 13, 3)
                 else
                     p2.sendTitle(Localization.DUEL_STARTING_TITLE_EN, "§b", 3, 13, 3)
-                p1.closeInventory()
                 p2.closeInventory()
-                hasBegan = true
-                p1.playSound(p1.location, Sound.EVENT_RAID_HORN, 4f, 1f)
                 p2.playSound(p2.location, Sound.EVENT_RAID_HORN, 4f, 1f)
+
+                hasBegan = true
 
             }
         }.runTaskLater(Manager.INSTANCE, 60)
@@ -181,7 +190,7 @@ class Duel(val p1: Player, val p2: Player, val kit: Kits, private val ID: String
         savePlayerdata(p2)
         sendGameEndMessage()
 
-        loser.health = 20.0
+        loser.health = loser.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue!!
         loser.inventory.clear()
         loser.velocity = Vector(0, 10, 0)
 
@@ -203,6 +212,10 @@ class Duel(val p1: Player, val p2: Player, val kit: Kits, private val ID: String
                 arena.removeSchematic()
             }
         }.runTaskLater(Manager.INSTANCE, 45)
+        players.remove(p1)
+        players.remove(p2)
+        Data.inFight.remove(p1)
+        Data.inFight.remove(p2)
     }
 
     private fun setPlayersInLists() {
@@ -339,13 +352,19 @@ class Duel(val p1: Player, val p2: Player, val kit: Kits, private val ID: String
         } catch (e: IOException) {
             e.printStackTrace()
         }
+
+        object : BukkitRunnable() {
+            override fun run() {
+                File("$path//playerdata//${player.uniqueId}.yml").delete()
+            }
+        }.runTaskLaterAsynchronously(Manager.INSTANCE, 7*20*60)
     }
 
     private fun sendGameEndMessage() {
         winner.getStats().addKill()
         loser.getStats().addDeath()
 
-        sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}-------------------")
+        sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
 
         involvedInDuel.forEach {
             val winnerComponent = if (it.localization("de"))
@@ -371,6 +390,6 @@ class Duel(val p1: Player, val p2: Player, val kit: Kits, private val ID: String
             it.spigot().sendMessage(loserComponent)
         }
         sendMessage(Localization.CLICK_NAME_TO_OPEN_INV_DE, Localization.CLICK_NAME_TO_OPEN_INV_EN)
-        sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}-------------------")
+        sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
     }
 }

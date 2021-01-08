@@ -1,6 +1,5 @@
 package de.hglabor.plugins.duels.functionality
 
-import net.axay.kspigot.chat.KColors
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack

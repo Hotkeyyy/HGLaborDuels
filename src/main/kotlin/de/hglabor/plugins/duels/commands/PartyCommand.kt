@@ -6,6 +6,7 @@ import de.hglabor.plugins.duels.party.Partys.getPartyFromPlayer
 import de.hglabor.plugins.duels.party.Partys.hasParty
 import de.hglabor.plugins.duels.party.Partys.isInOrHasParty
 import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
+import de.hglabor.plugins.duels.utils.Ranks
 import net.axay.kspigot.chat.KColors
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
@@ -18,7 +19,7 @@ object PartyCommand : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender is Player) {
             val player = sender
-            if (test.contains(player) || player.isOp) {
+            if (test.contains(player) || Ranks.getRank(player) == Ranks.Rank.OWNER || Ranks.getRank(player) == Ranks.Rank.ADMIN) {
                 if (args.size == 1) {
                     if (args[0].equals("create", true)) {
                         if (!player.isInOrHasParty())
