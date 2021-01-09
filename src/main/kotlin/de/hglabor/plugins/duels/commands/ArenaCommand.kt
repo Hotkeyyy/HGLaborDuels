@@ -1,5 +1,6 @@
 package de.hglabor.plugins.duels.commands
 
+import de.hglabor.plugins.duels.arenas.Arenas
 import de.hglabor.plugins.duels.arenas.CreateArena
 import de.hglabor.plugins.duels.guis.CreateArenaGUI
 import de.hglabor.plugins.duels.arenas.arenaFromPlayer
@@ -41,11 +42,9 @@ object ArenaCommand : CommandExecutor {
                             player.teleport(Location(Bukkit.getWorld("FightWorld"), 0.0, 150.0, 0.0))
                             return true
                         } else if (args[0].equals("list", true)) {
-                            val file = File("arenas//arenas.yml")
-                            val yamlConfiguration = YamlConfiguration.loadConfiguration(file)
                             val arenas = arrayListOf<String>()
                             var message = ""
-                            for (arena in yamlConfiguration.getKeys(false)) {
+                            for (arena in Arenas.allArenas.keys) {
                                 arenas.add(arena)
                             }
 

@@ -1,6 +1,5 @@
 package de.hglabor.plugins.duels.eventmanager.duel
 
-import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.kits.Kits.Companion.info
 import de.hglabor.plugins.duels.kits.Specials
 import de.hglabor.plugins.duels.utils.Data
@@ -23,13 +22,6 @@ object OnMove {
                             duel.stop()
                         }
                     }
-                }
-            }
-            if (Data.frozenBecauseCountdown.contains(player)) {
-                val from = it.from
-                val to = it.to
-                if (from.z != to.z && from.x != to.x) {
-                    it.isCancelled = true
                 }
             }
         }

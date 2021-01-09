@@ -156,6 +156,7 @@ class CreateArena(val creator: Player) {
                 else
                     creator.sendMessage(Localization.ARENA_CREATION_SUCCESS_EN)
                 arenaFromPlayer.remove(creator)
+                Arenas.allArenas[name] = Pair(tag, Arenas.getClipboard(name))
                 closer.close()
             } catch (ignore: IOException) {
             }

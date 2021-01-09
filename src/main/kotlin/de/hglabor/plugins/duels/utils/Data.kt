@@ -25,8 +25,6 @@ object Data {
         return duelFromID[duelIDFromPlayer[player]!!]!!
     }
 
-    val frozenBecauseCountdown = arrayListOf<Player>()
-
     val usedLocationMultipliersXZ = arrayListOf<Pair<Int, Int>>()
     const val locationMultiplier = 5000.0
 

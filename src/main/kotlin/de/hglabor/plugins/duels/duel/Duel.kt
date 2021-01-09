@@ -75,7 +75,6 @@ class Duel(val p1: Player, val p2: Player, val kit: Kits, private val ID: String
         object : BukkitRunnable() {
             override fun run() {
                 players.forEach {
-                    setPlayersInLists()
                     it.getStats().addGame()
                     it.isGlowing = false
                     it.inventory.clear()
@@ -84,14 +83,6 @@ class Duel(val p1: Player, val p2: Player, val kit: Kits, private val ID: String
                 giveKit()
                 teleportPlayersToSpawns()
                 countdown()
-
-                object : BukkitRunnable() {
-                    override fun run() {
-                        Data.frozenBecauseCountdown.remove(p1)
-                        Data.frozenBecauseCountdown.remove(p2)
-
-                    }
-                }.runTaskLater(Manager.INSTANCE, 60)
 
                 if (StaffData.followingStaffFromPlayer[p1]?.isNotEmpty() == true)
                     StaffData.followingStaffFromPlayer[p1]!!.forEach {
@@ -190,7 +181,8 @@ class Duel(val p1: Player, val p2: Player, val kit: Kits, private val ID: String
         savePlayerdata(p2)
         sendGameEndMessage()
 
-        loser.health = loser.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue!!
+        loser.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = 20.0
+        loser.health = 20.0
         loser.inventory.clear()
         loser.velocity = Vector(0, 10, 0)
 
@@ -221,8 +213,6 @@ class Duel(val p1: Player, val p2: Player, val kit: Kits, private val ID: String
     private fun setPlayersInLists() {
         Data.inFight.add(p1)
         Data.inFight.add(p2)
-        Data.frozenBecauseCountdown.add(p1)
-        Data.frozenBecauseCountdown.add(p2)
         Data.gameIDs.add(ID)
         Data.duel[p1] = p2
         Data.duel[p2] = p1

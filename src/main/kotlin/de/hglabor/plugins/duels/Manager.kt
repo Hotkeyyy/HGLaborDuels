@@ -1,6 +1,7 @@
 package de.hglabor.plugins.duels
 
 import de.hglabor.plugins.duels.arenas.ArenaTags
+import de.hglabor.plugins.duels.arenas.Arenas
 import de.hglabor.plugins.duels.eventmanager.arena.CreateArenaListener
 import de.hglabor.plugins.duels.commands.*
 import de.hglabor.plugins.duels.duel.overview.DuelOverviewGUI
@@ -130,6 +131,8 @@ class Manager : KSpigot() {
         getCommand("staffmode")!!.setExecutor(StaffmodeCommand)
         getCommand("ban")!!.setExecutor(BanCommand)
         getCommand("tempban")!!.setExecutor(TempBanCommand)
+
+        Arenas.enable()
     }
 
     /*fun connectMongo() {

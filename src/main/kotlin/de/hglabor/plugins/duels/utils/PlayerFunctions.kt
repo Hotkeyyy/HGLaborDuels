@@ -10,6 +10,7 @@ import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.scoreboard.LobbyScoreboard
 import de.hglabor.plugins.duels.settings.Settings
 import de.hglabor.plugins.duels.spawn.SpawnUtils
+import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
 import de.hglabor.plugins.staff.utils.StaffData.isVanished
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.extensions.bukkit.feedSaturate
@@ -26,6 +27,7 @@ import net.md_5.bungee.api.chat.hover.content.Text
 import org.bukkit.*
 import org.bukkit.attribute.Attribute
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
@@ -114,8 +116,8 @@ object PlayerFunctions {
         Data.inFight.remove(player)
         LobbyScoreboard.setScoreboard(player)
 
-        player.activePotionEffects.forEach { potionEffect ->
-            player.removePotionEffect(potionEffect.type)
+        player.activePotionEffects.forEach {
+            player.removePotionEffect(it.type)
         }
         player.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 25, 1))
         player.isGlowing = true

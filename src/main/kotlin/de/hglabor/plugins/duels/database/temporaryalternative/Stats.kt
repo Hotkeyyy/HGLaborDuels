@@ -4,7 +4,10 @@ import org.bukkit.Bukkit
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 import java.io.IOException
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.*
+
 
 class Stats(val uuid: UUID) {
     val file = File("plugins//HGLaborDuels//temp//stats.yml")
@@ -45,6 +48,12 @@ class Stats(val uuid: UUID) {
 
     fun getDeaths(): Int {
         return yamlConfiguration["$uuid.stats.deaths"] as Int
+    }
+
+    fun getKD(): Double {
+        val notRounded = getKills() / getDeaths().toDouble()
+        val rounded = "%.2f".format(notRounded)
+        return rounded.toDouble()
     }
 
     fun addDeath() {

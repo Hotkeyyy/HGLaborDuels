@@ -2,6 +2,8 @@ package de.hglabor.plugins.duels.eventmanager
 
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
+import de.hglabor.plugins.staff.utils.StaffData
+import de.hglabor.plugins.staff.utils.StaffData.isVanished
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.broadcast
@@ -17,7 +19,11 @@ object OnPlayerQuit {
             it.quitMessage = null
             broadcast("${KColors.PALEVIOLETRED}← ${KColors.GRAY}${player.name}")
 
-            if(player.isInFight()) {
+            if (player.isVanished) {
+                StaffData.vanishedPlayers.remove(player)
+            }
+
+            if (player.isInFight()) {
                 if(Data.duelIDFromPlayer.containsKey(player)) {
                     val duel = Data.duelFromPlayer(player)
                     duel.loser = player

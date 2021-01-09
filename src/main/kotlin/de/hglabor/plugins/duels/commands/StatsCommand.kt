@@ -9,7 +9,11 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import java.math.RoundingMode
+import java.text.DecimalFormat
 import java.util.*
+import kotlin.math.round
+import kotlin.math.roundToLong
 
 object StatsCommand : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
@@ -68,9 +72,7 @@ object StatsCommand : CommandExecutor {
                 )
                 if (stats.getDeaths() != 0)
                     player.sendMessage(
-                        Localization.STATS_COMMAND_KD.replace(
-                            "%kd%", (stats.getKills().toDouble() / stats.getDeaths().toDouble()).toString()
-                        )
+                        Localization.STATS_COMMAND_KD.replace("%kd%", stats.getKD().toString())
                     )
                 else
                     player.sendMessage(
@@ -113,15 +115,11 @@ object StatsCommand : CommandExecutor {
                 )
                 if (stats.getDeaths() != 0)
                     player.sendMessage(
-                        Localization.STATS_COMMAND_KD.replace(
-                            "%kd%", (stats.getKills().toDouble() / stats.getDeaths().toDouble()).toString()
-                        )
+                        Localization.STATS_COMMAND_KD.replace("%kd%", stats.getKD().toString())
                     )
                 else
                     player.sendMessage(
-                        Localization.STATS_COMMAND_KD.replace(
-                            "%kd%", (stats.getKills()).toString()
-                        )
+                        Localization.STATS_COMMAND_KD.replace("%kd%", (stats.getKills()).toString())
                     )
                 player.sendMessage(
                     Localization.STATS_COMMAND_SOUPS_EATEN_EN.replace(
