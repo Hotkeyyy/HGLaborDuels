@@ -1,14 +1,15 @@
 package de.hglabor.plugins.duels.eventmanager.duel
 
+import de.hglabor.plugins.duels.data.DataHolder
 import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.kits.Kits.Companion.info
 import de.hglabor.plugins.duels.kits.Specials
 import de.hglabor.plugins.duels.soupsimulator.isInSoupsimulator
 import de.hglabor.plugins.duels.utils.Data
-import de.hglabor.plugins.duels.utils.PlayerFunctions.getStats
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.broadcast
+import net.axay.kspigot.runnables.async
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -58,16 +59,17 @@ object OnDamage {
                     val damager = it.damager as Player
                     val duel = Data.duelFromPlayer(player)
 
-                    if (!duel.kit.info.specials.contains(Specials.HITCOOLDOWN)) {
+                    if (!duel.hasBegan)
+                        it.isCancelled = true
+
+                    if (!duel.kit.info.specials.contains(Specials.HITCOOLDOWN))
                         it.damage *= 0.55
-                    }
 
                     if (duel.kit.info.specials.contains(Specials.NODAMAGE))
                         it.damage = 0.0
 
                     if (damager.inventory.itemInMainHand.type == Material.TRIDENT)
                         it.damage = 4.0
-
 
                     if (!duel.hasEnded) {
                         if (!it.isCancelled) {
@@ -80,7 +82,7 @@ object OnDamage {
                                 duel.longestCombo[damager] = duel.currentCombo[damager]!!
                             }
 
-                            damager.getStats().addTotalHit()
+                            async { DataHolder.playerStats[player]?.addTotalHit() }
                         }
                     } else {
                         it.isCancelled = true

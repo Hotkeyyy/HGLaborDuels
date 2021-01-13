@@ -98,9 +98,9 @@ class NoDebuff : Kit(Kits.NODEBUFF) {
                                     val second: Int = (rest / 1000).toInt()
                                     val ms = rest % 1000
                                     if (player.localization("de"))
-                                        player.sendMessage("${Localization.PREFIX}Du musst noch ${KColors.DODGERBLUE}$second${KColors.DARKGRAY}:${KColors.DODGERBLUE}$ms ${(if (second == 1) " Sekunde" else " Sekunden")} ${KColors.GRAY}warten.")
+                                        player.sendMessage("${Localization.PREFIX}Du musst noch ${KColors.DODGERBLUE}$second${KColors.DARKGRAY}:${KColors.DODGERBLUE}$ms${(if (second == 1) " Sekunde" else " Sekunden")} ${KColors.GRAY}warten.")
                                     else
-                                        player.sendMessage("${Localization.PREFIX}You still have to wait ${KColors.DODGERBLUE}$second${KColors.DARKGRAY}:${KColors.DODGERBLUE}$ms ${(if (second == 1) " second" else " seconds")}${KColors.GRAY}.")
+                                        player.sendMessage("${Localization.PREFIX}You still have to wait ${KColors.DODGERBLUE}$second${KColors.DARKGRAY}:${KColors.DODGERBLUE}$ms${(if (second == 1) " second" else " seconds")}${KColors.GRAY}.")
                                     it.isCancelled = true
                                     return@listen
                                 }

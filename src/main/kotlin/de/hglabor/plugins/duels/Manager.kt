@@ -2,27 +2,28 @@ package de.hglabor.plugins.duels
 
 import de.hglabor.plugins.duels.arenas.ArenaTags
 import de.hglabor.plugins.duels.arenas.Arenas
-import de.hglabor.plugins.duels.eventmanager.arena.CreateArenaListener
 import de.hglabor.plugins.duels.commands.*
+import de.hglabor.plugins.duels.data.DataHolder
+import de.hglabor.plugins.duels.data.PlayerSettings
+import de.hglabor.plugins.duels.data.PlayerStats
+import de.hglabor.plugins.duels.database.MongoManager
 import de.hglabor.plugins.duels.duel.overview.DuelOverviewGUI
 import de.hglabor.plugins.duels.eventmanager.*
+import de.hglabor.plugins.duels.eventmanager.arena.CreateArenaListener
 import de.hglabor.plugins.duels.eventmanager.duel.*
 import de.hglabor.plugins.duels.eventmanager.soupsimulator.SoupsimulatorEvents
 import de.hglabor.plugins.duels.functionality.SoupHealing
-import de.hglabor.plugins.duels.functionality.SoupRecipes
+import de.hglabor.plugins.duels.guis.PlayerSettingsGUI
 import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.protection.Protection
 import de.hglabor.plugins.duels.scoreboard.LobbyScoreboard
-import de.hglabor.plugins.duels.settings.Settings
 import de.hglabor.plugins.duels.spawn.SetSpawnCommand
 import de.hglabor.plugins.duels.utils.CreateFiles
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
 import de.hglabor.plugins.duels.utils.WorldManager
-import de.hglabor.plugins.staff.commands.BanCommand
 import de.hglabor.plugins.staff.commands.FollowCommand
 import de.hglabor.plugins.staff.commands.StaffmodeCommand
-import de.hglabor.plugins.staff.commands.TempBanCommand
 import de.hglabor.plugins.staff.eventmanager.StaffOnInteract
 import de.hglabor.plugins.staff.eventmanager.StaffOnInventoryClick
 import de.hglabor.plugins.staff.eventmanager.StaffOnItemDrop
@@ -33,6 +34,7 @@ import net.axay.kspigot.extensions.bukkit.success
 import net.axay.kspigot.extensions.console
 import net.axay.kspigot.extensions.onlinePlayers
 import net.axay.kspigot.main.KSpigot
+import net.axay.kspigot.runnables.async
 import net.axay.kspigot.sound.sound
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
@@ -44,7 +46,7 @@ class Manager : KSpigot() {
 
     companion object {
         lateinit var INSTANCE: Manager; private set
-        //lateinit var mongoManager: MongoManager
+        lateinit var mongoManager: MongoManager
     }
 
     override fun load() {
@@ -54,7 +56,10 @@ class Manager : KSpigot() {
 
         onlinePlayers.forEach {
             it.sound(Sound.BLOCK_BEACON_ACTIVATE)
-            Settings.setPlayerSettings(it)
+            async {
+                PlayerStats.get(it)
+                PlayerSettings.get(it)
+            }
         }
 
         WorldManager.deleteFightWorld()
@@ -70,10 +75,9 @@ class Manager : KSpigot() {
     override fun startup() {
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord")
         registerEventsAndCommands()
-        SoupRecipes.register()
         LobbyScoreboard.startRunnable()
         CreateFiles
-        //connectMongo()
+        connectMongo()
         WorldManager.createFightWorld()
         WorldManager.createBuildWorld()
         console.success("Duels plugin enabled.")
@@ -85,7 +89,18 @@ class Manager : KSpigot() {
             if(it.gameMode != GameMode.CREATIVE)
                 it.reset()
             it.sound(Sound.BLOCK_BEACON_DEACTIVATE)
+
+            async {
+                val playerStats = PlayerStats.get(it)
+                playerStats.update()
+                DataHolder.playerStats.remove(it)
+
+                val playerSettings = PlayerSettings.get(it)
+                playerSettings.update()
+                DataHolder.playerSettings.remove(it)
+            }
         }
+        MongoManager.disconnect()
     }
 
     private fun registerEventsAndCommands() {
@@ -112,6 +127,7 @@ class Manager : KSpigot() {
         SoupsimulatorEvents.enable()
         CreateArenaListener.enable()
         DuelOverviewGUI.enable()
+        PlayerSettingsGUI.enable()
 
         getCommand("challenge")!!.setExecutor(ChallengeCommand)
         getCommand("setspawn")!!.setExecutor(SetSpawnCommand)
@@ -121,7 +137,6 @@ class Manager : KSpigot() {
         getCommand("dueloverview")!!.setExecutor(DuelOverviewCommand)
         getCommand("hub")!!.setExecutor(HubCommand)
         getCommand("leave")!!.setExecutor(LeaveCommand)
-        getCommand("rank")!!.setExecutor(RankCommand)
         getCommand("party")!!.setExecutor(PartyCommand)
 
         StaffOnItemDrop.enable()
@@ -129,18 +144,16 @@ class Manager : KSpigot() {
         StaffOnInventoryClick.enable()
         getCommand("follow")!!.setExecutor(FollowCommand)
         getCommand("staffmode")!!.setExecutor(StaffmodeCommand)
-        getCommand("ban")!!.setExecutor(BanCommand)
-        getCommand("tempban")!!.setExecutor(TempBanCommand)
 
         Arenas.enable()
     }
 
-    /*fun connectMongo() {
+    fun connectMongo() {
         mongoManager = MongoManager
         mongoManager.connect()
     }
 
     fun getMongoManager(): MongoManager {
-        return mongoManager;
-    }*/
+        return mongoManager
+    }
 }

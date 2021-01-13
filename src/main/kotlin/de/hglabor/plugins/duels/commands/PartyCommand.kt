@@ -6,7 +6,6 @@ import de.hglabor.plugins.duels.party.Partys.getPartyFromPlayer
 import de.hglabor.plugins.duels.party.Partys.hasParty
 import de.hglabor.plugins.duels.party.Partys.isInOrHasParty
 import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
-import de.hglabor.plugins.duels.utils.Ranks
 import net.axay.kspigot.chat.KColors
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
@@ -15,11 +14,10 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 object PartyCommand : CommandExecutor {
-    val test = arrayListOf<Player>()
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender is Player) {
             val player = sender
-            if (test.contains(player) || Ranks.getRank(player) == Ranks.Rank.OWNER || Ranks.getRank(player) == Ranks.Rank.ADMIN) {
+            if (player.isOp) {
                 if (args.size == 1) {
                     if (args[0].equals("create", true)) {
                         if (!player.isInOrHasParty())
@@ -52,7 +50,6 @@ object PartyCommand : CommandExecutor {
                     if (args[0].equals("givepermissions")) {
                         val target = Bukkit.getPlayer(args[1])
                         if (target != null) {
-                            test.add(target)
                             target.sendMessage("rechte für party bekommen")
                             player.sendMessage("du hast ${target.name} rechte gegeben")
                         } else
@@ -61,7 +58,6 @@ object PartyCommand : CommandExecutor {
                     } else if (args[0].equals("removepermissions")) {
                         val target = Bukkit.getPlayer(args[1])
                         if (target != null) {
-                            test.remove(target)
                             target.sendMessage("rechte für party genommen")
                             player.sendMessage("du hast ${target.name} rechte genommen")
                         } else

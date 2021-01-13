@@ -1,39 +1,40 @@
 package de.hglabor.plugins.duels.database
 
 
+import com.google.gson.Gson
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import org.bson.Document
 import org.bukkit.entity.Player
+import org.litote.kmongo.KMongo
 
 object MongoManager {
     private lateinit var client: MongoClient
     private lateinit var database: MongoDatabase
-    private lateinit var collection: MongoCollection<Document>
+    lateinit var playerStatsCollection: MongoCollection<Document>
+    lateinit var playerSettingsCollection: MongoCollection<Document>
 
     fun connect() {
-        this.client = MongoClients.create("mongodb://${MongoConfig.username}:${MongoConfig.password}@${MongoConfig.host}:${MongoConfig.port}/${MongoConfig.database}")
-        this.database = this.client.getDatabase(MongoConfig.database)
-        this.collection = this.database.getCollection(MongoConfig.collection)
+
+        MongoConfig.loadConfig()
+
+        client = MongoClients.create(MongoConfig.uri())
+        database = client.getDatabase(MongoConfig.database)
+
+        playerStatsCollection = getCollection("duels_playerStats")
+        playerSettingsCollection = getCollection("duels_playerSettings")
     }
 
-    fun playerStatsExists(player: Player): Boolean {
-        val filter = Document("uuid", player.uniqueId.toString())
-        if(collection.find(filter).count() < 1)
-            return true
-        return false
+    fun disconnect() {
+        client.close()
     }
 
-    fun createPlayerStats(player: Player) {
-        val document = Document("uuid", player.uniqueId.toString())
-            .append("lastPlayerName", player.name)
-            .append("kills", 0)
-            .append("deaths", 0)
-            .append("soupsEaten", 0)
-            .append("totalHits", 0)
-            .append("soupsimulatorHighscore", 0)
-        collection.insertOne(document)
+    fun getCollection(name: String): MongoCollection<Document> {
+        if (!database.listCollectionNames().contains(name))
+            database.createCollection(name)
+
+        return database.getCollection(name)
     }
 }

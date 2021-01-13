@@ -6,7 +6,6 @@ import de.hglabor.plugins.duels.soupsimulator.isInSoupsimulator
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
-import org.bukkit.attribute.Attribute
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -15,9 +14,9 @@ import org.bukkit.entity.Player
 object LeaveCommand : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender is Player) {
-            if (sender.isInSoupsimulator()) {
+            if (sender.isInSoupsimulator())
                 Soupsimulator.end(sender)
-            }
+
             else if (sender.isInFight()) {
                 val duel = Data.duelFromPlayer(sender)
                 duel.winner = duel.getOtherPlayer(sender)

@@ -14,7 +14,7 @@ class Party(val leader: Player) {
 
     fun invitePlayer(invited: Player) {
         invitedPlayers.add(invited)
-        leader.sendMessage("du hast ${invited.name} eingeladen")
+        leader.sendMessage("du hast ${invited.displayName} eingeladen")
         players.filter { it != leader }.forEach {
             it.sendMessage("${leader.name} hat ${invited.name} eingeladen")
         }

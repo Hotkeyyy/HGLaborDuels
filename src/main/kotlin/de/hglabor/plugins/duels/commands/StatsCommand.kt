@@ -1,139 +1,85 @@
 package de.hglabor.plugins.duels.commands
 
-import de.hglabor.plugins.duels.database.temporaryalternative.Stats
+import de.hglabor.plugins.duels.data.PlayerStats
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
+import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
 import net.axay.kspigot.chat.KColors
+import net.axay.kspigot.runnables.async
 import org.bukkit.Bukkit
+import org.bukkit.OfflinePlayer
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import java.math.RoundingMode
-import java.text.DecimalFormat
-import java.util.*
-import kotlin.math.round
-import kotlin.math.roundToLong
+
 
 object StatsCommand : CommandExecutor {
-    override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
+
+    override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<out String>): Boolean {
         if (sender is Player) {
             val player = sender
-            val target: UUID
+            val target: OfflinePlayer
             var targetIsOtherPlayer = false
+
             if (args.size == 1) {
-                if (Bukkit.getOfflinePlayer(args[0]).hasPlayedBefore()) {
-                    target = Bukkit.getOfflinePlayer(args[0]).uniqueId
+                target = Bukkit.getOfflinePlayer(args[0])
+                if (PlayerStats.exist(target.uniqueId)) {
                     targetIsOtherPlayer = true
                 } else {
-                    if (player.localization("de")) {
-                        player.sendMessage(
-                            Localization.STATS_COMMAND_PLAYER_NOT_FOUND_DE.replace(
-                                "%playerName%", args[0]
-                            )
-                        )
-                        return false
-                    } else {
-                        player.sendMessage(
-                            Localization.STATS_COMMAND_PLAYER_NOT_FOUND_EN.replace(
-                                "%playerName%", args[0]
-                            )
-                        )
-                        return false
-                    }
+                    player.sendLocalizedMessage(
+                        Localization.STATS_COMMAND_PLAYER_NOT_FOUND_DE.replace("%playerName%", target.name!!),
+                        Localization.STAFF_PLAYER_NOT_FOUND_EN.replace("%playerName%", target.name!!)
+                    )
+                    return false
                 }
-            } else {
-                target = player.uniqueId
-            }
-            val stats = Stats(target)
-            player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
+            } else
+                target = player
+
+
             if (player.localization("de")) {
                 if (targetIsOtherPlayer)
-                    player.sendMessage(
-                        Localization.STATS_COMMAND_STATS_OF_PLAYER_DE.replace(
-                            "%playerName%", Bukkit.getOfflinePlayer(target).name!!
-                        )
-                    )
-
-                player.sendMessage(
-                    Localization.STATS_COMMAND_TOTAL_GAMES_DE.replace(
-                        "%fights%", stats.getTotalGames().toString()
-                    )
-                )
-                player.sendMessage(
-                    Localization.STATS_COMMAND_KILLS.replace(
-                        "%kills%", stats.getKills().toString()
-                    )
-                )
-                player.sendMessage(
-                    Localization.STATS_COMMAND_DEATHS_DE.replace(
-                        "%deaths%", stats.getDeaths().toString()
-                    )
-                )
-                if (stats.getDeaths() != 0)
-                    player.sendMessage(
-                        Localization.STATS_COMMAND_KD.replace("%kd%", stats.getKD().toString())
-                    )
-                else
-                    player.sendMessage(
-                        Localization.STATS_COMMAND_KD.replace(
-                            "%kd%", (stats.getKills()).toString()
-                        )
-                    )
-                player.sendMessage(
-                    Localization.STATS_COMMAND_SOUPS_EATEN_DE.replace(
-                        "%soupsEaten%", (stats.getSoupsEaten()).toString()
-                    )
-                )
-                player.sendMessage(
-                    Localization.STATS_COMMAND_TOTAL_HITS_DE.replace(
-                        "%totalHits%", (stats.getTotalHits()).toString()
-                    )
-                )
+                    player.sendMessage(" §8| §7Stats von Spieler §(» ${KColors.MEDIUMPURPLE}${target.name}")
+                sendStatsDE(player, target)
             } else {
                 if (targetIsOtherPlayer)
-                    player.sendMessage(
-                        Localization.STATS_COMMAND_STATS_OF_PLAYER_EN.replace(
-                            "%playerName%", Bukkit.getOfflinePlayer(target).name!!
-                        )
-                    )
-
-                player.sendMessage(
-                    Localization.STATS_COMMAND_TOTAL_GAMES_EN.replace(
-                        "%fights%", stats.getTotalGames().toString()
-                    )
-                )
-                player.sendMessage(
-                    Localization.STATS_COMMAND_KILLS.replace(
-                        "%kills%", stats.getKills().toString()
-                    )
-                )
-                player.sendMessage(
-                    Localization.STATS_COMMAND_DEATHS_EN.replace(
-                        "%deaths%", stats.getDeaths().toString()
-                    )
-                )
-                if (stats.getDeaths() != 0)
-                    player.sendMessage(
-                        Localization.STATS_COMMAND_KD.replace("%kd%", stats.getKD().toString())
-                    )
-                else
-                    player.sendMessage(
-                        Localization.STATS_COMMAND_KD.replace("%kd%", (stats.getKills()).toString())
-                    )
-                player.sendMessage(
-                    Localization.STATS_COMMAND_SOUPS_EATEN_EN.replace(
-                        "%soupsEaten%", (stats.getSoupsEaten()).toString()
-                    )
-                )
-                player.sendMessage(
-                    Localization.STATS_COMMAND_TOTAL_HITS_EN.replace(
-                        "%totalHits%", (stats.getTotalHits()).toString()
-                    )
-                )
-                player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
+                    player.sendMessage(" §8| §7Stats of player §(» ${KColors.MEDIUMPURPLE}${target.name}")
+                sendStatsEN(player, target)
             }
         }
         return false
     }
+
+    private fun sendStatsDE(player: Player, target: OfflinePlayer) {
+        async {
+            val stats = PlayerStats.get(target)
+            player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
+            player.sendMessage(" §8| §7Gesamte Spiele §8» ${KColors.DEEPSKYBLUE}${stats.totalGames()}")
+            player.sendMessage(" §8| §7Kills §8» ${KColors.DODGERBLUE}${stats.kills()}")
+            player.sendMessage(" §8| §7Tode §8» ${KColors.TOMATO}${stats.deaths()}")
+            player.sendMessage(" §8| §7K/D §8» ${KColors.YELLOW}${stats.kd()}")
+            player.sendMessage(" §8| §7Soupsimulator Rekord §8» ${KColors.SPRINGGREEN}${stats.soupsimulatorHighscore()}")
+            player.sendMessage(" §8| §7Gegessene Suppen §8» ${KColors.SANDYBROWN}${stats.soupsEaten()}")
+            player.sendMessage(" §8| §7Gesamte Schläge §8» ${KColors.CORNSILK}${stats.totalHits()}")
+            player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
+        }
+
+    }
+
+    private fun sendStatsEN(player: Player, target: OfflinePlayer) {
+        async {
+            val stats = PlayerStats.get(target)
+            player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
+            player.sendMessage(" §8| §7Total Games §8» ${KColors.DEEPSKYBLUE}${stats.totalGames()}")
+            player.sendMessage(" §8| §7Kills §8» ${KColors.DODGERBLUE}${stats.kills()}")
+            player.sendMessage(" §8| §7Deaths §8» ${KColors.TOMATO}${stats.deaths()}")
+            player.sendMessage(" §8| §7K/D §8» ${KColors.YELLOW}${stats.kd()}")
+            player.sendMessage(" §8| §7Soupsimulator Highscore §8» ${KColors.SPRINGGREEN}${stats.soupsimulatorHighscore()}")
+            player.sendMessage(" §8| §7Soups eaten §8» ${KColors.SANDYBROWN}${stats.soupsEaten()}")
+            player.sendMessage(" §8| §7Total hits §8» ${KColors.CORNSILK}${stats.totalHits()}")
+            player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
+        }
+
+    }
+
 }

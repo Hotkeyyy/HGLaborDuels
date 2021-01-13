@@ -3,6 +3,7 @@ package de.hglabor.plugins.duels.soupsimulator
 import de.hglabor.plugins.duels.Manager
 import de.hglabor.plugins.duels.kits.KitUtils
 import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
 import net.axay.kspigot.chat.KColors
@@ -44,6 +45,8 @@ object Soupsimulator {
     val wrongHotkeys = hashMapOf<Player, Int>()
 
     fun countdown(player: Player) {
+        Data.challengeKit.remove(player)
+        Data.challenged.remove(player)
         player.inventory.clear()
         player.isGlowing = false
         player.sendTitle("${KColors.LIMEGREEN}3", "§a", 3, 13, 3)
@@ -108,7 +111,7 @@ object Soupsimulator {
                 }
                 player.level = 10
             } else {
-                player.sendTitle("${KColors.DODGERBLUE}Recraft", "§a", 1, 15, 1)
+                player.sendTitle("${KColors.MEDIUMPURPLE}Recraft", "§a", 1, 15, 1)
                 KitUtils.giveRecraft(player, 64)
                 task[player] = SoupsimulatorTasks.RECRAFT
                 taskStart[player] = System.currentTimeMillis()

@@ -1,6 +1,8 @@
 package de.hglabor.plugins.duels.eventmanager.soupsimulator
 
 import de.hglabor.plugins.duels.Manager
+import de.hglabor.plugins.duels.data.DataHolder
+import de.hglabor.plugins.duels.data.PlayerStats
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.soupsimulator.Soupsimulator
 import de.hglabor.plugins.duels.soupsimulator.SoupsimulatorLevel
@@ -8,11 +10,11 @@ import de.hglabor.plugins.duels.soupsimulator.SoupsimulatorTasks
 import de.hglabor.plugins.duels.soupsimulator.gui.SoupsimulatorGUI
 import de.hglabor.plugins.duels.soupsimulator.isInSoupsimulator
 import de.hglabor.plugins.duels.utils.Data
-import de.hglabor.plugins.duels.utils.PlayerFunctions.getStats
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.getHandItem
 import net.axay.kspigot.extensions.events.isRightClick
+import net.axay.kspigot.runnables.async
 import net.axay.kspigot.utils.hasMark
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -135,7 +137,8 @@ object SoupsimulatorEvents {
                     if (player.getHandItem(it.hand)?.type == Material.MUSHROOM_STEW) {
                         if (Soupsimulator.task[player] == SoupsimulatorTasks.SOUP || Soupsimulator.level[player] != SoupsimulatorLevel.BONUS) {
                             player.inventory.itemInMainHand.type = Material.BOWL
-                            player.getStats().addSoupEaten()
+
+                            async { DataHolder.playerStats[player]?.addEatenSoup() }
                         }
                     }
                 }

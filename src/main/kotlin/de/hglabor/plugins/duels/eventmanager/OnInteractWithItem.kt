@@ -1,6 +1,5 @@
 package de.hglabor.plugins.duels.eventmanager
 
-import de.hglabor.plugins.duels.guis.SettingsGUI
 import de.hglabor.plugins.duels.protection.Protection.isRestricted
 import de.hglabor.plugins.duels.utils.PlayerFunctions.stopSpectating
 import de.hglabor.plugins.staff.utils.StaffData.isInStaffMode
@@ -27,7 +26,7 @@ object OnInteractWithItem {
 
             if (it.player.getHandItem(EquipmentSlot.HAND)?.hasMark("settings")!!) {
                 if (it.player.isOp)
-                    SettingsGUI.openGUI(it.player)
+
                 it.player.sendMessage("${KColors.TOMATO}Not working yet")
             }
 

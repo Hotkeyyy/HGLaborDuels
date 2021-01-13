@@ -1,7 +1,7 @@
 @file:Suppress("PropertyName")
 
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 /*
  * BUILD CONSTANTS
@@ -14,7 +14,7 @@ val JVM_VERSION_STRING = JVM_VERSION.versionString
  * PROJECT
  */
 
-group = "net.axay"
+group = "de.hglabor"
 version = "1.0.0"
 
 /*
@@ -56,7 +56,7 @@ dependencies {
     compileOnly("com.destroystokyo.paper:paper-api:1.16.4-R0.1-SNAPSHOT")
 
     // KSPIGOT
-    implementation("net.axay", "KSpigot", "v1.16.4_R19")
+    implementation("net.axay", "KSpigot", "v1.16.4_R21")
 
     // FAWE
     implementation("com.intellectualsites.fawe:FAWE-Bukkit:1.16-462")
@@ -84,9 +84,7 @@ tasks.withType<KotlinCompile> {
 tasks {
     shadowJar {
         minimize()
-
         simpleRelocate("net.axay.kspigot")
-
     }
 }
 

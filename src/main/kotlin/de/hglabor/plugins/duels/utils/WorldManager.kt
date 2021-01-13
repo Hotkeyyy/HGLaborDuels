@@ -36,7 +36,7 @@ object WorldManager {
         world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true)
         world.setGameRule(GameRule.DISABLE_RAIDS, true)
         world.time = 0
-        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, true)
+        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false)
         world.setGameRule(GameRule.DO_FIRE_TICK, false)
         world.isThundering = false
         world.setStorm(false)
@@ -76,7 +76,7 @@ class VoidGenerator : ChunkGenerator() {
         return true
     }
 
-    override fun getFixedSpawnLocation(world: World, random: Random): Location? {
+    override fun getFixedSpawnLocation(world: World, random: Random): Location {
         return Location(world, 0.0, 128.0, 0.0)
     }
 }

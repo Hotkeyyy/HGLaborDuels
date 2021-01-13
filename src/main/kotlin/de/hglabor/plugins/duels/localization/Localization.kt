@@ -269,7 +269,10 @@ object Localization {
     val SETTINGSGUI_NAME_DE = "${KColors.DODGERBLUE}Einstellungen"
     val SETTINGSGUI_KNOCKBACK_NAME_EN = "${KColors.DODGERBLUE}Knockback"
     val SETTINGSGUI_KNOCKBACK_NAME_DE = "${KColors.DODGERBLUE}Rückstoß"
-    val SETTINGSGUI_HITSOUND_NAME_EN = "${KColors.DODGERBLUE}Damagesound"
-    val SETTINGSGUI_HITSOUND_NAME_DE = "${KColors.DODGERBLUE}Schaden Sound"
+    val SETTINGSGUI_DAMAGESOUND_NAME_EN = "${KColors.DODGERBLUE}Knockback Attack sound"
+    val SETTINGSGUI_DAMAGESOUND_NAME_DE = "${KColors.DODGERBLUE}Rückstoß Angriff Sound"
+    val SETTINGSGUI_ALLOWSPECTATORS_NAME = "${KColors.DODGERBLUE}Spectators"
+    val SETTINGSGUI_CHATINFIGHT_NAME_EN = "${KColors.DODGERBLUE}Chat in fight"
+    val SETTINGSGUI_CHATINFIGHT_NAME_DE = "${KColors.DODGERBLUE}Chat im Kampf"
     val SETTINGSGUI_CHAT_NAME = "${KColors.DODGERBLUE}Chat"
 }

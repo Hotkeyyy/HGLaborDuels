@@ -2,7 +2,6 @@ package de.hglabor.plugins.staff.utils
 
 import de.hglabor.plugins.duels.scoreboard.LobbyScoreboard
 import de.hglabor.plugins.duels.utils.Data
-import de.hglabor.plugins.duels.utils.Ranks
 import de.hglabor.plugins.staff.utils.StaffData.isStaff
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.extensions.onlinePlayers
@@ -41,24 +40,6 @@ object StaffScoreboard {
         obj.getScore("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                  §b").score = 1
         obj.getScore("${KColors.GRAY}${KColors.ITALIC}HGLabor.de").score = 0
 
-        val owner: Team = LobbyScoreboard.getTeam(sb, "0001owner", Ranks.Rank.OWNER)
-        val admin: Team = LobbyScoreboard.getTeam(sb, "0002admin", Ranks.Rank.ADMIN)
-        val mod: Team = LobbyScoreboard.getTeam(sb, "0003mod", Ranks.Rank.MOD)
-        val helper: Team = LobbyScoreboard.getTeam(sb, "0004helper", Ranks.Rank.HELPER)
-        val normieplus: Team = LobbyScoreboard.getTeam(sb, "0005normieplus", Ranks.Rank.NORMIEPLUS)
-        val normie: Team = LobbyScoreboard.getTeam(sb, "0006normie", Ranks.Rank.NORMIE)
-
-        onlinePlayers.forEach { on ->
-            when (Ranks.getRank(on)) {
-                Ranks.Rank.OWNER -> owner.addEntry(on.name)
-                Ranks.Rank.ADMIN -> admin.addEntry(on.name)
-                Ranks.Rank.MOD -> mod.addEntry(on.name)
-                Ranks.Rank.HELPER -> helper.addEntry(on.name)
-                Ranks.Rank.NORMIEPLUS -> normieplus.addEntry(on.name)
-                else -> normie.addEntry(on.name)
-            }
-        }
-
         player.scoreboard = sb
     }
 
@@ -68,24 +49,6 @@ object StaffScoreboard {
 
         if (obj == null) {
             obj = sb.registerNewObjective("aaa", "bbb", "${KColors.DEEPSKYBLUE}${KColors.BOLD}Duels")
-        }
-
-        val owner: Team = LobbyScoreboard.getTeam(sb, "0001owner", Ranks.Rank.OWNER)
-        val admin: Team = LobbyScoreboard.getTeam(sb, "0002admin", Ranks.Rank.ADMIN)
-        val mod: Team = LobbyScoreboard.getTeam(sb, "0003mod", Ranks.Rank.MOD)
-        val helper: Team = LobbyScoreboard.getTeam(sb, "0004helper", Ranks.Rank.HELPER)
-        val normieplus: Team = LobbyScoreboard.getTeam(sb, "0005normieplus", Ranks.Rank.NORMIEPLUS)
-        val normie: Team = LobbyScoreboard.getTeam(sb, "0006normie", Ranks.Rank.NORMIE)
-
-        onlinePlayers.forEach { on ->
-            when (Ranks.getRank(on)) {
-                Ranks.Rank.OWNER -> owner.addEntry(on.name)
-                Ranks.Rank.ADMIN -> admin.addEntry(on.name)
-                Ranks.Rank.MOD -> mod.addEntry(on.name)
-                Ranks.Rank.HELPER -> helper.addEntry(on.name)
-                Ranks.Rank.NORMIEPLUS -> normieplus.addEntry(on.name)
-                else -> normie.addEntry(on.name)
-            }
         }
 
         val inFight = Data.inFight.size

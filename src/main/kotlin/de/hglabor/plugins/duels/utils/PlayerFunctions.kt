@@ -2,15 +2,14 @@ package de.hglabor.plugins.duels.utils
 
 import de.hglabor.plugins.duels.Manager
 import de.hglabor.plugins.duels.arenas.Arenas
-import de.hglabor.plugins.duels.database.temporaryalternative.Stats
 import de.hglabor.plugins.duels.functionality.MainInventory
 import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.kits.Kits.Companion.info
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.scoreboard.LobbyScoreboard
-import de.hglabor.plugins.duels.settings.Settings
 import de.hglabor.plugins.duels.spawn.SpawnUtils
-import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
+import de.hglabor.plugins.staff.functionality.StaffInventory
+import de.hglabor.plugins.staff.utils.StaffData.isInStaffMode
 import de.hglabor.plugins.staff.utils.StaffData.isVanished
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.extensions.bukkit.feedSaturate
@@ -26,13 +25,9 @@ import net.md_5.bungee.api.chat.TextComponent
 import net.md_5.bungee.api.chat.hover.content.Text
 import org.bukkit.*
 import org.bukkit.attribute.Attribute
-import org.bukkit.configuration.file.YamlConfiguration
-import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
-import org.bukkit.scoreboard.Team
-import java.io.File
 
 
 object PlayerFunctions {
@@ -61,13 +56,13 @@ object PlayerFunctions {
         }
 
         player.sendLocalizedMessage(
-            Localization.YOU_DUELED_DE.replace("%playerName%", target.name).replace("%kit%", kit.info.name),
-            Localization.YOU_DUELED_EN.replace("%playerName%", target.name).replace("%kit%", kit.info.name)
+            Localization.YOU_DUELED_DE.replace("%playerName%", target.displayName).replace("%kit%", kit.info.name),
+            Localization.YOU_DUELED_EN.replace("%playerName%", target.displayName).replace("%kit%", kit.info.name)
         )
 
         target.sendLocalizedMessage(
-            Localization.YOU_WERE_DUELED_DE.replace("%playerName%", player.name).replace("%kit%", kit.info.name),
-            Localization.YOU_WERE_DUELED_EN.replace("%playerName%", player.name).replace("%kit%", kit.info.name)
+            Localization.YOU_WERE_DUELED_DE.replace("%playerName%", player.displayName).replace("%kit%", kit.info.name),
+            Localization.YOU_WERE_DUELED_EN.replace("%playerName%", player.displayName).replace("%kit%", kit.info.name)
         )
 
         val message = TextComponent("")
@@ -94,7 +89,10 @@ object PlayerFunctions {
 
     fun Player.reset() {
         val player: Player = player!!
-        MainInventory.giveItems(player)
+        if (!player.isInStaffMode)
+            MainInventory.giveItems(player)
+        else
+            StaffInventory.giveItems(player)
         player.gameMode = GameMode.ADVENTURE
         player.fireTicks = 0
         player.exp = 0f
@@ -145,8 +143,8 @@ object PlayerFunctions {
 
         if (notifyPlayers)
             duel.sendMessage(
-                Localization.PLAYER_STARTED_SPECTATING_DE.replace("%playerName%", player.name),
-                Localization.PLAYER_STARTED_SPECTATING_EN.replace("%playerName%", player.name)
+                Localization.PLAYER_STARTED_SPECTATING_DE.replace("%playerName%", player.displayName),
+                Localization.PLAYER_STARTED_SPECTATING_EN.replace("%playerName%", player.displayName)
             )
 
         player.inventory.setItem(
@@ -170,8 +168,8 @@ object PlayerFunctions {
         if (!forced)
             if (player.localization("de"))
                 duel.sendMessage(
-                    Localization.PLAYER_STOPPED_SPECTATING_DE.replace("%playerName%", player.name),
-                    Localization.PLAYER_STOPPED_SPECTATING_EN.replace("%playerName%", player.name)
+                    Localization.PLAYER_STOPPED_SPECTATING_DE.replace("%playerName%", player.displayName),
+                    Localization.PLAYER_STOPPED_SPECTATING_EN.replace("%playerName%", player.displayName)
                 )
     }
 
@@ -179,20 +177,11 @@ object PlayerFunctions {
         return player!!.locale.toLowerCase().contains(locale)
     }
 
-    fun Player.getStats(): Stats {
-        return Stats(player!!.uniqueId)
-    }
 
     fun Player.sendLocalizedMessage(germanMessage: String, englishMessage: String) {
         if (player!!.localization("de"))
             player!!.sendMessage(germanMessage)
         else
             player!!.sendMessage(englishMessage)
-    }
-
-    fun Player.hasRank(): Boolean {
-        val file = File("plugins//HGLaborDuels//ranks.yml")
-        val yamlConfiguration = YamlConfiguration.loadConfiguration(file)
-        return yamlConfiguration.contains(player!!.uniqueId.toString())
     }
 }

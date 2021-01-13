@@ -78,12 +78,8 @@ object Protection {
                     it.isCancelled = true
                 if ((it.entity as Player).isInStaffMode)
                     it.isCancelled = true
-                if (!((it.damager as Player).isInFight() || (it.entity as Player).isInFight())) {
-                    it.isCancelled = true
-                } else {
-                    if ((it.damager as Player).getEnemy() != it.entity) {
-                        it.isCancelled = true
-                    }
+                if ((it.damager as Player).isInFight() && (it.entity as Player).isInFight()) {
+                    it.isCancelled = false
                 }
             }
         }

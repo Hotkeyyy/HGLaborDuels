@@ -26,11 +26,11 @@ object SpecCommand : CommandExecutor {
                             if (player.localization("de"))
                                 player.sendMessage(
                                     Localization.SPEC_COMMAND_PLAYER_NOT_FIGHTING_DE.replace(
-                                        "%playerName%", t.name))
+                                        "%playerName%", t.displayName))
                             else
                                 player.sendMessage(
                                     Localization.SPEC_COMMAND_PLAYER_NOT_FIGHTING_EN.replace(
-                                        "%playerName%", t.name))
+                                        "%playerName%", t.displayName))
                         }
                     } else {
                         if (player.localization("de"))

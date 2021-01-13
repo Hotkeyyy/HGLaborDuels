@@ -3,6 +3,7 @@ package de.hglabor.plugins.duels.duel
 import de.hglabor.plugins.duels.Manager
 import de.hglabor.plugins.duels.arenas.Arena
 import de.hglabor.plugins.duels.arenas.Arenas
+import de.hglabor.plugins.duels.data.DataHolder
 import de.hglabor.plugins.duels.kits.KitType
 import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.kits.Kits.Companion.giveKit
@@ -10,13 +11,13 @@ import de.hglabor.plugins.duels.kits.Kits.Companion.info
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.spawn.SpawnUtils
 import de.hglabor.plugins.duels.utils.Data
-import de.hglabor.plugins.duels.utils.PlayerFunctions.getStats
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
 import de.hglabor.plugins.duels.utils.PlayerFunctions.stopSpectating
 import de.hglabor.plugins.staff.Staffmode.teleportToFollowedPlayer
 import de.hglabor.plugins.staff.utils.StaffData
 import net.axay.kspigot.chat.KColors
+import net.axay.kspigot.runnables.async
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.TextComponent
@@ -63,6 +64,8 @@ class Duel(val p1: Player, val p2: Player, val kit: Kits, private val ID: String
     val path = File("plugins//HGLaborDuels//temp//duels//$ID//")
 
     fun start() {
+        DataHolder.playerStats[p1]?.addTotalGame()
+        DataHolder.playerStats[p2]?.addTotalGame()
         setPlayersInLists()
 
         p1.inventory.clear()
@@ -75,7 +78,6 @@ class Duel(val p1: Player, val p2: Player, val kit: Kits, private val ID: String
         object : BukkitRunnable() {
             override fun run() {
                 players.forEach {
-                    it.getStats().addGame()
                     it.isGlowing = false
                     it.inventory.clear()
                     it.gameMode = GameMode.SURVIVAL
@@ -142,14 +144,14 @@ class Duel(val p1: Player, val p2: Player, val kit: Kits, private val ID: String
                 else
                     p1.sendTitle(Localization.DUEL_STARTING_TITLE_EN, "§b", 3, 13, 3)
                 p1.closeInventory()
-                p1.playSound(p1.location, Sound.EVENT_RAID_HORN, 4f, 1f)
+                p1.playSound(p1.location, Sound.EVENT_RAID_HORN, 10f, 1f)
 
                 if (p2.localization("de"))
                     p2.sendTitle(Localization.DUEL_STARTING_TITLE_DE, "§b", 3, 13, 3)
                 else
                     p2.sendTitle(Localization.DUEL_STARTING_TITLE_EN, "§b", 3, 13, 3)
                 p2.closeInventory()
-                p2.playSound(p2.location, Sound.EVENT_RAID_HORN, 4f, 1f)
+                p2.playSound(p2.location, Sound.EVENT_RAID_HORN, 10f, 1f)
 
                 hasBegan = true
 
@@ -351,8 +353,8 @@ class Duel(val p1: Player, val p2: Player, val kit: Kits, private val ID: String
     }
 
     private fun sendGameEndMessage() {
-        winner.getStats().addKill()
-        loser.getStats().addDeath()
+        async { DataHolder.playerStats[winner]?.addKill() }
+        async { DataHolder.playerStats[loser]?.addDeath() }
 
         sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
 
