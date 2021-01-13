@@ -14,6 +14,7 @@ import de.hglabor.plugins.duels.eventmanager.duel.*
 import de.hglabor.plugins.duels.eventmanager.soupsimulator.SoupsimulatorEvents
 import de.hglabor.plugins.duels.functionality.SoupHealing
 import de.hglabor.plugins.duels.guis.PlayerSettingsGUI
+import de.hglabor.plugins.duels.guis.QueueGUI
 import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.protection.Protection
@@ -34,7 +35,6 @@ import net.axay.kspigot.extensions.bukkit.success
 import net.axay.kspigot.extensions.console
 import net.axay.kspigot.extensions.onlinePlayers
 import net.axay.kspigot.main.KSpigot
-import net.axay.kspigot.runnables.async
 import net.axay.kspigot.sound.sound
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
@@ -55,16 +55,14 @@ class Manager : KSpigot() {
         console.info("Loading Duels plugin...")
 
         onlinePlayers.forEach {
+            if (it.gameMode != GameMode.CREATIVE)
+                it.reset()
             it.sound(Sound.BLOCK_BEACON_ACTIVATE)
-            async {
-                PlayerStats.get(it)
-                PlayerSettings.get(it)
-            }
         }
 
         WorldManager.deleteFightWorld()
         val duelsPath = File("plugins//HGLaborDuels//temp//duels//")
-        if(duelsPath.exists()) {
+        if (duelsPath.exists()) {
             duelsPath.deleteRecursively()
         }
         File("plugins//HGLaborDuels//temp//duels//").mkdir()
@@ -86,19 +84,16 @@ class Manager : KSpigot() {
     override fun shutdown() {
         broadcast("${Localization.PREFIX}${KColors.TOMATO}DISABLING PLUGIN ${KColors.DARKGRAY}(maybe a reload)")
         onlinePlayers.forEach {
-            if(it.gameMode != GameMode.CREATIVE)
-                it.reset()
             it.sound(Sound.BLOCK_BEACON_DEACTIVATE)
 
-            async {
-                val playerStats = PlayerStats.get(it)
-                playerStats.update()
-                DataHolder.playerStats.remove(it)
+            val playerStats = PlayerStats.get(it)
+            playerStats.update()
+            DataHolder.playerStats.remove(it)
 
-                val playerSettings = PlayerSettings.get(it)
-                playerSettings.update()
-                DataHolder.playerSettings.remove(it)
-            }
+            val playerSettings = PlayerSettings.get(it)
+            playerSettings.update()
+            DataHolder.playerSettings.remove(it)
+
         }
         MongoManager.disconnect()
     }
@@ -126,11 +121,14 @@ class Manager : KSpigot() {
         Kits.enable()
         SoupsimulatorEvents.enable()
         CreateArenaListener.enable()
+
         DuelOverviewGUI.enable()
         PlayerSettingsGUI.enable()
+        QueueGUI.enable()
 
         getCommand("challenge")!!.setExecutor(ChallengeCommand)
         getCommand("setspawn")!!.setExecutor(SetSpawnCommand)
+        getCommand("spawn")!!.setExecutor(SpawnCommand)
         getCommand("arena")!!.setExecutor(ArenaCommand)
         getCommand("spec")!!.setExecutor(SpecCommand)
         getCommand("stats")!!.setExecutor(StatsCommand)
@@ -148,7 +146,7 @@ class Manager : KSpigot() {
         Arenas.enable()
     }
 
-    fun connectMongo() {
+    private fun connectMongo() {
         mongoManager = MongoManager
         mongoManager.connect()
     }

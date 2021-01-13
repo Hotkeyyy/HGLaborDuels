@@ -41,7 +41,7 @@ class NoDebuff : Kit(Kits.NODEBUFF) {
     }
 
     override val name = "NoDebuff"
-    override val itemInGUIs = Kits.guiItem(Material.SPLASH_POTION, name, "PotPvP")
+    override fun itemInGUIs() = Kits.guiItem(Material.SPLASH_POTION, name, "PotPvP")
     override val arenaTag = ArenaTags.NONE
     override val type = KitType.NONE
     override val specials = listOf(Specials.PEARLCOOLDOWN)
@@ -75,7 +75,7 @@ class NoDebuff : Kit(Kits.NODEBUFF) {
     override fun enable() {
         ChooseKitGUI.addContent(
             ChooseKitGUI.KitsGUICompoundElement(
-                itemInGUIs,
+                itemInGUIs(),
                 onClick = {
                     it.player.closeInventory()
                     Data.openedDuelGUI[it.player]?.let { it1 -> it.player.duel(it1, kits) }

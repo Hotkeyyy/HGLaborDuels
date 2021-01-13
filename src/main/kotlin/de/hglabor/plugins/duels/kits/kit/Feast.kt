@@ -11,7 +11,7 @@ import org.bukkit.entity.Player
 
 class Feast : Kit(Kits.FEAST) {
     override val name = "Feast"
-    override val itemInGUIs = Kits.guiItem(Material.DIAMOND_SWORD, name, "Soup")
+    override fun itemInGUIs() = Kits.guiItem(Material.DIAMOND_SWORD, name, "Soup")
     override val arenaTag = ArenaTags.NONE
     override val type = KitType.SOUP
     override val specials = listOf(null)
@@ -33,7 +33,7 @@ class Feast : Kit(Kits.FEAST) {
     override fun enable() {
         ChooseKitGUI.addContent(
             ChooseKitGUI.KitsGUICompoundElement(
-                itemInGUIs,
+                itemInGUIs(),
                 onClick = {
                     it.player.closeInventory()
                     Data.openedDuelGUI[it.player]?.let { it1 -> it.player.duel(it1, kits) }

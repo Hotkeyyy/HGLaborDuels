@@ -31,6 +31,9 @@ enum class Kits {
 
     companion object {
         val cooldown = hashMapOf<Player, Long>()
+        val queue = hashMapOf<Kits, ArrayList<Player>>()
+        val playerQueue = hashMapOf<Player, Kits>()
+        val inGame = hashMapOf<Kits, Int>()
 
         fun guiItem(material: Material, name: String, description: String?): ItemStack {
             return itemStack(material) {
@@ -59,6 +62,8 @@ enum class Kits {
             Speed().enable()
             Sumo().enable()
             Underwater().enable()
+
+            values().forEach { inGame[it] = 0; queue[it] = arrayListOf() }
         }
 
         fun Player.giveKit(kit: Kits) {

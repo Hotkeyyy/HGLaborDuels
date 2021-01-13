@@ -9,7 +9,6 @@ import net.axay.kspigot.items.addLore
 import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
 import net.axay.kspigot.items.name
-import net.axay.kspigot.utils.hasMark
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Sound
@@ -22,7 +21,7 @@ object PlayerSettingsGUI {
     fun open(player: Player) {
         val inventory = Bukkit.createInventory(null, 27, "${KColors.DODGERBLUE}Settings")
 
-        for (i in 0..27)
+        for (i in 0..26)
             inventory.setItem(i, itemStack(Material.WHITE_STAINED_GLASS_PANE) { meta { name = null } })
         for (i in 10..16)
             inventory.setItem(i, itemStack(Material.BLACK_STAINED_GLASS_PANE) { meta { name = null } })
@@ -52,7 +51,6 @@ object PlayerSettingsGUI {
                     }
                 }
             }
-            hasMark("knockback")
         }
         return item
     }
@@ -84,7 +82,6 @@ object PlayerSettingsGUI {
                     }
                 }
             }
-            hasMark("attacksound")
         }
         return item
     }
@@ -115,7 +112,6 @@ object PlayerSettingsGUI {
                     }
                 }
             }
-            hasMark("allowspec")
         }
         return item
     }
@@ -130,20 +126,6 @@ object PlayerSettingsGUI {
                 addLore {
                     if (player.localization("de")) {
                         if (settings.chatInFight() == PlayerSettings.Companion.Chat.NONE) {
-                            +"${KColors.MEDIUMPURPLE}None"
-                            +"${KColors.DIMGRAY}All"
-                            +"${KColors.DIMGRAY}Enemy"
-                        } else if (settings.chatInFight() == PlayerSettings.Companion.Chat.ENEMY) {
-                            +"${KColors.MEDIUMPURPLE}Enemy"
-                            +"${KColors.DIMGRAY}None"
-                            +"${KColors.DIMGRAY}All"
-                        } else {
-                            +"${KColors.MEDIUMPURPLE}All"
-                            +"${KColors.DIMGRAY}Enemy"
-                            +"${KColors.DIMGRAY}None"
-                        }
-                    } else {
-                        if (settings.chatInFight() == PlayerSettings.Companion.Chat.NONE) {
                             +"${KColors.MEDIUMPURPLE}Keine"
                             +"${KColors.DIMGRAY}Alle"
                             +"${KColors.DIMGRAY}Gegner"
@@ -156,10 +138,23 @@ object PlayerSettingsGUI {
                             +"${KColors.DIMGRAY}Gegner"
                             +"${KColors.DIMGRAY}Keine"
                         }
+                    } else {
+                        if (settings.chatInFight() == PlayerSettings.Companion.Chat.NONE) {
+                            +"${KColors.MEDIUMPURPLE}None"
+                            +"${KColors.DIMGRAY}All"
+                            +"${KColors.DIMGRAY}Enemy"
+                        } else if (settings.chatInFight() == PlayerSettings.Companion.Chat.ENEMY) {
+                            +"${KColors.MEDIUMPURPLE}Enemy"
+                            +"${KColors.DIMGRAY}None"
+                            +"${KColors.DIMGRAY}All"
+                        } else {
+                            +"${KColors.MEDIUMPURPLE}All"
+                            +"${KColors.DIMGRAY}Enemy"
+                            +"${KColors.DIMGRAY}None"
+                        }
                     }
                 }
             }
-            hasMark("chat")
         }
         return item
     }
@@ -172,8 +167,8 @@ object PlayerSettingsGUI {
                 it.isCancelled = true
                 if (it.currentItem != null) {
                     val settings = PlayerSettings.get(player)
-                    
-                    if (it.currentItem!!.hasMark("knockback")) {
+
+                    if (it.currentItem!!.type == Material.PISTON) {
                         if (settings.knockback() == PlayerSettings.Companion.Knockback.NEW)
                             settings.setKnockback(PlayerSettings.Companion.Knockback.OLD)
                         else if (settings.knockback() == PlayerSettings.Companion.Knockback.OLD)
@@ -182,19 +177,19 @@ object PlayerSettingsGUI {
                         clickedSetting = true
                     }
 
-                    if (it.currentItem!!.hasMark("attacksound")) {
+                    if (it.currentItem!!.type == Material.NOTE_BLOCK) {
                             settings.setAttackSound(!settings.ifAttackSound())
                         it.inventory.setItem(it.rawSlot, attackSoundItem(player))
                         clickedSetting = true
                     }
 
-                    if (it.currentItem!!.hasMark("allowspec")) {
+                    if (it.currentItem!!.type == Material.ENDER_EYE) {
                         settings.setAllowSpectators(!settings.ifAllowSpectators())
                         it.inventory.setItem(it.rawSlot, allowSpectatorsItem(player))
                         clickedSetting = true
                     }
 
-                    if (it.currentItem!!.hasMark("chat")) {
+                    if (it.currentItem!!.type == Material.WRITABLE_BOOK) {
                         if (settings.chatInFight() == PlayerSettings.Companion.Chat.ALL) 
                             settings.setChatInFight(PlayerSettings.Companion.Chat.ENEMY)
                         else if (settings.chatInFight() == PlayerSettings.Companion.Chat.ENEMY)

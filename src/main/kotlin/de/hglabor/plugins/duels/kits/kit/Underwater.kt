@@ -19,7 +19,7 @@ import org.bukkit.potion.PotionEffectType
 
 class Underwater : Kit(Kits.UNDERWATER) {
     override val name = "Underwater"
-    override val itemInGUIs = Kits.guiItem(Material.TROPICAL_FISH_BUCKET, name, "Soup")
+    override fun itemInGUIs() = Kits.guiItem(Material.TROPICAL_FISH_BUCKET, name, "Soup")
     override val arenaTag = ArenaTags.UNDERWATER
     override val type = KitType.SOUP
     override val specials = listOf(null)
@@ -49,7 +49,7 @@ class Underwater : Kit(Kits.UNDERWATER) {
     override fun enable() {
         ChooseKitGUI.addContent(
             ChooseKitGUI.KitsGUICompoundElement(
-                itemInGUIs,
+                itemInGUIs(),
                 onClick = {
                     it.player.closeInventory()
                     Data.openedDuelGUI[it.player]?.let { it1 -> it.player.duel(it1, kits) }

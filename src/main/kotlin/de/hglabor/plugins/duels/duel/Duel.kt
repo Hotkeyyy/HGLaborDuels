@@ -47,7 +47,7 @@ class Duel(val p1: Player, val p2: Player, val kit: Kits, private val ID: String
     var involvedInDuel = arrayListOf(p1, p2)
 
     var speccount = 0
-    val loc = Data.getFreeLocation()
+    private val loc = Data.getFreeLocation()
     val arena = Arena(loc, Arenas.getRandomArena(kit.info.arenaTag))
 
     lateinit var winner: Player
@@ -171,6 +171,8 @@ class Duel(val p1: Player, val p2: Player, val kit: Kits, private val ID: String
         p2.addPotionEffect(PotionEffect(PotionEffectType.JUMP, 20 * 3, 200))
         p2.addPotionEffect(PotionEffect(PotionEffectType.SLOW, 20 * 3, 200))
     }
+
+
 
     fun giveKit() {
         p1.giveKit(kit)

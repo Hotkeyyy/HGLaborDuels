@@ -15,8 +15,8 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
 
 class OnlySword : Kit(Kits.ONLYSWORD) {
-    override val name = "OnlySword"
-    override val itemInGUIs = Kits.guiItem(Material.GOLDEN_SWORD, name, null)
+    override val name = "Only Sword"
+    override fun itemInGUIs() = Kits.guiItem(Material.GOLDEN_SWORD, name, null)
     override val arenaTag = ArenaTags.NONE
     override val type = KitType.NONE
     override val specials = listOf(null)
@@ -40,7 +40,7 @@ class OnlySword : Kit(Kits.ONLYSWORD) {
     override fun enable() {
         ChooseKitGUI.addContent(
             ChooseKitGUI.KitsGUICompoundElement(
-                itemInGUIs,
+                itemInGUIs(),
                 onClick = {
                     it.player.closeInventory()
                     Data.openedDuelGUI[it.player]?.let { it1 -> it.player.duel(it1, kits) }

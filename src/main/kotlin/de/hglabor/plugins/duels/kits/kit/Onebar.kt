@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack
 
 class Onebar : Kit(Kits.ONEBAR) {
     override val name = "Onebar"
-    override val itemInGUIs = Kits.guiItem(Material.WOODEN_SWORD, name, "Soup")
+    override fun itemInGUIs() = Kits.guiItem(Material.WOODEN_SWORD, name, "Soup")
     override val arenaTag = ArenaTags.NONE
     override val type = KitType.SOUP
     override val specials = listOf(null)
@@ -33,7 +33,7 @@ class Onebar : Kit(Kits.ONEBAR) {
     override fun enable() {
         ChooseKitGUI.addContent(
             ChooseKitGUI.KitsGUICompoundElement(
-                itemInGUIs,
+                itemInGUIs(),
                 onClick = {
                     it.player.closeInventory()
                     Data.openedDuelGUI[it.player]?.let { it1 -> it.player.duel(it1, kits) }

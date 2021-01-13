@@ -11,7 +11,7 @@ import org.bukkit.entity.Player
 
 class Anchor : Kit(Kits.ANCHOR) {
     override val name = "Anchor"
-    override val itemInGUIs = Kits.guiItem(Material.ANVIL, name, "Soup")
+    override fun itemInGUIs() = Kits.guiItem(Material.ANVIL, name, "Soup")
     override val arenaTag = ArenaTags.NONE
     override val type = KitType.SOUP
     override val specials = listOf(null)
@@ -30,7 +30,7 @@ class Anchor : Kit(Kits.ANCHOR) {
     override fun enable() {
         ChooseKitGUI.addContent(
             ChooseKitGUI.KitsGUICompoundElement(
-                itemInGUIs,
+                itemInGUIs(),
                 onClick = {
                     it.player.closeInventory()
                     Data.openedDuelGUI[it.player]?.let { it1 -> it.player.duel(it1, kits) }

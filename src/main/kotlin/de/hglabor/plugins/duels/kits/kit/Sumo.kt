@@ -11,7 +11,7 @@ import org.bukkit.entity.Player
 
 class Sumo : Kit(Kits.SUMO) {
     override val name = "Sumo"
-    override val itemInGUIs = Kits.guiItem(Material.LEAD, name, null)
+    override fun itemInGUIs() = Kits.guiItem(Material.LEAD, name, null)
     override val arenaTag = ArenaTags.SUMO
     override val type = KitType.NONE
     override val specials = listOf(Specials.NODAMAGE, Specials.DEADINWATER)
@@ -25,7 +25,7 @@ class Sumo : Kit(Kits.SUMO) {
     override fun enable() {
         ChooseKitGUI.addContent(
             ChooseKitGUI.KitsGUICompoundElement(
-                itemInGUIs,
+                itemInGUIs(),
                 onClick = {
                     it.player.closeInventory()
                     Data.openedDuelGUI[it.player]?.let { it1 -> it.player.duel(it1, kits) }

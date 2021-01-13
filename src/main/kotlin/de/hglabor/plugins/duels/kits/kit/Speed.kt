@@ -13,7 +13,7 @@ import org.bukkit.potion.PotionEffectType
 
 class Speed : Kit(Kits.SPEED) {
     override val name = "Speed"
-    override val itemInGUIs = Kits.guiItem(Material.SUGAR, name, "Soup")
+    override fun itemInGUIs() = Kits.guiItem(Material.SUGAR, name, "Soup")
     override val arenaTag = ArenaTags.NONE
     override val type = KitType.SOUP
     override val specials = listOf(null)
@@ -36,7 +36,7 @@ class Speed : Kit(Kits.SPEED) {
     override fun enable() {
         ChooseKitGUI.addContent(
             ChooseKitGUI.KitsGUICompoundElement(
-                itemInGUIs,
+                itemInGUIs(),
                 onClick = {
                     it.player.closeInventory()
                     Data.openedDuelGUI[it.player]?.let { it1 -> it.player.duel(it1, kits) }

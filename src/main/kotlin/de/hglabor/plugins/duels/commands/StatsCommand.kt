@@ -29,7 +29,7 @@ object StatsCommand : CommandExecutor {
                 } else {
                     player.sendLocalizedMessage(
                         Localization.STATS_COMMAND_PLAYER_NOT_FOUND_DE.replace("%playerName%", target.name!!),
-                        Localization.STAFF_PLAYER_NOT_FOUND_EN.replace("%playerName%", target.name!!)
+                        Localization.STATS_COMMAND_PLAYER_NOT_FOUND_EN.replace("%playerName%", target.name!!)
                     )
                     return false
                 }
@@ -55,12 +55,12 @@ object StatsCommand : CommandExecutor {
             val stats = PlayerStats.get(target)
             player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
             player.sendMessage(" §8| §7Gesamte Spiele §8» ${KColors.DEEPSKYBLUE}${stats.totalGames()}")
-            player.sendMessage(" §8| §7Kills §8» ${KColors.DODGERBLUE}${stats.kills()}")
-            player.sendMessage(" §8| §7Tode §8» ${KColors.TOMATO}${stats.deaths()}")
-            player.sendMessage(" §8| §7K/D §8» ${KColors.YELLOW}${stats.kd()}")
+            player.sendMessage(" §8| §7Kills §8» ${KColors.DEEPSKYBLUE}${stats.kills()}")
+            player.sendMessage(" §8| §7Tode §8» ${KColors.DEEPSKYBLUE}${stats.deaths()}")
+            player.sendMessage(" §8| §7K/D §8» ${KColors.DEEPSKYBLUE}${stats.kd()}")
             player.sendMessage(" §8| §7Soupsimulator Rekord §8» ${KColors.SPRINGGREEN}${stats.soupsimulatorHighscore()}")
-            player.sendMessage(" §8| §7Gegessene Suppen §8» ${KColors.SANDYBROWN}${stats.soupsEaten()}")
-            player.sendMessage(" §8| §7Gesamte Schläge §8» ${KColors.CORNSILK}${stats.totalHits()}")
+            player.sendMessage(" §8| §7Gegessene Suppen §8» ${KColors.DODGERBLUE}${stats.soupsEaten()}")
+            player.sendMessage(" §8| §7Gesamte Schläge §8» ${KColors.DODGERBLUE}${stats.totalHits()}")
             player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
         }
 
@@ -71,12 +71,12 @@ object StatsCommand : CommandExecutor {
             val stats = PlayerStats.get(target)
             player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
             player.sendMessage(" §8| §7Total Games §8» ${KColors.DEEPSKYBLUE}${stats.totalGames()}")
-            player.sendMessage(" §8| §7Kills §8» ${KColors.DODGERBLUE}${stats.kills()}")
-            player.sendMessage(" §8| §7Deaths §8» ${KColors.TOMATO}${stats.deaths()}")
-            player.sendMessage(" §8| §7K/D §8» ${KColors.YELLOW}${stats.kd()}")
+            player.sendMessage(" §8| §7Kills §8» ${KColors.DEEPSKYBLUE}${stats.kills()}")
+            player.sendMessage(" §8| §7Deaths §8» ${KColors.DEEPSKYBLUE}${stats.deaths()}")
+            player.sendMessage(" §8| §7K/D §8» ${KColors.DEEPSKYBLUE}${stats.kd()}")
             player.sendMessage(" §8| §7Soupsimulator Highscore §8» ${KColors.SPRINGGREEN}${stats.soupsimulatorHighscore()}")
-            player.sendMessage(" §8| §7Soups eaten §8» ${KColors.SANDYBROWN}${stats.soupsEaten()}")
-            player.sendMessage(" §8| §7Total hits §8» ${KColors.CORNSILK}${stats.totalHits()}")
+            player.sendMessage(" §8| §7Soups eaten §8» ${KColors.DODGERBLUE}${stats.soupsEaten()}")
+            player.sendMessage(" §8| §7Total hits §8» ${KColors.DODGERBLUE}${stats.totalHits()}")
             player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
         }
 

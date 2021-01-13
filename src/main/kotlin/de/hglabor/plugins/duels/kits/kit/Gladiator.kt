@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack
 
 class Gladiator : Kit(Kits.GLADIATOR) {
     override val name = "Gladiator"
-    override val itemInGUIs = Kits.guiItem(Material.IRON_BARS, name, "Soup")
+    override fun itemInGUIs() = Kits.guiItem(Material.IRON_BARS, name, "Soup")
     override val arenaTag = ArenaTags.GLADIATOR
     override val type = KitType.SOUP
     override val specials = listOf(null)
@@ -42,7 +42,7 @@ class Gladiator : Kit(Kits.GLADIATOR) {
     override fun enable() {
         ChooseKitGUI.addContent(
             ChooseKitGUI.KitsGUICompoundElement(
-                itemInGUIs,
+                itemInGUIs(),
                 onClick = {
                     it.player.closeInventory()
                     Data.openedDuelGUI[it.player]?.let { it1 -> it.player.duel(it1, kits) }

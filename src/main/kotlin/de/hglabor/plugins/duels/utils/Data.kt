@@ -2,7 +2,6 @@ package de.hglabor.plugins.duels.utils
 
 import de.hglabor.plugins.duels.duel.Duel
 import de.hglabor.plugins.duels.kits.Kits
-import de.hglabor.plugins.duels.party.Party
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 

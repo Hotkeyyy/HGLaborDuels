@@ -1,5 +1,7 @@
 package de.hglabor.plugins.duels.eventmanager
 
+import de.hglabor.plugins.duels.guis.PlayerSettingsGUI
+import de.hglabor.plugins.duels.guis.QueueGUI
 import de.hglabor.plugins.duels.protection.Protection.isRestricted
 import de.hglabor.plugins.duels.utils.PlayerFunctions.stopSpectating
 import de.hglabor.plugins.staff.utils.StaffData.isInStaffMode
@@ -25,14 +27,17 @@ object OnInteractWithItem {
             }
 
             if (it.player.getHandItem(EquipmentSlot.HAND)?.hasMark("settings")!!) {
-                if (it.player.isOp)
-
+                PlayerSettingsGUI.open(it.player)
                 it.player.sendMessage("${KColors.TOMATO}Not working yet")
             }
 
+            if (it.player.getHandItem(EquipmentSlot.HAND)?.hasMark("queue")!!) {
+                QueueGUI.open(it.player)
+                it.player.sendMessage("${KColors.TOMATO}Not working yet")
+            }
 
-                if (it.player.isInStaffMode)
-                    it.isCancelled = true
+            if (it.player.isInStaffMode)
+                it.isCancelled = true
 
             if (it.player.world.name == "world")
                 if (it.player.gameMode.isRestricted)

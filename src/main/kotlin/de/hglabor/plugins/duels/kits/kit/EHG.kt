@@ -11,7 +11,7 @@ import org.bukkit.entity.Player
 
 class EHG : Kit(Kits.EHG) {
     override val name = "EHG"
-    override val itemInGUIs = Kits.guiItem(Material.STONE_SWORD, name, "Soup")
+    override fun itemInGUIs() = Kits.guiItem(Material.STONE_SWORD, name, "Soup")
     override val arenaTag = ArenaTags.NONE
     override val type = KitType.SOUP
     override val specials = listOf(null)
@@ -30,7 +30,7 @@ class EHG : Kit(Kits.EHG) {
     override fun enable() {
         ChooseKitGUI.addContent(
             ChooseKitGUI.KitsGUICompoundElement(
-                itemInGUIs,
+                itemInGUIs(),
                 onClick = {
                     it.player.closeInventory()
                     Data.openedDuelGUI[it.player]?.let { it1 -> it.player.duel(it1, kits) }

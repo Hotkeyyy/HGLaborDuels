@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack
 
 class Classic : Kit(Kits.CLASSIC) {
     override val name = "Classic"
-    override val itemInGUIs = Kits.guiItem(Material.DIAMOND_CHESTPLATE, name, "1.16 Cooldown")
+    override fun itemInGUIs() = Kits.guiItem(Material.DIAMOND_CHESTPLATE, name, "1.16 Cooldown")
     override val arenaTag = ArenaTags.NONE
     override val type = KitType.NONE
     override val specials = listOf(Specials.HITCOOLDOWN)
@@ -38,7 +38,7 @@ class Classic : Kit(Kits.CLASSIC) {
     override fun enable() {
         ChooseKitGUI.addContent(
             ChooseKitGUI.KitsGUICompoundElement(
-                itemInGUIs,
+                itemInGUIs(),
                 onClick = {
                     it.player.closeInventory()
                     Data.openedDuelGUI[it.player]?.let { it1 -> it.player.duel(it1, kits) }

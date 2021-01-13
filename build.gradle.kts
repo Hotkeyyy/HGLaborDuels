@@ -53,7 +53,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.21")
 
     // SPIGOT
-    compileOnly("com.destroystokyo.paper:paper-api:1.16.4-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc", "spigot", "1.16.4-R0.1-SNAPSHOT")
 
     // KSPIGOT
     implementation("net.axay", "KSpigot", "v1.16.4_R21")

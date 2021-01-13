@@ -6,10 +6,8 @@ import de.hglabor.plugins.duels.guis.ChooseKitGUI
 import de.hglabor.plugins.duels.kits.*
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.duel
-import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.items.itemStack
 import org.bukkit.Material
-import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
@@ -18,7 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable
 
 class Archer : Kit(Kits.ARCHER) {
     override val name = "Archer"
-    override val itemInGUIs = Kits.guiItem(Material.BOW, name, null)
+    override fun itemInGUIs() = Kits.guiItem(Material.BOW, name, null)
     override val arenaTag = ArenaTags.NONE
     override val type = KitType.NONE
     override val specials = listOf(null)
@@ -47,7 +45,7 @@ class Archer : Kit(Kits.ARCHER) {
     override fun enable() {
         ChooseKitGUI.addContent(
             ChooseKitGUI.KitsGUICompoundElement(
-                itemInGUIs,
+                itemInGUIs(),
                 onClick = {
                     it.player.closeInventory()
                     Data.openedDuelGUI[it.player]?.let { it1 -> it.player.duel(it1, kits) }

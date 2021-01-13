@@ -1,14 +1,12 @@
 package de.hglabor.plugins.duels.eventmanager.duel
 
 import de.hglabor.plugins.duels.data.DataHolder
-import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.kits.Kits.Companion.info
 import de.hglabor.plugins.duels.kits.Specials
 import de.hglabor.plugins.duels.soupsimulator.isInSoupsimulator
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import net.axay.kspigot.event.listen
-import net.axay.kspigot.extensions.broadcast
 import net.axay.kspigot.runnables.async
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -59,9 +57,10 @@ object OnDamage {
                     val damager = it.damager as Player
                     val duel = Data.duelFromPlayer(player)
 
-                    if (!duel.hasBegan)
+                    if (!duel.hasBegan) {
                         it.isCancelled = true
-
+                        return@listen
+                    }
                     if (!duel.kit.info.specials.contains(Specials.HITCOOLDOWN))
                         it.damage *= 0.55
 

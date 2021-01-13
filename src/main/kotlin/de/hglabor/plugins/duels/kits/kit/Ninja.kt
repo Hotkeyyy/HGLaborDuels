@@ -22,7 +22,7 @@ import kotlin.math.sin
 
 class Ninja : Kit(Kits.NINJA) {
     override val name = "Ninja"
-    override val itemInGUIs = Kits.guiItem(Material.INK_SAC, name, "Soup")
+    override fun itemInGUIs() = Kits.guiItem(Material.INK_SAC, name, "Soup")
     override val arenaTag = ArenaTags.NONE
     override val type = KitType.SOUP
     override val specials = listOf(Specials.NINJA)
@@ -41,7 +41,7 @@ class Ninja : Kit(Kits.NINJA) {
     override fun enable() {
         ChooseKitGUI.addContent(
             ChooseKitGUI.KitsGUICompoundElement(
-                itemInGUIs,
+                itemInGUIs(),
                 onClick = {
                     it.player.closeInventory()
                     Data.openedDuelGUI[it.player]?.let { it1 -> it.player.duel(it1, kits) }

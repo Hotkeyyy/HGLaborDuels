@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemFlag
 
 class IceFishing : Kit(Kits.ICEFISHING) {
     override val name = "Ice Fishing"
-    override val itemInGUIs = Kits.guiItem(Material.FISHING_ROD, name, "Pull your enemy into water")
+    override fun itemInGUIs() = Kits.guiItem(Material.FISHING_ROD, name, "Pull your enemy into the water")
     override val arenaTag = ArenaTags.ICEFISHING
     override val type = KitType.NONE
     override val specials = listOf(Specials.NODAMAGE, Specials.DEADINWATER)
@@ -32,7 +32,7 @@ class IceFishing : Kit(Kits.ICEFISHING) {
     override fun enable() {
         ChooseKitGUI.addContent(
             ChooseKitGUI.KitsGUICompoundElement(
-                itemInGUIs,
+                itemInGUIs(),
                 onClick = {
                     it.player.closeInventory()
                     Data.openedDuelGUI[it.player]?.let { it1 -> it.player.duel(it1, kits) }
