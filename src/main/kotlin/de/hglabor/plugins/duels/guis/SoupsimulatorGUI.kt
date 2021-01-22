@@ -1,4 +1,4 @@
-package de.hglabor.plugins.duels.soupsimulator.gui
+package de.hglabor.plugins.duels.guis
 
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.soupsimulator.Soupsimulator
@@ -44,8 +44,7 @@ object SoupsimulatorGUI {
                     }
                 }) {
                     it.player.closeInventory()
-                    Soupsimulator.level[it.player] = SoupsimulatorLevel.EASY
-                    Soupsimulator.countdown(it.player)
+                    Soupsimulator(player).start(SoupsimulatorLevel.EASY)
                 }
 
                 button(Slots.RowOneSlotFour, itemStack(Material.YELLOW_CONCRETE) {
@@ -63,8 +62,7 @@ object SoupsimulatorGUI {
                     }
                 }) {
                     it.player.closeInventory()
-                    Soupsimulator.level[it.player] = SoupsimulatorLevel.MEDIUM
-                    Soupsimulator.countdown(it.player)
+                    Soupsimulator(player).start(SoupsimulatorLevel.MEDIUM)
                 }
 
                 button(Slots.RowOneSlotSix, itemStack(Material.RED_CONCRETE) {
@@ -82,8 +80,7 @@ object SoupsimulatorGUI {
                     }
                 }) {
                     it.player.closeInventory()
-                    Soupsimulator.level[it.player] = SoupsimulatorLevel.HARD
-                    Soupsimulator.countdown(it.player)
+                    Soupsimulator(player).start(SoupsimulatorLevel.HARD)
                 }
 
                 button(Slots.RowOneSlotEight, itemStack(Material.PURPLE_CONCRETE) {
@@ -101,8 +98,7 @@ object SoupsimulatorGUI {
                     }
                 }) {
                     it.player.closeInventory()
-                    Soupsimulator.level[it.player] = SoupsimulatorLevel.BONUS
-                    Soupsimulator.countdown(it.player)
+                    Soupsimulator(player).start(SoupsimulatorLevel.BONUS)
                 }
             }
         }

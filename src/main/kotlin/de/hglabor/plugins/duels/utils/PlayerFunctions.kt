@@ -3,9 +3,13 @@ package de.hglabor.plugins.duels.utils
 import de.hglabor.plugins.duels.Manager
 import de.hglabor.plugins.duels.arenas.Arenas
 import de.hglabor.plugins.duels.functionality.MainInventory
+import de.hglabor.plugins.duels.functionality.PartyInventory
 import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.kits.Kits.Companion.info
 import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.party.Party
+import de.hglabor.plugins.duels.party.Partys.hasParty
+import de.hglabor.plugins.duels.party.Partys.isInParty
 import de.hglabor.plugins.duels.scoreboard.LobbyScoreboard
 import de.hglabor.plugins.duels.spawn.SpawnUtils
 import de.hglabor.plugins.staff.functionality.StaffInventory
@@ -15,15 +19,12 @@ import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.extensions.bukkit.feedSaturate
 import net.axay.kspigot.extensions.bukkit.heal
 import net.axay.kspigot.extensions.onlinePlayers
-import net.axay.kspigot.items.itemStack
-import net.axay.kspigot.items.meta
-import net.axay.kspigot.items.name
-import net.axay.kspigot.utils.mark
 import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.HoverEvent
 import net.md_5.bungee.api.chat.TextComponent
 import net.md_5.bungee.api.chat.hover.content.Text
-import org.bukkit.*
+import org.bukkit.GameMode
+import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
@@ -36,16 +37,8 @@ object PlayerFunctions {
         return Data.inFight.contains(player)
     }
 
-    fun Player.getEnemy(): Player {
-        return Data.duel[player]!!
-    }
-
     fun Player.duel(target: Player, kit: Kits) {
         val player: Player = player!!
-//        if (player == target) {
-//            player.sendLocalizedMessage(Localization.CHALLENGE_COMMAND_ACCEPT_CANT_DUEL_SELF_DE, Localization.CHALLENGE_COMMAND_ACCEPT_CANT_DUEL_SELF_EN)
-//            return
-//        }
 
         if (!Arenas.arenaWithTagExists(kit.info.arenaTag)) {
             player.sendLocalizedMessage(
@@ -57,13 +50,19 @@ object PlayerFunctions {
 
         player.sendLocalizedMessage(
             Localization.YOU_DUELED_DE.replace("%playerName%", target.displayName).replace("%kit%", kit.info.name),
-            Localization.YOU_DUELED_EN.replace("%playerName%", target.displayName).replace("%kit%", kit.info.name)
-        )
+            Localization.YOU_DUELED_EN.replace("%playerName%", target.displayName).replace("%kit%", kit.info.name))
 
-        target.sendLocalizedMessage(
-            Localization.YOU_WERE_DUELED_DE.replace("%playerName%", player.displayName).replace("%kit%", kit.info.name),
-            Localization.YOU_WERE_DUELED_EN.replace("%playerName%", player.displayName).replace("%kit%", kit.info.name)
-        )
+        if (player.hasParty()) {
+            target.sendLocalizedMessage(
+                Localization.YOU_WERE_DUELED_DE.replace("%kit%", kit.info.name),
+                Localization.YOU_WERE_DUELED_EN.replace("%kit%", kit.info.name),
+                "%playerName%", "${player.name}'s ${KColors.CORNSILK}Party (${Party.get(player)!!.players.size})§7")
+        } else {
+            target.sendLocalizedMessage(
+                Localization.YOU_WERE_DUELED_DE.replace("%kit%", kit.info.name),
+                Localization.YOU_WERE_DUELED_EN.replace("%kit%", kit.info.name),
+                "%playerName%", "${player.name}")
+        }
 
         val message = TextComponent("")
         val one = TextComponent("  [")
@@ -89,10 +88,12 @@ object PlayerFunctions {
 
     fun Player.reset() {
         val player: Player = player!!
-        if (!player.isInStaffMode)
-            MainInventory.giveItems(player)
-        else
+        if (player.isInStaffMode)
             StaffInventory.giveItems(player)
+        else if (player.isInParty())
+            PartyInventory.giveItems(player)
+        else
+            MainInventory.giveItems(player)
         player.gameMode = GameMode.ADVENTURE
         player.fireTicks = 0
         player.exp = 0f
@@ -110,7 +111,7 @@ object PlayerFunctions {
         Data.challengeKit.remove(player)
         Data.challenged.remove(player)
         Data.duelIDFromPlayer.remove(player)
-        Data.duelIDFromSpec.remove(player)
+        Data.duelFromSpec.remove(player)
         Data.inFight.remove(player)
         LobbyScoreboard.setScoreboard(player)
 
@@ -121,67 +122,21 @@ object PlayerFunctions {
         player.isGlowing = true
     }
 
-    fun Player.spec(gameID: String, notifyPlayers: Boolean) {
-        val player: Player = player!!
-        val duel = Data.duelFromID[gameID]
-        val spawnOne: Location = duel!!.arena.spawn1Loc
-        val spawnTwo: Location = duel.arena.spawn2Loc
-        val x = (spawnOne.x + spawnTwo.x) / 2
-        val y = spawnOne.y + 3
-        val z = (spawnOne.z + spawnTwo.z) / 2
-        val centerLoc = Location(Bukkit.getWorld("FightWorld"), x, y, z)
-        Data.duelIDFromSpec[player] = gameID
-        duel.addSpectator(player)
-        player.inventory.clear()
-        player.teleport(centerLoc)
-        player.allowFlight = true
-        player.isFlying = true
-
-        for (duelplayers in duel.players) {
-            duelplayers.hidePlayer(Manager.INSTANCE, player)
-        }
-
-        if (notifyPlayers)
-            duel.sendMessage(
-                Localization.PLAYER_STARTED_SPECTATING_DE.replace("%playerName%", player.displayName),
-                Localization.PLAYER_STARTED_SPECTATING_EN.replace("%playerName%", player.displayName)
-            )
-
-        player.inventory.setItem(
-            8,
-            itemStack(Material.MAGENTA_GLAZED_TERRACOTTA) {
-                meta {
-                    name = if (player.localization("de"))
-                        Localization.STOP_SPECTATING_ITEM_NAME_DE
-                    else
-                        Localization.STOP_SPECTATING_ITEM_NAME_EN
-                }; mark("stopspec")
-            })
-    }
-
-    fun Player.stopSpectating(forced: Boolean) {
-        val player: Player = player!!
-        val duel = Data.duelFromID[Data.duelIDFromSpec[player]]
-        player.reset()
-        duel!!.specs.remove(player)
-        duel.involvedInDuel.remove(player)
-        if (!forced)
-            if (player.localization("de"))
-                duel.sendMessage(
-                    Localization.PLAYER_STOPPED_SPECTATING_DE.replace("%playerName%", player.displayName),
-                    Localization.PLAYER_STOPPED_SPECTATING_EN.replace("%playerName%", player.displayName)
-                )
-    }
-
     fun Player.localization(locale: String): Boolean {
         return player!!.locale.toLowerCase().contains(locale)
     }
-
 
     fun Player.sendLocalizedMessage(germanMessage: String, englishMessage: String) {
         if (player!!.localization("de"))
             player!!.sendMessage(germanMessage)
         else
             player!!.sendMessage(englishMessage)
+    }
+
+    fun Player.sendLocalizedMessage(germanMessage: String, englishMessage: String, toReplace: String, replacement: String) {
+        if (player!!.localization("de"))
+            player!!.sendMessage(germanMessage.replace(toReplace, replacement))
+        else
+            player!!.sendMessage(englishMessage.replace(toReplace, replacement))
     }
 }

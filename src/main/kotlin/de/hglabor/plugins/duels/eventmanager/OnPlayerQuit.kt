@@ -3,6 +3,7 @@ package de.hglabor.plugins.duels.eventmanager
 import de.hglabor.plugins.duels.data.DataHolder
 import de.hglabor.plugins.duels.data.PlayerSettings
 import de.hglabor.plugins.duels.data.PlayerStats
+import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import de.hglabor.plugins.staff.utils.StaffData
@@ -39,11 +40,17 @@ object OnPlayerQuit {
             if (player.isInFight()) {
                 if (Data.duelIDFromPlayer.containsKey(player)) {
                     val duel = Data.duelFromPlayer(player)
-                    duel.loser = player
-                    duel.winner = duel.getOtherPlayer(player)
-                    duel.stop()
+                    duel.playerLeft(player)
                     Data.challenged.remove(player)
                 }
+            }
+
+            if (Kits.playerQueue.containsKey(player)) {
+                val kit = Kits.playerQueue[player]
+                val playerList = Kits.queue[kit]!!
+                playerList.remove(player)
+                Kits.playerQueue.remove(player)
+                Kits.queue[kit!!] = playerList
             }
         }
     }

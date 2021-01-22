@@ -1,5 +1,6 @@
 package de.hglabor.plugins.duels.eventmanager.duel
 
+import de.hglabor.plugins.duels.duel.GameState
 import de.hglabor.plugins.duels.kits.Kits.Companion.info
 import de.hglabor.plugins.duels.kits.Specials
 import de.hglabor.plugins.duels.utils.Data
@@ -14,12 +15,12 @@ object OnMove {
             val player = it.player
             if (player.isInFight()) {
                 val duel = Data.duelFromPlayer(player)
+                if (duel.state == GameState.COUNTDOWN)
+                    it.isCancelled = true
                 if (duel.kit.info.specials.contains(Specials.DEADINWATER)) {
-                    if (!duel.hasEnded) {
+                    if (duel.state == GameState.RUNNING) {
                         if (player.isFeetInWater) {
-                            duel.winner = duel.getOtherPlayer(player)
-                            duel.loser = player
-                            duel.stop()
+                            duel.playerDied(player)
                         }
                     }
                 }

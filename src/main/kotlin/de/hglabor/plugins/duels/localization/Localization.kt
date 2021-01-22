@@ -5,6 +5,7 @@ import net.axay.kspigot.chat.KColors
 object Localization {
     val PREFIX = " ${KColors.DARKGRAY}| ${KColors.DEEPSKYBLUE}Duels ${KColors.DARKGRAY}» ${KColors.GRAY}"
     val SOUPSIMULATOR_PREFIX = " ${KColors.DARKGRAY}| ${KColors.DEEPSKYBLUE}Soupsimulator ${KColors.DARKGRAY}» ${KColors.GRAY}"
+    val PARTY_PREFIX = " ${KColors.DARKGRAY}| ${KColors.MAGENTA}Party ${KColors.DARKGRAY}» ${KColors.GRAY}"
     val NO_PERM_EN = "${PREFIX}${KColors.TOMATO}You do not have permissions to access that command."
     val NO_PERM_DE = "${PREFIX}${KColors.TOMATO}Du hast dazu keine Rechte."
     val PLAYER_NOT_ONLINE_EN = "${PREFIX}${KColors.RED}The player ${KColors.DARKRED}%playerName% ${KColors.RED}is not online."
@@ -110,32 +111,62 @@ object Localization {
     // StatsCommand
     val STATS_COMMAND_PLAYER_NOT_FOUND_EN = "${PREFIX}${KColors.TOMATO}Player %playerName% not found."
     val STATS_COMMAND_PLAYER_NOT_FOUND_DE = "${PREFIX}${KColors.TOMATO}Spieler %playerName% wurde nicht gefunden."
-    val STATS_COMMAND_TOTAL_GAMES_EN = " ${KColors.DARKGRAY}| ${KColors.GRAY}Fights ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}%fights%"
-    val STATS_COMMAND_TOTAL_GAMES_DE = " ${KColors.DARKGRAY}| ${KColors.GRAY}Kämpfe ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}%fights%"
-    val STATS_COMMAND_STATS_OF_PLAYER_EN = " ${KColors.DARKGRAY}| ${KColors.GRAY}Stats of Player ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}%playerName%"
-    val STATS_COMMAND_STATS_OF_PLAYER_DE = " ${KColors.DARKGRAY}| ${KColors.GRAY}Stats von Spieler ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}%playerName%"
-    val STATS_COMMAND_KILLS = " ${KColors.DARKGRAY}| ${KColors.GRAY}Kills ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}%kills%"
-    val STATS_COMMAND_DEATHS_EN = " ${KColors.DARKGRAY}| ${KColors.GRAY}Deaths ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}%deaths%"
-    val STATS_COMMAND_DEATHS_DE = " ${KColors.DARKGRAY}| ${KColors.GRAY}Tode ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}%deaths%"
-    val STATS_COMMAND_KD = " ${KColors.DARKGRAY}| ${KColors.GRAY}K/D ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}%kd%"
-    val STATS_COMMAND_SOUPS_EATEN_EN = " ${KColors.DARKGRAY}| ${KColors.GRAY}Soups eaten ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}%soupsEaten%"
-    val STATS_COMMAND_SOUPS_EATEN_DE = " ${KColors.DARKGRAY}| ${KColors.GRAY}Gegessene Suppen ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}%soupsEaten%"
-    val STATS_COMMAND_TOTAL_HITS_EN = " ${KColors.DARKGRAY}| ${KColors.GRAY}Total Hits ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}%totalHits%"
-    val STATS_COMMAND_TOTAL_HITS_DE = " ${KColors.DARKGRAY}| ${KColors.GRAY}Gesamte hits ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}%totalHits%"
 
     // ChallengeCommand
     val CHALLENGE_COMMAND_ACCEPT_PLAYER_IN_FIGHT_EN = "${PREFIX}${KColors.TOMATO}%playerName% is already in fight."
     val CHALLENGE_COMMAND_ACCEPT_PLAYER_IN_FIGHT_DE = "${PREFIX}${KColors.TOMATO}%playerName% ist bereits im Kampf."
-    val CHALLENGE_COMMAND_ACCEPT_CANT_DUEL_SELF_EN = "${PREFIX}${KColors.TOMATO}You can't challenge yourself."
-    val CHALLENGE_COMMAND_ACCEPT_CANT_DUEL_SELF_DE = "${PREFIX}${KColors.TOMATO}Du kannst dich nicht selbst herrausfordern."
+    val CHALLENGE_COMMAND_CANT_DUEL_SELF_EN = "${PREFIX}${KColors.TOMATO}You can't challenge yourself."
+    val CHALLENGE_COMMAND_CANT_DUEL_SELF_DE = "${PREFIX}${KColors.TOMATO}Du kannst dich nicht selbst herrausfordern."
     val CHALLENGE_COMMAND_HELP = "${PREFIX}${KColors.TOMATO}/Challenge ${KColors.DARKGRAY}[${KColors.RED}${KColors.DARKGRAY}]"
 
     // DuelOverviewCommand
     val DUELOVERVIEW_COMMAND_GAME_NOT_FOUND_EN = "${PREFIX}${KColors.TOMATO}Game with ID %gameID% not found."
     val DUELOVERVIEW_COMMAND_GAME_NOT_FOUND_DE = "${PREFIX}${KColors.TOMATO}Spiel mit der ID %gameID% wurde nicht gefunden."
-    val DUELOVERVIEW_COMMAND_PLAYER_NOT_FOUND_EN = "${PREFIX}${KColors.TOMATO}Player %player% in game %gameID% not found."
-    val DUELOVERVIEW_COMMAND_PLAYER_NOT_FOUND_DE = "${PREFIX}${KColors.TOMATO}Spieler %player% im Spiel %gameID% wurde nicht gefunden."
     val DUELOVERVIEW_HELP = "${PREFIX}${KColors.TOMATO}/dueloverview gameID player"
+
+    // Party
+    val PARTY_CREATED_EN = "${PARTY_PREFIX}Your party has been ${KColors.GREEN}created${KColors.GRAY}."
+    val PARTY_CREATED_DE = "${PARTY_PREFIX}Deine Party wurde ${KColors.GREEN}erstellt${KColors.GRAY}."
+    val PARTY_YOU_INVITED_EN = "${PARTY_PREFIX}You invited ${KColors.MEDIUMPURPLE}%playerName% ${KColors.GRAY}to your party."
+    val PARTY_YOU_INVITED_DE = "${PARTY_PREFIX}Du hast ${KColors.MEDIUMPURPLE}%playerName% ${KColors.GRAY}zu deiner Party eingealden."
+    val PARTY_YOU_WERE_INVITED_EN = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.GRAY}invited you to their party."
+    val PARTY_YOU_WERE_INVITED_DE = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.GRAY}hat dich in seine Party eingeladen."
+    val PARTY_PLAYER_JOINED_EN = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.GRAY}joined the party."
+    val PARTY_PLAYER_JOINED_DE = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.GRAY}ist der Party beigetreten."
+    val PARTY_YOU_JOINED_EN = "${PARTY_PREFIX}You joined ${KColors.MEDIUMPURPLE}%playerName%'s ${KColors.GRAY}party."
+    val PARTY_YOU_JOINED_DE = "${PARTY_PREFIX}Du bist ${KColors.MEDIUMPURPLE}%playerName%'s ${KColors.GRAY}party."
+    val PARTY_PLAYER_LEFT_EN = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}left ${KColors.GRAY}left the party."
+    val PARTY_PLAYER_LEFT_DE = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.GRAY}hat die Party ${KColors.TOMATO}verlassen${KColors.GRAY}."
+    val PARTY_YOU_LEFT_EN = "${PARTY_PREFIX}${KColors.GRAY}You ${KColors.TOMATO}left ${KColors.GRAY}the party."
+    val PARTY_YOU_LEFT_DE = "${PARTY_PREFIX}${KColors.GRAY}Du hast die Party ${KColors.TOMATO}verlassen${KColors.GRAY}."
+    val PARTY_PLAYER_WAS_KICKED_EN = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.GRAY}was ${KColors.TOMATO}kicked ${KColors.GRAY}from the party."
+    val PARTY_PLAYER_WAS_KICKED_DE = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.GRAY}wurde aus der Party ${KColors.TOMATO}geworfen${KColors.GRAY}."
+    val PARTY_YOU_WERE_KICKED_EN = "${PARTY_PREFIX}${KColors.GRAY}You were ${KColors.TOMATO}kicked ${KColors.GRAY}from the party."
+    val PARTY_YOU_WERE_KICKED_DE = "${PARTY_PREFIX}${KColors.GRAY}Du wurdest aus der Party ${KColors.TOMATO}gekickt${KColors.GRAY}."
+    val PARTY_DELETED_EN = "${PARTY_PREFIX}${KColors.GRAY}The party was ${KColors.TOMATO}deleted${KColors.GRAY}."
+    val PARTY_DELETED_DE = "${PARTY_PREFIX}${KColors.GRAY}Die Party ${KColors.TOMATO}gelöscht${KColors.GRAY}."
+    val PARTY_NOW_PUBLIC_EN = "${PARTY_PREFIX}${KColors.GRAY}The party is now ${KColors.MEDIUMPURPLE}public${KColors.GRAY}."
+    val PARTY_NOW_PUBLIC_DE = "${PARTY_PREFIX}${KColors.GRAY}Die Party ist nun ${KColors.MEDIUMPURPLE}öffentlich${KColors.GRAY}."
+    val PARTY_NOW_PRIVAT_EN = "${PARTY_PREFIX}${KColors.GRAY}The party is now ${KColors.MEDIUMPURPLE}privat${KColors.GRAY}."
+    val PARTY_NOW_PRIVAT_DE = "${PARTY_PREFIX}${KColors.GRAY}Die Party ist nun ${KColors.MEDIUMPURPLE}privat${KColors.GRAY}."
+
+    // Party Command
+    val PARTY_COMMAND_ALREADY_IN_PARTY_EN = "${PARTY_PREFIX}${KColors.TOMATO}You're already in a party."
+    val PARTY_COMMAND_ALREADY_IN_PARTY_DE = "${PARTY_PREFIX}${KColors.TOMATO}Du bist bereits in einer Party"
+    val PARTY_COMMAND_NOT_IN_PARTY_DE = "${PARTY_PREFIX}${KColors.TOMATO}You're not in a party."
+    val PARTY_COMMAND_NOT_IN_PARTY_EN = "${PARTY_PREFIX}${KColors.TOMATO}Du bist in keiner Party."
+    val PARTY_COMMAND_PLAYER_ALREADY_IN_PARTY_EN = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}is already in a party."
+    val PARTY_COMMAND_PLAYER_ALREADY_IN_PARTY_DE = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}ist bereits in einer Party."
+    val PARTY_COMMAND_CANT_JOIN_EN = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}doesn't have a public party."
+    val PARTY_COMMAND_CANT_JOIN_DE = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}hat keine öffentliche Party."
+    val PARTY_COMMAND_PLAYER_HAS_NO_PARTY_EN = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}has no party."
+    val PARTY_COMMAND_PLAYER_HAS_NO_PARTY_DE = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}hat keine Party."
+    val PARTY_COMMAND_PLAYER_NOT_IN_PARTY_EN = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}isn't in a party."
+    val PARTY_COMMAND_PLAYER_NOT_IN_PARTY_DE = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}ist in keiner Party."
+    val PARTY_COMMAND_NOT_LEADER_EN = "${PARTY_PREFIX}${KColors.TOMATO}You aren't the party leader."
+    val PARTY_COMMAND_NOT_LEADER_DE = "${PARTY_PREFIX}${KColors.TOMATO}Du bist nicht der Partyleiter."
+    val PARTY_COMMAND_PLAYER_NOT_IN_OWN_EN = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}isn't in your party."
+    val PARTY_COMMAND_PLAYER_NOT_IN_OWN_DE = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}ist nicht in deiner Party."
 
     // Duel
     val DUEL_STARTING_TITLE_EN = "${KColors.DEEPSKYBLUE}Good luck!"
@@ -147,7 +178,7 @@ object Localization {
     val CLICK_NAME_TO_OPEN_INV_EN = " ${KColors.DARKGRAY}| ${KColors.GRAY}${KColors.ITALIC}Click name to open players inventory"
     val CLICK_NAME_TO_OPEN_INV_DE = " ${KColors.DARKGRAY}| ${KColors.GRAY}${KColors.ITALIC}Klicke auf einen Namen umd das Inventar zu öffnen"
 
-    // NinjaKit
+    // Kit
     val CAN_USE_KIT_AGAIN_EN = "${PREFIX}You can use your kit again."
     val CAN_USE_KIT_AGAIN_DE = "${PREFIX}Du kannst dein Kit wieder benutzen."
 
@@ -156,6 +187,8 @@ object Localization {
     val ARENA_INVENTORY_ITEM_NAME_DE = "${KColors.DEEPSKYBLUE}Arena GUI öffnen ${KColors.DARKGRAY}* ${KColors.GRAY}Rechtsklick"
 
     // MainInventory
+    val MAIN_INVENTORY_PARTY_ITEM_NAME_EN = "${KColors.DEEPSKYBLUE}Create Party ${KColors.DARKGRAY}* ${KColors.GRAY}Right click"
+    val MAIN_INVENTORY_PARTY_ITEM_NAME_DE = "${KColors.DEEPSKYBLUE}Party Erstellen ${KColors.DARKGRAY}* ${KColors.GRAY}Rechtsklick"
     val MAIN_INVENTORY_DUEL_ITEM_NAME_EN = "${KColors.DEEPSKYBLUE}Duel Player"
     val MAIN_INVENTORY_DUEL_ITEM_NAME_DE = "${KColors.DEEPSKYBLUE}Spieler herrausfordern"
     val MAIN_INVENTORY_SOUPSIMULATOR_ITEM_NAME_EN = "${KColors.DEEPSKYBLUE}Soupsimulator ${KColors.DARKGRAY}* ${KColors.GRAY}Right click"
@@ -164,6 +197,12 @@ object Localization {
     val MAIN_INVENTORY_QUEUE_ITEM_NAME_DE = "${KColors.DEEPSKYBLUE}Queue ${KColors.DARKGRAY}* ${KColors.GRAY}Rechtsklick"
     val MAIN_INVENTORY_SETTINGS_ITEM_NAME_EN = "${KColors.DEEPSKYBLUE}Settings ${KColors.DARKGRAY}* ${KColors.GRAY}Right click"
     val MAIN_INVENTORY_SETTINGS_ITEM_NAME_DE = "${KColors.DEEPSKYBLUE}Einstellungen ${KColors.DARKGRAY}* ${KColors.GRAY}Rechtsklick"
+
+    // PartyInventory
+    val PARTY_INVENTORY_PARTY_GAME_ITEM_NAME_EN = "${KColors.DEEPSKYBLUE}Party Games ${KColors.DARKGRAY}* ${KColors.GRAY}Right click"
+    val PARTY_INVENTORY_PARTY_GAME_ITEM_NAME_DE = "${KColors.DEEPSKYBLUE}Party Spiele ${KColors.DARKGRAY}* ${KColors.GRAY}Rechtsklick"
+    val PARTY_INVENTORY_INFO_ITEM_NAME_EN = "${KColors.DEEPSKYBLUE}Party Info ${KColors.DARKGRAY}* ${KColors.GRAY}Right click"
+    val PARTY_INVENTORY_INFO_ITEM_NAME_DE = "${KColors.DEEPSKYBLUE}Party Info ${KColors.DARKGRAY}* ${KColors.GRAY}Rechtsklick"
 
     // SoupsimulatorGUI
     val SOUPSIMULATOR_GUI_EASY_NAME_EN = "${KColors.LIMEGREEN}EASY"
@@ -195,6 +234,8 @@ object Localization {
     val SOUPSIMULATOR_END_RECRAFTS = " ${KColors.DARKGRAY}| ${KColors.GRAY}Recrafts ${KColors.DARKGRAY}» ${KColors.DARKVIOLET}%recrafts%"
     val SOUPSIMULATOR_END_WRONGHOTKEYS_EN = " ${KColors.DARKGRAY}| ${KColors.GRAY}Wrong Hotkeys ${KColors.DARKGRAY}» ${KColors.RED}%wrongHotkeys%"
     val SOUPSIMULATOR_END_WRONGHOTKEYS_DE = " ${KColors.DARKGRAY}| ${KColors.GRAY}Falsche Hotkeys ${KColors.DARKGRAY}» ${KColors.RED}%wrongHotkeys%"
+    val SOUPSIMULATOR_NEW_RECORD_EN = "${SOUPSIMULATOR_PREFIX}${KColors.GREEN}You broke your previous record${KColors.GRAY}."
+    val SOUPSIMULATOR_NEW_RECORD_DE = "${SOUPSIMULATOR_PREFIX}${KColors.GREEN}Du hast deinen bisherigen Rekord gebrochen${KColors.GRAY}."
 
     // SoupsimulatorEvents
     val SOUPSIMULATOR_END_DIED_EN ="${SOUPSIMULATOR_PREFIX}You ${KColors.RED}did not survive ${KColors.GRAY}the simulator."
@@ -250,23 +291,7 @@ object Localization {
     val FOLLOW_COMMAND_HELP_EN = "${STAFFPREFIX}${KColors.GRAY}Please use ${KColors.MEDIUMPURPLE}/follow ${KColors.DARKGRAY}<${KColors.MEDIUMPURPLE}Player${KColors.DARKGRAY}>"
     val FOLLOW_COMMAND_HELP_DE = "${STAFFPREFIX}${KColors.GRAY}Bitte benutze ${KColors.MEDIUMPURPLE}/follow ${KColors.DARKGRAY}<${KColors.MEDIUMPURPLE}Spieler${KColors.DARKGRAY}>"
 
-    // BanCommand
-    val PLAYER_WAS_BANNED_EN = "$STAFFPREFIX${KColors.DARKPURPLE}%playerName% ${KColors.GRAY}has been ${KColors.RED}permanently banned${KColors.GRAY}."
-    val PLAYER_WAS_BANNED_DE = "$STAFFPREFIX${KColors.DARKPURPLE}%playerName% ${KColors.GRAY}wurde ${KColors.RED}permanent gebannt${KColors.GRAY}."
-    val BAN_COMMAND_HELP_EN = "${STAFFPREFIX}${KColors.GRAY}Please use ${KColors.MEDIUMPURPLE}/ban ${KColors.DARKGRAY}<${KColors.MEDIUMPURPLE}Player${KColors.DARKGRAY}>"
-    val BAN_COMMAND_HELP_DE = "${STAFFPREFIX}${KColors.GRAY}Bitte benutze ${KColors.MEDIUMPURPLE}/ban ${KColors.DARKGRAY}<${KColors.MEDIUMPURPLE}Spieler${KColors.DARKGRAY}>"
-
-    // TempBanCommand
-    val TEMPBAN_COMMAND_HELP_EN = "${STAFFPREFIX}${KColors.GRAY}Please use ${KColors.MEDIUMPURPLE}/tempban ${KColors.DARKGRAY}<${KColors.MEDIUMPURPLE}Player${KColors.DARKGRAY}> <${KColors.MEDIUMPURPLE}Amount${KColors.DARKGRAY}> <${KColors.MEDIUMPURPLE}Timeunit${KColors.DARKGRAY}> <${KColors.MEDIUMPURPLE}Reason${KColors.DARKGRAY}>"
-    val TEMPBAN_COMMAND_HELP_DE = "${STAFFPREFIX}${KColors.GRAY}Bitte benutze ${KColors.MEDIUMPURPLE}/tempban ${KColors.DARKGRAY}<${KColors.MEDIUMPURPLE}Spieler${KColors.DARKGRAY}> <${KColors.MEDIUMPURPLE}Einheit${KColors.DARKGRAY}> <${KColors.MEDIUMPURPLE}Zeiteinheit${KColors.DARKGRAY}> <${KColors.MEDIUMPURPLE}Grund${KColors.DARKGRAY}>"
-    val TEMPBAN_COMMAND_TIMEUNITS_EN = "${STAFFPREFIX} ${KColors.GRAY}Timeunits ${KColors.DARKGRAY}» ${KColors.MEDIUMPURPLE}h ${KColors.DARKGRAY}- ${KColors.LIGHTPURPLE}Hours ${KColors.DARKGRAY}, ${KColors.MEDIUMPURPLE}d ${KColors.DARKGRAY}- ${KColors.LIGHTPURPLE}Days ${KColors.DARKGRAY}, ${KColors.MEDIUMPURPLE}w ${KColors.DARKGRAY}- ${KColors.LIGHTPURPLE}Weeks ${KColors.DARKGRAY}, ${KColors.MEDIUMPURPLE}m ${KColors.DARKGRAY}- ${KColors.LIGHTPURPLE}Months"
-    val TEMPBAN_COMMAND_TIMEUNITS_DE = "${STAFFPREFIX} ${KColors.GRAY}Zeiteinheiten ${KColors.DARKGRAY}» ${KColors.MEDIUMPURPLE}h ${KColors.DARKGRAY}- ${KColors.LIGHTPURPLE}Stunden ${KColors.DARKGRAY}, ${KColors.MEDIUMPURPLE}d ${KColors.DARKGRAY}- ${KColors.LIGHTPURPLE}Tage ${KColors.DARKGRAY}, ${KColors.MEDIUMPURPLE}w ${KColors.DARKGRAY}- ${KColors.LIGHTPURPLE}Wochen ${KColors.DARKGRAY}, ${KColors.MEDIUMPURPLE}m ${KColors.DARKGRAY}- ${KColors.LIGHTPURPLE}Monate"
-    val PLAYER_WAS_TEMPBANNED_EN = "$STAFFPREFIX${KColors.DARKPURPLE}%playerName% ${KColors.GRAY}has been ${KColors.RED}temporarily banned${KColors.GRAY}."
-    val PLAYER_WAS_TEMPBANNED_DE = "$STAFFPREFIX${KColors.DARKPURPLE}%playerName% ${KColors.GRAY}wurde ${KColors.RED}temporär gebannt${KColors.GRAY}."
-
     // SettingsGUI
-    val SETTINGSGUI_NAME_EN = "${KColors.DODGERBLUE}Settings"
-    val SETTINGSGUI_NAME_DE = "${KColors.DODGERBLUE}Einstellungen"
     val SETTINGSGUI_KNOCKBACK_NAME_EN = "${KColors.DODGERBLUE}Knockback"
     val SETTINGSGUI_KNOCKBACK_NAME_DE = "${KColors.DODGERBLUE}Rückstoß"
     val SETTINGSGUI_DAMAGESOUND_NAME_EN = "${KColors.DODGERBLUE}Knockback Attack sound"
@@ -275,4 +300,7 @@ object Localization {
     val SETTINGSGUI_CHATINFIGHT_NAME_EN = "${KColors.DODGERBLUE}Chat in fight"
     val SETTINGSGUI_CHATINFIGHT_NAME_DE = "${KColors.DODGERBLUE}Chat im Kampf"
     val SETTINGSGUI_CHAT_NAME = "${KColors.DODGERBLUE}Chat"
+
+    // Tournament
+
 }

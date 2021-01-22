@@ -6,10 +6,11 @@ import net.axay.kspigot.event.listen
 import net.axay.kspigot.gui.*
 import net.axay.kspigot.gui.elements.GUICompoundElement
 import net.axay.kspigot.gui.elements.GUIRectSpaceCompound
-import net.axay.kspigot.items.*
+import net.axay.kspigot.items.itemStack
+import net.axay.kspigot.items.meta
+import net.axay.kspigot.items.name
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryCloseEvent
-import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
 object ChooseKitGUI {

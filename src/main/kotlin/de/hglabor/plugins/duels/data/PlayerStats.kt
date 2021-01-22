@@ -3,12 +3,15 @@ package de.hglabor.plugins.duels.data
 import com.mongodb.client.model.Filters
 import de.hglabor.plugins.duels.database.MongoManager
 import org.bson.Document
-import org.bukkit.OfflinePlayer
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.util.NumberConversions
 import org.litote.kmongo.MongoOperator
 import java.text.DecimalFormat
 import java.util.*
+
+
+
 
 class PlayerStats(val uuid: UUID) {
     companion object {
@@ -22,7 +25,11 @@ class PlayerStats(val uuid: UUID) {
             return stats
         }
 
-        fun get(offlinePlayer: OfflinePlayer): PlayerStats {
+        fun get(playerName: String): PlayerStats {
+            val offlinePlayer = Bukkit.getOfflinePlayer(playerName)
+            if (DataHolder.playerStats.containsKey(offlinePlayer)) {
+                return DataHolder.playerStats[offlinePlayer]!!
+            }
             val stats = PlayerStats(offlinePlayer.uniqueId)
             stats.load()
             return stats
@@ -73,7 +80,7 @@ class PlayerStats(val uuid: UUID) {
     }
 
     fun kd(): Double {
-        val kd = if (kills() != 0) kills().toDouble() / deaths().toDouble() else kills().toDouble()
+        val kd = if (deaths() != 0) kills().toDouble() / deaths().toDouble() else kills().toDouble()
         val df = DecimalFormat("###.##")
         return df.format(kd).toDouble()
     }

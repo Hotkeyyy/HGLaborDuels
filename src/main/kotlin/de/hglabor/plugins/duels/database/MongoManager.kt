@@ -1,14 +1,12 @@
 package de.hglabor.plugins.duels.database
 
 
-import com.google.gson.Gson
+import com.mongodb.MongoException
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import org.bson.Document
-import org.bukkit.entity.Player
-import org.litote.kmongo.KMongo
 
 object MongoManager {
     private lateinit var client: MongoClient
@@ -18,20 +16,24 @@ object MongoManager {
 
     fun connect() {
 
-        MongoConfig.loadConfig()
+        try {
+            MongoConfig.loadConfig()
 
-        client = MongoClients.create(MongoConfig.uri())
-        database = client.getDatabase(MongoConfig.database)
+            client = MongoClients.create(MongoConfig.uri())
+            database = client.getDatabase(MongoConfig.database)
 
-        playerStatsCollection = getCollection("duels_playerStats")
-        playerSettingsCollection = getCollection("duels_playerSettings")
+            playerStatsCollection = getCollection("duels_playerStats")
+            playerSettingsCollection = getCollection("duels_playerSettings")
+        } catch (e: MongoException) {
+            e.printStackTrace()
+        }
     }
 
     fun disconnect() {
         client.close()
     }
 
-    fun getCollection(name: String): MongoCollection<Document> {
+    private fun getCollection(name: String): MongoCollection<Document> {
         if (!database.listCollectionNames().contains(name))
             database.createCollection(name)
 

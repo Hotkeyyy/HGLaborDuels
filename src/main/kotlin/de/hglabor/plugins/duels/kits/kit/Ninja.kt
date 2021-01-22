@@ -2,9 +2,9 @@ package de.hglabor.plugins.duels.kits.kit
 
 import de.hglabor.plugins.duels.Manager
 import de.hglabor.plugins.duels.arenas.ArenaTags
+import de.hglabor.plugins.duels.duel.GameState
 import de.hglabor.plugins.duels.guis.ChooseKitGUI
 import de.hglabor.plugins.duels.kits.*
-import de.hglabor.plugins.duels.kits.Kits.Companion.info
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.duel
@@ -52,7 +52,7 @@ class Ninja : Kit(Kits.NINJA) {
             val player = it.player
             if (player.isInFight()) {
                 val duel = Data.duelFromPlayer(player)
-                if (duel.hasBegan) {
+                if (duel.state == GameState.RUNNING) {
                     if (kitMap[duel.kit]!!.specials.contains(Specials.NINJA)) {
                         if (player.isSneaking) {
                             val jetzt: Long = System.currentTimeMillis()
@@ -70,7 +70,9 @@ class Ninja : Kit(Kits.NINJA) {
                                     return@listen
                                 }
                             }
-                            val t: Player = duel.getOtherPlayer(player)
+                            val t: Player? = duel.lastHitOfPlayer[player]
+                            if (t == null)
+                                return@listen
                             var nang: Float = t.location.yaw + 90
                             if (nang < 0) nang += 360f
                             val nX = cos(Math.toRadians(nang.toDouble()))

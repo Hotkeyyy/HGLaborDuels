@@ -38,9 +38,9 @@ object OnChallenge {
                             Data.openedDuelGUI[damager] = target
                             damager.openGUI(ChooseKitGUI.gui)
                         }
-                    } else
-                        if (Data.duelFromPlayer(damager).hasBegan)
-                            it.isCancelled = true
+                    }
+                } else {
+                    return@listen
                 }
             }
         }

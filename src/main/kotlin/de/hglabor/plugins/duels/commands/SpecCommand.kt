@@ -1,11 +1,10 @@
 package de.hglabor.plugins.duels.commands
 
 import de.hglabor.plugins.duels.localization.Localization
-import de.hglabor.plugins.duels.soupsimulator.isInSoupsimulator
+import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
-import de.hglabor.plugins.duels.utils.PlayerFunctions.spec
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -21,7 +20,7 @@ object SpecCommand : CommandExecutor {
                     val t = Bukkit.getPlayer(args[0])
                     if (t != null) {
                         if (t.isInFight()) {
-                            player.spec(Data.duelIDFromPlayer[t]!!, true)
+                            Data.duelFromPlayer(t).addSpectator(player, true)
                         } else {
                             if (player.localization("de"))
                                 player.sendMessage(

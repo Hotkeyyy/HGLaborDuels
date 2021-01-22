@@ -3,11 +3,9 @@ package de.hglabor.plugins.duels
 import de.hglabor.plugins.duels.arenas.ArenaTags
 import de.hglabor.plugins.duels.arenas.Arenas
 import de.hglabor.plugins.duels.commands.*
-import de.hglabor.plugins.duels.data.DataHolder
-import de.hglabor.plugins.duels.data.PlayerSettings
-import de.hglabor.plugins.duels.data.PlayerStats
 import de.hglabor.plugins.duels.database.MongoManager
-import de.hglabor.plugins.duels.duel.overview.DuelOverviewGUI
+import de.hglabor.plugins.duels.duel.overview.DuelPlayerDataOverviewGUI
+import de.hglabor.plugins.duels.duel.overview.DuelTeamOverviewGUI
 import de.hglabor.plugins.duels.eventmanager.*
 import de.hglabor.plugins.duels.eventmanager.arena.CreateArenaListener
 import de.hglabor.plugins.duels.eventmanager.duel.*
@@ -41,7 +39,6 @@ import org.bukkit.GameMode
 import org.bukkit.Sound
 import java.io.File
 
-
 class Manager : KSpigot() {
 
     companion object {
@@ -67,7 +64,7 @@ class Manager : KSpigot() {
         }
         File("plugins//HGLaborDuels//temp//duels//").mkdir()
 
-        broadcast("${Localization.PREFIX}${KColors.DODGERBLUE}ENABLED PLUGIN ")
+        broadcast("${Localization.PREFIX}${KColors.DODGERBLUE}ENABLED PLUGIN")
     }
 
     override fun startup() {
@@ -86,13 +83,13 @@ class Manager : KSpigot() {
         onlinePlayers.forEach {
             it.sound(Sound.BLOCK_BEACON_DEACTIVATE)
 
-            val playerStats = PlayerStats.get(it)
+            /*val playerStats = PlayerStats.get(it)
             playerStats.update()
             DataHolder.playerStats.remove(it)
 
             val playerSettings = PlayerSettings.get(it)
             playerSettings.update()
-            DataHolder.playerSettings.remove(it)
+            DataHolder.playerSettings.remove(it)*/
 
         }
         MongoManager.disconnect()
@@ -122,7 +119,8 @@ class Manager : KSpigot() {
         SoupsimulatorEvents.enable()
         CreateArenaListener.enable()
 
-        DuelOverviewGUI.enable()
+        DuelPlayerDataOverviewGUI.enable()
+        DuelTeamOverviewGUI.enable()
         PlayerSettingsGUI.enable()
         QueueGUI.enable()
 
@@ -144,6 +142,7 @@ class Manager : KSpigot() {
         getCommand("staffmode")!!.setExecutor(StaffmodeCommand)
 
         Arenas.enable()
+        getCommand("tournament")!!.setExecutor(TournamentCommand)
     }
 
     private fun connectMongo() {

@@ -22,7 +22,7 @@ object OnAccept {
                     if (damager.getHandItem(EquipmentSlot.HAND)?.hasMark("duelitem")!!) {
                         if (Data.challenged[target] == damager) {
                             it.isCancelled = true
-                            Duel(damager, target, Data.challengeKit[target]!!, Data.getFreeGameID()).start()
+                            Duel.create(damager, target, Data.challengeKit[target]!!)
                         }
                     }
                 }

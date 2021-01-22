@@ -2,24 +2,21 @@ package de.hglabor.plugins.duels.commands
 
 import de.hglabor.plugins.duels.arenas.Arenas
 import de.hglabor.plugins.duels.arenas.CreateArena
-import de.hglabor.plugins.duels.guis.CreateArenaGUI
 import de.hglabor.plugins.duels.arenas.arenaFromPlayer
 import de.hglabor.plugins.duels.functionality.CreateArenaInventory
+import de.hglabor.plugins.duels.guis.CreateArenaGUI
 import de.hglabor.plugins.duels.localization.Localization
-import de.hglabor.plugins.duels.soupsimulator.isInSoupsimulator
+import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import net.axay.kspigot.chat.KColors
 import org.bukkit.Bukkit
 import org.bukkit.Location
-import org.bukkit.Sound
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
-import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
-import java.io.File
-import java.util.ArrayList
+import java.util.*
 
 object ArenaCommand : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {

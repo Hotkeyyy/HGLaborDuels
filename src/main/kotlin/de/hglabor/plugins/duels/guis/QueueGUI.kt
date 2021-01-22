@@ -10,10 +10,12 @@ import net.axay.kspigot.items.addLore
 import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
 import net.axay.kspigot.items.name
+import net.axay.kspigot.runnables.async
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryCloseEvent
 
 object QueueGUI {
     fun open(player: Player) {
@@ -39,7 +41,31 @@ object QueueGUI {
             }
             inventory.addItem(itemStack)
         }
+        Data.openedQueue[player] = inventory
         player.openInventory(inventory)
+    }
+
+    fun updateItems() {
+        async {
+            val blacklistedSlots = arrayListOf(9, 18, 17, 26)
+            Data.openedQueue.keys.forEach {
+                var i = 10
+                for (kit in Kits.values()) {
+                    val itemStack = kitMap[kit]?.itemInGUIs()
+                    itemStack?.meta {
+                        addLore {
+                            +"§8§m                  "
+                            +"§7In Queue §8» ${KColors.MEDIUMPURPLE}${Kits.queue[kit]?.size}"
+                            +"§7In Game §8» ${KColors.DODGERBLUE}${Kits.inGame[kit]}"
+                        }
+                    }
+                    Data.openedQueue[it]?.setItem(i, itemStack)
+                    i++
+                    while (blacklistedSlots.contains(i))
+                        i++
+                }
+            }
+        }
     }
 
     fun enable() {
@@ -57,32 +83,43 @@ object QueueGUI {
                         return@listen
                     }
 
-                    val playerList = Kits.queue[kit]!!
                     if (Kits.playerQueue.containsKey(player)) {
                         if (Kits.playerQueue[player] == kit) {
-                            playerList.remove(player)
                             Kits.playerQueue.remove(player)
-                            Kits.queue[kit] = playerList
+                            Kits.queue[kit]?.remove(player)
                             player.sendMessage("queue verlassen")
                             return@listen
                         }
                     }
-                    playerList.add(player)
+                    if (Kits.playerQueue[player] != null)
+                        Kits.queue[Kits.playerQueue[player]]?.remove(player)
                     Kits.playerQueue[player] = kit
-                    Kits.queue[kit] = playerList
+                    Kits.queue[kit]?.add(player)
                     player.sendMessage("queue für §3${kit.name} §rbetreten")
+                    updateItems()
                     startNewDuelIfEnoughPlayersInQueue(kit)
                 }
             }
         }
+
+        listen<InventoryCloseEvent> {
+            if (it.view.title == "${KColors.DODGERBLUE}Queue") {
+                Data.openedQueue.remove(it.player)
+            }
+        }
     }
 
-    fun startNewDuelIfEnoughPlayersInQueue(kit: Kits) {
+    private fun startNewDuelIfEnoughPlayersInQueue(kit: Kits) {
         val list = Kits.queue[kit]!!
         if (list.size > 1) {
-            Duel(list.first(), list.last(), kit, Data.getFreeGameID()).start()
+            Duel.create(list.first(), list.last(), kit)
             list.remove(list.first())
             list.remove(list.last())
+            Kits.playerQueue.remove(list.first())
+            Kits.playerQueue.remove(list.last())
+            Kits.queue[kit]!!.remove(list.first())
+            Kits.queue[kit]!!.remove(list.last())
+
         }
     }
 }

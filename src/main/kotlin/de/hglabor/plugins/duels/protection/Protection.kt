@@ -1,17 +1,13 @@
 package de.hglabor.plugins.duels.protection
 
-import de.hglabor.plugins.duels.soupsimulator.isInSoupsimulator
-import de.hglabor.plugins.duels.utils.PlayerFunctions.getEnemy
+import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import de.hglabor.plugins.staff.utils.StaffData.isInStaffMode
 import net.axay.kspigot.event.listen
-import net.axay.kspigot.extensions.broadcast
 import net.axay.kspigot.extensions.bukkit.getHandItem
 import net.axay.kspigot.utils.hasMark
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
-import org.bukkit.entity.EntityType
-import org.bukkit.entity.ExperienceOrb
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockExplodeEvent
@@ -107,8 +103,7 @@ object Protection {
             if (it.entity is Player) {
                 if ((it.entity as Player).isInSoupsimulator()) {
                     if (it.regainReason == EntityRegainHealthEvent.RegainReason.REGEN || it.regainReason == EntityRegainHealthEvent.RegainReason.EATING ||
-                        it.regainReason == EntityRegainHealthEvent.RegainReason.SATIATED
-                    ) {
+                        it.regainReason == EntityRegainHealthEvent.RegainReason.SATIATED) {
                         it.isCancelled = true
                     }
                 }

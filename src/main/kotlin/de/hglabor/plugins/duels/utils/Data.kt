@@ -2,22 +2,24 @@ package de.hglabor.plugins.duels.utils
 
 import de.hglabor.plugins.duels.duel.Duel
 import de.hglabor.plugins.duels.kits.Kits
+import de.hglabor.plugins.duels.soupsimulator.Soupsimulator
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
 
 object Data {
     val droppedItemInSoupsimulator = arrayListOf<Entity>()
-    val gameIDs = arrayListOf<String>()
+    val soupsimulator = hashMapOf<Player, Soupsimulator>()
 
+    val gameIDs = arrayListOf<String>()
     val inFight = arrayListOf<Player>()
     val openedDuelGUI = hashMapOf<Player, Player>()
-
+    val openedQueue = hashMapOf<Player, Inventory>()
     val challenged = hashMapOf<Player, Player>() // Challenger Player
     val challengeKit: HashMap<Player, Kits> = HashMap()
-
     val duel = hashMapOf<Player, Player>()
     val duelIDFromPlayer = hashMapOf<Player, String>()
-    val duelIDFromSpec = hashMapOf<Player, String>()
+    val duelFromSpec = hashMapOf<Player, Duel>()
     val duelFromID = hashMapOf<String, Duel>()
 
     fun duelFromPlayer(player: Player): Duel {

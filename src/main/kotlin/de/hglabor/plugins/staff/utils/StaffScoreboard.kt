@@ -1,10 +1,8 @@
 package de.hglabor.plugins.staff.utils
 
-import de.hglabor.plugins.duels.scoreboard.LobbyScoreboard
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.staff.utils.StaffData.isStaff
 import net.axay.kspigot.chat.KColors
-import net.axay.kspigot.extensions.onlinePlayers
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
@@ -15,7 +13,7 @@ import org.bukkit.scoreboard.Team
 object StaffScoreboard {
     val hasScoreboard = arrayListOf<Player>()
     fun setScoreboard(player: Player) {
-        val sb = Bukkit.getScoreboardManager().newScoreboard
+        val sb = Bukkit.getScoreboardManager()!!.newScoreboard
         var obj = sb.getObjective("aaa")
 
         if (obj == null) {

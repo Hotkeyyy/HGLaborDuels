@@ -34,3 +34,5 @@ commands:
       - mod
       - modmode
   party:
+  spawn:
+  tournament:

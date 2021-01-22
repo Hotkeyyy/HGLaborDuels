@@ -1,7 +1,7 @@
 package de.hglabor.plugins.staff.commands
 
 import de.hglabor.plugins.duels.localization.Localization
-import de.hglabor.plugins.duels.soupsimulator.isInSoupsimulator
+import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
 import de.hglabor.plugins.staff.Staffmode

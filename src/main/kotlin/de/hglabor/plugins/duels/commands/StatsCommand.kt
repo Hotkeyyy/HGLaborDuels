@@ -19,11 +19,13 @@ object StatsCommand : CommandExecutor {
     override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<out String>): Boolean {
         if (sender is Player) {
             val player = sender
-            val target: OfflinePlayer
+            val targetName: String
+            var target: OfflinePlayer
             var targetIsOtherPlayer = false
 
             if (args.size == 1) {
-                target = Bukkit.getOfflinePlayer(args[0])
+                targetName = args[0]
+                target = Bukkit.getOfflinePlayer(targetName)
                 if (PlayerStats.exist(target.uniqueId)) {
                     targetIsOtherPlayer = true
                 } else {
@@ -33,27 +35,28 @@ object StatsCommand : CommandExecutor {
                     )
                     return false
                 }
-            } else
+            } else {
+                targetName = player.name
                 target = player
+            }
 
-
+            player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
             if (player.localization("de")) {
                 if (targetIsOtherPlayer)
                     player.sendMessage(" §8| §7Stats von Spieler §(» ${KColors.MEDIUMPURPLE}${target.name}")
-                sendStatsDE(player, target)
+                sendStatsDE(player, targetName)
             } else {
                 if (targetIsOtherPlayer)
                     player.sendMessage(" §8| §7Stats of player §(» ${KColors.MEDIUMPURPLE}${target.name}")
-                sendStatsEN(player, target)
+                sendStatsEN(player, targetName)
             }
         }
         return false
     }
 
-    private fun sendStatsDE(player: Player, target: OfflinePlayer) {
+    private fun sendStatsDE(player: Player, targetName: String) {
         async {
-            val stats = PlayerStats.get(target)
-            player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
+            val stats = PlayerStats.get(targetName)
             player.sendMessage(" §8| §7Gesamte Spiele §8» ${KColors.DEEPSKYBLUE}${stats.totalGames()}")
             player.sendMessage(" §8| §7Kills §8» ${KColors.DEEPSKYBLUE}${stats.kills()}")
             player.sendMessage(" §8| §7Tode §8» ${KColors.DEEPSKYBLUE}${stats.deaths()}")
@@ -66,10 +69,9 @@ object StatsCommand : CommandExecutor {
 
     }
 
-    private fun sendStatsEN(player: Player, target: OfflinePlayer) {
+    private fun sendStatsEN(player: Player, targetName: String) {
         async {
-            val stats = PlayerStats.get(target)
-            player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
+            val stats = PlayerStats.get(targetName)
             player.sendMessage(" §8| §7Total Games §8» ${KColors.DEEPSKYBLUE}${stats.totalGames()}")
             player.sendMessage(" §8| §7Kills §8» ${KColors.DEEPSKYBLUE}${stats.kills()}")
             player.sendMessage(" §8| §7Deaths §8» ${KColors.DEEPSKYBLUE}${stats.deaths()}")

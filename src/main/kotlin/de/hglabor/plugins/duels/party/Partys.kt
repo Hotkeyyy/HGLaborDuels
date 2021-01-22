@@ -3,28 +3,22 @@ package de.hglabor.plugins.duels.party
 import org.bukkit.entity.Player
 
 object Partys {
-    val partyOfLeader = hashMapOf<Player, Party>()
-    val partyOfMember = hashMapOf<Player, Party>()
+    val playerParty = hashMapOf<Player, Party>()
 
     fun Player.hasParty(): Boolean {
-        return partyOfLeader.containsKey(this)
+        if (playerParty.containsKey(this))
+            if (playerParty[this]?.leader == this)
+                return true
+        return false
     }
 
     fun Player.isInParty(): Boolean {
-        return partyOfMember.containsKey(this)
+        return playerParty.containsKey(this)
     }
 
-    fun Player.isInOrHasParty(): Boolean {
-        return partyOfMember.containsKey(this) || partyOfLeader.containsKey(this)
-    }
-
-    fun getPartyFromPlayer(player: Player): Party {
-        if (player.hasParty()) {
-            partyOfLeader.remove(player)
-            return partyOfLeader[player]!!
-        } else {
-            partyOfMember.remove(player)
-            return partyOfMember[player]!!
-        }
+    fun Player.isPartyMember(): Boolean {
+        if (playerParty.containsKey(this))
+            return playerParty[this]?.leader != this
+        return false
     }
 }

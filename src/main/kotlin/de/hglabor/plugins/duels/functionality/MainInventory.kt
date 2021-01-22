@@ -31,7 +31,18 @@ object MainInventory {
 
         p.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)!!.baseValue = 0.0
 
-        p.inventory.setItem(2, itemStack(Material.NETHERITE_SWORD) {
+        p.inventory.setItem(5, itemStack(Material.POPPY) {
+            amount = 1
+            meta {
+                name = if (p.localization("de"))
+                    Localization.MAIN_INVENTORY_PARTY_ITEM_NAME_DE
+                else
+                    Localization.MAIN_INVENTORY_PARTY_ITEM_NAME_EN
+            }
+            mark("createparty")
+        })
+
+        p.inventory.setItem(3, itemStack(Material.NETHERITE_SWORD) {
             amount = 1
             addEnchantment(Enchantment.DURABILITY, 1)
             meta {
@@ -57,7 +68,7 @@ object MainInventory {
             mark("queue")
         })
 
-        p.inventory.setItem(6, itemStack(Material.SUSPICIOUS_STEW) {
+        p.inventory.setItem(1, itemStack(Material.SUSPICIOUS_STEW) {
             amount = 1
             meta {
                 name = if (p.localization("de"))
@@ -68,7 +79,7 @@ object MainInventory {
             mark("soupsim")
         })
 
-        p.inventory.setItem(8, itemStack(Material.REPEATER) {
+        p.inventory.setItem(7, itemStack(Material.REPEATER) {
             amount = 1
             meta {
                 name = if (p.localization("de"))
