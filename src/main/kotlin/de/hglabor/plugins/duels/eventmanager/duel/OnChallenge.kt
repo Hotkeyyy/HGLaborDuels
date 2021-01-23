@@ -21,6 +21,7 @@ object OnChallenge {
                 if(player.getHandItem(EquipmentSlot.HAND)?.hasMark("duelitem")!!) {
                     if(!(player.isInFight() && target.isInFight())) {
                         Data.openedDuelGUI[player] = target
+                        Data.openedKitInventory[player] = Data.KitInventories.DUEL
                         player.openGUI(ChooseKitGUI.gui)
                     }
                 }
@@ -36,6 +37,7 @@ object OnChallenge {
                         if (Data.challenged[target] != damager) {
                             it.isCancelled = true
                             Data.openedDuelGUI[damager] = target
+                            Data.openedKitInventory[damager] = Data.KitInventories.DUEL
                             damager.openGUI(ChooseKitGUI.gui)
                         }
                     }

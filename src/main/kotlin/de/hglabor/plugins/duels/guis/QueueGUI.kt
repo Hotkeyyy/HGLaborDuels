@@ -2,8 +2,11 @@ package de.hglabor.plugins.duels.guis
 
 import de.hglabor.plugins.duels.duel.Duel
 import de.hglabor.plugins.duels.kits.Kits
+import de.hglabor.plugins.duels.kits.Kits.Companion.info
 import de.hglabor.plugins.duels.kits.kitMap
+import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.utils.Data
+import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.items.addLore
@@ -36,7 +39,7 @@ object QueueGUI {
                 addLore {
                     +"§8§m                  "
                     +"§7In Queue §8» ${KColors.MEDIUMPURPLE}${Kits.queue[kit]?.size}"
-                    +"§7In Game §8» ${KColors.DODGERBLUE}${Kits.inGame[kit]}"
+                    +"§7In Game §8» ${KColors.DODGERBLUE}${Kits.inGame[kit]?.size}"
                 }
             }
             inventory.addItem(itemStack)
@@ -56,7 +59,7 @@ object QueueGUI {
                         addLore {
                             +"§8§m                  "
                             +"§7In Queue §8» ${KColors.MEDIUMPURPLE}${Kits.queue[kit]?.size}"
-                            +"§7In Game §8» ${KColors.DODGERBLUE}${Kits.inGame[kit]}"
+                            +"§7In Game §8» ${KColors.DODGERBLUE}${Kits.inGame[kit]?.size}"
                         }
                     }
                     Data.openedQueue[it]?.setItem(i, itemStack)
@@ -82,12 +85,12 @@ object QueueGUI {
                     } catch (e: IllegalArgumentException) {
                         return@listen
                     }
-
+                    updateItems()
                     if (Kits.playerQueue.containsKey(player)) {
                         if (Kits.playerQueue[player] == kit) {
                             Kits.playerQueue.remove(player)
                             Kits.queue[kit]?.remove(player)
-                            player.sendMessage("queue verlassen")
+                            player.sendLocalizedMessage(Localization.QUEUE_LEFT_DE,Localization.QUEUE_LEFT_EN, "%kit%", kit.info.name)
                             return@listen
                         }
                     }
@@ -95,8 +98,7 @@ object QueueGUI {
                         Kits.queue[Kits.playerQueue[player]]?.remove(player)
                     Kits.playerQueue[player] = kit
                     Kits.queue[kit]?.add(player)
-                    player.sendMessage("queue für §3${kit.name} §rbetreten")
-                    updateItems()
+                    player.sendLocalizedMessage(Localization.QUEUE_JOINED_DE,Localization.QUEUE_JOINED_EN, "%kit%", kit.info.name)
                     startNewDuelIfEnoughPlayersInQueue(kit)
                 }
             }

@@ -303,4 +303,10 @@ object Localization {
 
     // Tournament
 
+    // Queue
+    val QUEUE_JOINED_EN = "${PREFIX}Entered queue for ${KColors.MEDIUMPURPLE}%kit%"
+    val QUEUE_JOINED_DE = "${PREFIX}Queue für ${KColors.MEDIUMPURPLE}%kit% ${KColors.GRAY}betreten"
+    val QUEUE_LEFT_EN = "${PREFIX}Left queue for ${KColors.MEDIUMPURPLE}%kit%"
+    val QUEUE_LEFT_DE = "${PREFIX}Queue für ${KColors.MEDIUMPURPLE}%kit% ${KColors.GRAY}verlassen."
+
 }

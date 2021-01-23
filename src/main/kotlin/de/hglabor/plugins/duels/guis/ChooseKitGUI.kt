@@ -19,7 +19,7 @@ object ChooseKitGUI {
 
     val gui = kSpigotGUI(GUIType.FOUR_BY_NINE) {
 
-        title = "${KColors.DODGERBLUE}Duels"
+        title = "${KColors.DODGERBLUE}Choose Kit"
 
         page(1) {
 
@@ -44,8 +44,9 @@ object ChooseKitGUI {
 
     fun enable() {
         listen<InventoryCloseEvent> {
-            if(it.view.title == "${KColors.DODGERBLUE}Duels"){
+            if(it.view.title == "${KColors.DODGERBLUE}Choose Kit"){
                 Data.openedDuelGUI.remove(it.player)
+                Data.openedKitInventory.remove(it.player)
             }
         }
     }

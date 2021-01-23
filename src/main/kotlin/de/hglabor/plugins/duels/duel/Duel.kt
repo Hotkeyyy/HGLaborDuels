@@ -116,6 +116,9 @@ class Duel {
                 Data.challenged.remove(it)
                 Data.duelIDFromPlayer[it] = ID
                 Soupsimulator.get(it)?.stop()
+                it.isGlowing = false
+                it.inventory.clear()
+                Kits.inGame[kit]?.add(it)
             }
             alivePlayers.filter { it.isInSoupsimulator() }.forEach { Soupsimulator.forceStop(it) }
             Data.duelFromID[ID] = this
@@ -126,7 +129,6 @@ class Duel {
         init()
         Data.gameIDs.add(ID)
         alivePlayers.forEach { player ->
-            player.inventory.clear()
             player.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 40, 200))
 
             async { val stats = PlayerStats.get(player); stats.addTotalGame() }
@@ -134,10 +136,8 @@ class Duel {
 
         arena.pasteSchematic()
 
-        taskRunLater(40L, true) {
+        taskRunLater(20L, true) {
             alivePlayers.forEach {
-                it.isGlowing = false
-                it.inventory.clear()
                 it.gameMode = GameMode.SURVIVAL
                 it.giveKit(kit)
                 teleportPlayersToSpawns()
@@ -201,6 +201,7 @@ class Duel {
         val newAlivePlayers = alivePlayers
         alivePlayers = newAlivePlayers
         savePlayerdata(player)
+        Kits.inGame[kit]?.remove(player)
         if (lastAttackerOfPlayer[player] != null) {
             sendMessage("${KColors.DEEPSKYBLUE}${player.name} §rwrude von ${KColors.DEEPSKYBLUE}${lastAttackerOfPlayer[player]!!.name} §rtot")
             val killerStats = PlayerStats.get(lastAttackerOfPlayer[player]!!)
@@ -220,6 +221,7 @@ class Duel {
 
     fun playerLeft(player: Player) {
         alivePlayers.remove(player)
+        Kits.inGame[kit]?.remove(player)
         savePlayerdata(player)
         sendMessage("${KColors.DEEPSKYBLUE}${player.name} §rverlassen")
 
@@ -366,7 +368,7 @@ class Duel {
 
     fun stop() {
         state = GameState.ENDED
-        alivePlayers.forEach { savePlayerdata(it) }
+        alivePlayers.forEach { savePlayerdata(it); Kits.inGame[kit]?.remove(it) }
         sendResults()
 
         taskRunLater(45, true) {

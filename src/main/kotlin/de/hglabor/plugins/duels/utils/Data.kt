@@ -63,5 +63,8 @@ object Data {
             .map { allowedChars.random() }
             .joinToString("")
     }
+
+    val openedKitInventory = hashMapOf<Player, KitInventories>()
+    enum class KitInventories { DUEL, TOURNAMENT, SPLITPARTY }
 }
 

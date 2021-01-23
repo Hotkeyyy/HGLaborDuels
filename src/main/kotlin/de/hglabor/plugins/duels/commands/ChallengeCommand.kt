@@ -44,6 +44,7 @@ object ChallengeCommand : CommandExecutor {
                         }*/
 
                         Data.openedDuelGUI[player] = target
+                        Data.openedKitInventory[player] = Data.KitInventories.DUEL
                         player.openGUI(ChooseKitGUI.gui)
                     } else {
                         player.sendLocalizedMessage(

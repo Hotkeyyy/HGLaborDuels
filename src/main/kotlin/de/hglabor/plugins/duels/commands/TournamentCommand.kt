@@ -1,8 +1,11 @@
 package de.hglabor.plugins.duels.commands
 
+import de.hglabor.plugins.duels.guis.ChooseKitGUI
 import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.tournament.Tournament
 import de.hglabor.plugins.duels.tournament.Tournaments
+import de.hglabor.plugins.duels.utils.Data
+import net.axay.kspigot.gui.openGUI
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -15,7 +18,8 @@ object TournamentCommand : CommandExecutor {
 
             if (args.size == 1) {
                 if (args[0].equals("create", true)) {
-                    Tournament.createPublic(player, Kits.EHG)
+                    player.openGUI(ChooseKitGUI.gui)
+                    Data.openedKitInventory[player] = Data.KitInventories.TOURNAMENT
                     return true
                 } else if (args[0].equals("join", true)) {
                     Tournaments.publicTournament?.join(player)

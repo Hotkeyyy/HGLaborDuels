@@ -1,8 +1,6 @@
 package de.hglabor.plugins.duels.guis
 
-import de.hglabor.plugins.duels.duel.Duel
-import de.hglabor.plugins.duels.kits.Kits
-import de.hglabor.plugins.duels.party.Party
+import de.hglabor.plugins.duels.utils.Data
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.gui.GUIType
 import net.axay.kspigot.gui.Slots
@@ -29,8 +27,8 @@ object PartyGameGUI {
                         name = "split teamfight"
                     }
                 }) {
-                    val team = Party.get(player)!!
-                    Duel.create(team.getSplitTeams().first, team.getSplitTeams().second, Kits.EHG)
+                    Data.openedKitInventory[player] = Data.KitInventories.SPLITPARTY
+                    player.openGUI(ChooseKitGUI.gui)
                 }
             }
         }

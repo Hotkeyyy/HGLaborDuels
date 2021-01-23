@@ -180,10 +180,8 @@ class Soupsimulator(val player: Player) {
     fun stop() {
         state = GameState.ENDED
         player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
-        if (player.localization("de"))
-            player.sendLocalizedMessage(Localization.SOUPSIMULATOR_END_SCORE_DE, Localization.SOUPSIMULATOR_END_SCORE_EN, "%score%", "$score")
 
-        player.sendLocalizedMessage(Localization.SOUPSIMULATOR_END_SCORE_DE, Localization.SOUPSIMULATOR_END_SCORE_EN, "%refills%", "$refills")
+        player.sendLocalizedMessage(Localization.SOUPSIMULATOR_END_SCORE_DE, Localization.SOUPSIMULATOR_END_SCORE_EN, "%score%", "$score")
         if (level == SoupsimulatorLevel.BONUS) {
             player.sendMessage(Localization.SOUPSIMULATOR_END_REFILLS.replace("%refills%", "$refills"))
             player.sendMessage(Localization.SOUPSIMULATOR_END_RECRAFTS.replace("%recrafts%", "$recrafts"))
