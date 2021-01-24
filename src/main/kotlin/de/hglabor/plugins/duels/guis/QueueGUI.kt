@@ -112,16 +112,8 @@ object QueueGUI {
     }
 
     private fun startNewDuelIfEnoughPlayersInQueue(kit: Kits) {
-        val list = Kits.queue[kit]!!
-        if (list.size > 1) {
-            Duel.create(list.first(), list.last(), kit)
-            list.remove(list.first())
-            list.remove(list.last())
-            Kits.playerQueue.remove(list.first())
-            Kits.playerQueue.remove(list.last())
-            Kits.queue[kit]!!.remove(list.first())
-            Kits.queue[kit]!!.remove(list.last())
-
+        if (Kits.queue[kit]!!.size > 1) {
+            Duel.create(Kits.queue[kit]?.first()!!, Kits.queue[kit]?.last()!!, kit)
         }
     }
 }

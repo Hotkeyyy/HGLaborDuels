@@ -116,7 +116,9 @@ class Soupsimulator(val player: Player) {
     }
 
     fun nextTask() {
-        for (i in 1..player.inventory.size) player.inventory.setItem(i, ItemStack(Material.AIR))
+        for (i in 0..player.inventory.size)
+            if (player.inventory.getItem(i)?.type != Material.STONE_SWORD)
+                player.inventory.setItem(i, ItemStack(Material.AIR))
         player.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_PLING, 3f, 1f)
 
         if (level == SoupsimulatorLevel.BONUS) {
@@ -139,10 +141,20 @@ class Soupsimulator(val player: Player) {
             Task = SoupsimulatorTasks.SOUP
 
         if (Task == SoupsimulatorTasks.SOUP) {
-            val i = Random.nextInt(8) + 1
-            Task = SoupsimulatorTasks.SOUP
-            player.inventory.setItem(i, ItemStack(Material.MUSHROOM_STEW))
-            player.level = i + 1
+            var again = true
+
+            do {
+                val i = Random.nextInt(9)
+                if (player.inventory.getItem(i)?.type == Material.STONE_SWORD) {
+                    continue
+                } else {
+                    Task = SoupsimulatorTasks.SOUP
+                    player.inventory.setItem(i, ItemStack(Material.MUSHROOM_STEW))
+                    player.level = i
+                    again = false
+                }
+            } while (again)
+
         } else {
             taskStart = System.currentTimeMillis()
             player.level = 10

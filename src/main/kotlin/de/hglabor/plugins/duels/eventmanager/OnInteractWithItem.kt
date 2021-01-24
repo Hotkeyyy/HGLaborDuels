@@ -55,7 +55,7 @@ object OnInteractWithItem {
 
                 if (it.player.getHandItem(EquipmentSlot.HAND)?.hasMark("partygame")!!) {
                     it.isCancelled = true
-                    if (Party.get(it.player)?.players?.size!! < 1)
+                    if (Party.get(it.player)?.players?.size!! > 1)
                         PartyGameGUI.open(it.player)
                     else
                         it.player.sendLocalizedMessage("${Localization.PARTY_PREFIX}${KColors.TOMATO}Dafür sind nicht genügend Spieler in der Party.",

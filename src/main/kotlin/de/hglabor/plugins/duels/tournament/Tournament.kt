@@ -13,6 +13,7 @@ import net.axay.kspigot.extensions.broadcast
 import net.axay.kspigot.extensions.onlinePlayers
 import net.axay.kspigot.runnables.async
 import net.axay.kspigot.runnables.task
+import net.axay.kspigot.runnables.taskRunLater
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 
@@ -161,11 +162,16 @@ class Tournament {
 
         sendMessage("§4team died. ${teams.size} teams left")
 
-        if (fightingTeams.isEmpty()) {
-            roundEnded()
-            broadcast("roudn ended")
-        } else {
-            broadcast("roudn still going")
+        taskRunLater(
+            sync = true,
+            delay = 60
+        ) {
+            if (fightingTeams.isEmpty()) {
+                roundEnded()
+                broadcast("roudn ended")
+            } else {
+                broadcast("roudn still going")
+            }
         }
     }
 

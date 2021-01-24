@@ -19,11 +19,13 @@ import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntitySpawnEvent
+import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.CraftItemEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
+import org.bukkit.event.player.PlayerSwapHandItemsEvent
 
 object SoupsimulatorEvents {
     fun enable() {
@@ -93,17 +95,17 @@ object SoupsimulatorEvents {
             if (player.isInSoupsimulator()) {
                 val simulator = Soupsimulator.get(player)!!
                 if (simulator.state == GameState.RUNNING)
-                if (simulator.Task == SoupsimulatorTasks.RECRAFT) {
-                    if (it.currentItem?.type == Material.MUSHROOM_STEW && it.isShiftClick) {
-                        simulator.score += 3
-                        simulator.recrafts += 1
-                        player.closeInventory()
-                        async {
-                            simulator.sendRecraftRefillTime()
-                            simulator.nextTask()
+                    if (simulator.Task == SoupsimulatorTasks.RECRAFT) {
+                        if (it.currentItem?.type == Material.MUSHROOM_STEW && it.isShiftClick) {
+                            simulator.score += 3
+                            simulator.recrafts += 1
+                            player.closeInventory()
+                            async {
+                                simulator.sendRecraftRefillTime()
+                                simulator.nextTask()
+                            }
                         }
                     }
-                }
             }
         }
 
@@ -123,10 +125,8 @@ object SoupsimulatorEvents {
                                             simulator.score += 2
                                             simulator.refills += 1
                                             player.closeInventory()
-                                            async {
-                                                simulator.sendRecraftRefillTime()
-                                                simulator.nextTask()
-                                            }
+                                            simulator.sendRecraftRefillTime()
+                                            simulator.nextTask()
                                         }
                                     }
                                 }
@@ -161,5 +161,17 @@ object SoupsimulatorEvents {
                 it.isCancelled = it.itemDrop.itemStack.type != Material.BOWL
             }
         }
+
+        listen<InventoryClickEvent> {
+            if ((it.whoClicked as Player).isInSoupsimulator())
+                if (it.click == ClickType.SWAP_OFFHAND)
+                    it.isCancelled = true
+        }
+
+        listen<PlayerSwapHandItemsEvent> {
+            if (it.player.isInSoupsimulator())
+                it.isCancelled = true
+        }
+
     }
 }

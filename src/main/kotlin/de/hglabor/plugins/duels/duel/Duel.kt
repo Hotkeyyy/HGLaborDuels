@@ -27,6 +27,7 @@ import net.axay.kspigot.runnables.async
 import net.axay.kspigot.runnables.task
 import net.axay.kspigot.runnables.taskRunLater
 import net.axay.kspigot.utils.mark
+import net.md_5.bungee.api.ChatColor
 import org.bukkit.*
 import org.bukkit.block.Block
 import org.bukkit.configuration.file.YamlConfiguration
@@ -119,6 +120,8 @@ class Duel {
                 it.isGlowing = false
                 it.inventory.clear()
                 Kits.inGame[kit]?.add(it)
+                Kits.playerQueue.remove(it)
+                Kits.queue[kit]!!.remove(it)
             }
             alivePlayers.filter { it.isInSoupsimulator() }.forEach { Soupsimulator.forceStop(it) }
             Data.duelFromID[ID] = this
@@ -196,18 +199,14 @@ class Duel {
         player.teleport(finalLoc)
     }
 
-    fun playerDied(player: Player) {
+    fun playerDied(player: Player, germanMessage: String, englishMessage: String) {
         alivePlayers.remove(player)
         val newAlivePlayers = alivePlayers
         alivePlayers = newAlivePlayers
         savePlayerdata(player)
         Kits.inGame[kit]?.remove(player)
-        if (lastAttackerOfPlayer[player] != null) {
-            sendMessage("${KColors.DEEPSKYBLUE}${player.name} §rwrude von ${KColors.DEEPSKYBLUE}${lastAttackerOfPlayer[player]!!.name} §rtot")
-            val killerStats = PlayerStats.get(lastAttackerOfPlayer[player]!!)
-            killerStats.addKill()
-        } else
-            sendMessage("${KColors.DEEPSKYBLUE}${player.name} §rtot")
+
+        sendMessage(germanMessage, englishMessage)
 
         if (ifTeamDied(getTeam(player))) {
             loser = getTeam(player)
@@ -223,7 +222,9 @@ class Duel {
         alivePlayers.remove(player)
         Kits.inGame[kit]?.remove(player)
         savePlayerdata(player)
-        sendMessage("${KColors.DEEPSKYBLUE}${player.name} §rverlassen")
+        sendMessage("${teamColor(player)}${player.name} ${KColors.GRAY}hat den Kampf verlassen.",
+            "${teamColor(player)}${player.name} ${KColors.GRAY}left the fight.")
+
 
         if (ifTeamDied(getTeam(player))) {
             loser = getTeam(player)
@@ -338,6 +339,7 @@ class Duel {
             players.hidePlayer(Manager.INSTANCE, player)
         }
 
+        player.health = 20.0
         player.teleport(centerLoc)
         player.inventory.clear()
         player.allowFlight = true
@@ -429,6 +431,13 @@ class Duel {
             teamOne
         else
             teamTwo
+    }
+
+    fun teamColor(player: Player): ChatColor {
+        return if (teamOne.contains(player))
+            KColors.DEEPSKYBLUE
+        else
+            KColors.DEEPPINK
     }
 
     private fun getOtherTeam(player: Player): ArrayList<Player> {

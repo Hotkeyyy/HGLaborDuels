@@ -5,6 +5,7 @@ import de.hglabor.plugins.duels.kits.Kits.Companion.info
 import de.hglabor.plugins.duels.kits.Specials
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
+import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.isFeetInWater
 import org.bukkit.event.player.PlayerMoveEvent
@@ -20,7 +21,7 @@ object OnMove {
                 if (duel.kit.info.specials.contains(Specials.DEADINWATER)) {
                     if (duel.state == GameState.RUNNING) {
                         if (player.isFeetInWater) {
-                            duel.playerDied(player)
+                            duel.playerDied(player,  "${duel.teamColor(player)}${player.name} ${KColors.GRAY}ist gestorben.", "${duel.teamColor(player)}${player.name} ${KColors.GRAY}died.")
                         }
                     }
                 }

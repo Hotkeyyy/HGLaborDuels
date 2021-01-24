@@ -157,6 +157,7 @@ object Localization {
     val PARTY_COMMAND_NOT_IN_PARTY_EN = "${PARTY_PREFIX}${KColors.TOMATO}Du bist in keiner Party."
     val PARTY_COMMAND_PLAYER_ALREADY_IN_PARTY_EN = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}is already in a party."
     val PARTY_COMMAND_PLAYER_ALREADY_IN_PARTY_DE = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}ist bereits in einer Party."
+    val PARTY_COMMAND_PLAYER_ALREADY_INVITED_EN = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}ist bereits in einer Party."
     val PARTY_COMMAND_CANT_JOIN_EN = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}doesn't have a public party."
     val PARTY_COMMAND_CANT_JOIN_DE = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}hat keine öffentliche Party."
     val PARTY_COMMAND_PLAYER_HAS_NO_PARTY_EN = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}has no party."

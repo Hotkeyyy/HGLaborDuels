@@ -63,7 +63,14 @@ object PartyCommand : CommandExecutor {
                         if (!target.isInParty()) {
                             val party = Party.getOrCreate(player, true)
                             if (party.leader == player)
-                                party.invitePlayer(target)
+                                if (!party.invitedPlayers.contains(target))
+                                    if (!party.players.contains(target))
+                                        party.invitePlayer(target)
+                                    else
+                                        player.sendMessage("der ist schon in de rparty")
+                                else
+                                    player.sendMessage("du hast den schon eingealden")
+
                         } else
                             player.sendLocalizedMessage(Localization.PARTY_COMMAND_PLAYER_ALREADY_IN_PARTY_DE, Localization.PARTY_COMMAND_PLAYER_ALREADY_IN_PARTY_EN, "%playerName%", target.name)
                     else
