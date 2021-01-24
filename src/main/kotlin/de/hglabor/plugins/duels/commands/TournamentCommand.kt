@@ -1,10 +1,12 @@
 package de.hglabor.plugins.duels.commands
 
+import de.hglabor.plugins.duels.duel.GameState
 import de.hglabor.plugins.duels.guis.ChooseKitGUI
-import de.hglabor.plugins.duels.kits.Kits
-import de.hglabor.plugins.duels.tournament.Tournament
+import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.tournament.Tournaments
 import de.hglabor.plugins.duels.utils.Data
+import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
+import de.hglabor.plugins.staff.utils.StaffData.isStaff
 import net.axay.kspigot.gui.openGUI
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -18,11 +20,28 @@ object TournamentCommand : CommandExecutor {
 
             if (args.size == 1) {
                 if (args[0].equals("create", true)) {
-                    player.openGUI(ChooseKitGUI.gui)
-                    Data.openedKitInventory[player] = Data.KitInventories.TOURNAMENT
+                    if (player.isStaff) {
+                        if (Tournaments.publicTournament == null) {
+                            player.openGUI(ChooseKitGUI.gui)
+                            Data.openedKitInventory[player] = Data.KitInventories.TOURNAMENT
+                        } else {
+                            player.sendLocalizedMessage(Localization.TOURNAMENTCOMMAND_PUBLIC_TOURNAMENT_EXISTS_DE, Localization.TOURNAMENTCOMMAND_PUBLIC_TOURNAMENT_EXISTS_EN)
+                        }
+                    } else
+                        player.sendLocalizedMessage(Localization.NO_PERM_DE, Localization.NO_PERM_EN)
                     return true
                 } else if (args[0].equals("join", true)) {
-                    Tournaments.publicTournament?.join(player)
+                    if (Tournaments.publicTournament?.players?.contains(player) == false)
+                        Tournaments.publicTournament?.join(player)
+                    else
+                        player.sendLocalizedMessage(Localization.TOURNAMENTCOMMAND_ALREADY_IN_DE, Localization.TOURNAMENTCOMMAND_ALREADY_IN_EN)
+                    return true
+
+                } else if (args[0].equals("leave", true)) {
+                    if (Tournaments.publicTournament?.players?.contains(player) == true)
+                        Tournaments.publicTournament?.leave(player)
+                    else
+                        player.sendLocalizedMessage(Localization.TOURNAMENTCOMMAND_NOT_IN_DE, Localization.TOURNAMENTCOMMAND_NOT_IN_EN)
                     return true
                 } else if (args[0].equals("list", true)) {
                     player.sendMessage("starting: ${Tournaments.publicTournament?.timeToStart}")
@@ -32,9 +51,13 @@ object TournamentCommand : CommandExecutor {
                     return true
                 }
             } else if (args.size == 2) {
-                if (args[0].equals("start", true)) {
-                    Tournaments.publicTournament!!.timeToStart = args[1].toInt()
-                    return true
+                if (player.isStaff) {
+                    if (Tournaments.publicTournament?.state == GameState.COUNTDOWN)
+                        if (args[0].equals("start", true)) {
+                           Tournaments.publicTournament?.timeToStart = args[1].toInt()
+                            Tournaments.publicTournament?.announce(false)
+                           return true
+                        }
                 }
             }
             player.sendMessage("/tournament create")

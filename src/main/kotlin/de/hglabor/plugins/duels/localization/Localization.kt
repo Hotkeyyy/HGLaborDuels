@@ -107,6 +107,8 @@ object Localization {
     val SPEC_COMMAND_PLAYER_NOT_FIGHTING_DE = "${PREFIX}${KColors.TOMATO}%playerName% ist nicht am Kämpfen."
     val SPEC_COMMAND_HELP_EN = "${PREFIX}${KColors.GRAY}Please use ${KColors.DODGERBLUE}/spec ${KColors.DARKGRAY}<${KColors.DEEPSKYBLUE}Player${KColors.DARKGRAY}>"
     val SPEC_COMMAND_HELP_DE = "${PREFIX}${KColors.GRAY}Bitte benutze ${KColors.DODGERBLUE}/spec ${KColors.DARKGRAY}<${KColors.DEEPSKYBLUE}Spieler${KColors.DARKGRAY}>"
+    val SPEC_COMMAND_DENIED_EN = "${PREFIX}${KColors.GRAY}Bitte benutze ${KColors.DODGERBLUE}/spec ${KColors.DARKGRAY}<${KColors.DEEPSKYBLUE}Spieler${KColors.DARKGRAY}>"
+    val SPEC_COMMAND_DENIED_DE = "${PREFIX}${KColors.GRAY}Bitte benutze ${KColors.DODGERBLUE}/spec ${KColors.DARKGRAY}<${KColors.DEEPSKYBLUE}Spieler${KColors.DARKGRAY}>"
 
     // StatsCommand
     val STATS_COMMAND_PLAYER_NOT_FOUND_EN = "${PREFIX}${KColors.TOMATO}Player %playerName% not found."
@@ -157,7 +159,8 @@ object Localization {
     val PARTY_COMMAND_NOT_IN_PARTY_EN = "${PARTY_PREFIX}${KColors.TOMATO}Du bist in keiner Party."
     val PARTY_COMMAND_PLAYER_ALREADY_IN_PARTY_EN = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}is already in a party."
     val PARTY_COMMAND_PLAYER_ALREADY_IN_PARTY_DE = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}ist bereits in einer Party."
-    val PARTY_COMMAND_PLAYER_ALREADY_INVITED_EN = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}ist bereits in einer Party."
+    val PARTY_COMMAND_PLAYER_ALREADY_INVITED_EN = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}has already been invited."
+    val PARTY_COMMAND_PLAYER_ALREADY_INVITED_DE = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}wurde bereits eingeladen."
     val PARTY_COMMAND_CANT_JOIN_EN = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}doesn't have a public party."
     val PARTY_COMMAND_CANT_JOIN_DE = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}hat keine öffentliche Party."
     val PARTY_COMMAND_PLAYER_HAS_NO_PARTY_EN = "${PARTY_PREFIX}${KColors.MEDIUMPURPLE}%playerName% ${KColors.TOMATO}has no party."
@@ -302,7 +305,13 @@ object Localization {
     val SETTINGSGUI_CHATINFIGHT_NAME_DE = "${KColors.DODGERBLUE}Chat im Kampf"
     val SETTINGSGUI_CHAT_NAME = "${KColors.DODGERBLUE}Chat"
 
-    // Tournament
+    // TournamentCommand
+    val TOURNAMENTCOMMAND_PUBLIC_TOURNAMENT_EXISTS_EN = "${PREFIX}${KColors.TOMATO}There's already a running tournament."
+    val TOURNAMENTCOMMAND_PUBLIC_TOURNAMENT_EXISTS_DE = "${PREFIX}${KColors.TOMATO}Es läuft bereits ein Turnier."
+    val TOURNAMENTCOMMAND_ALREADY_IN_EN = "${PREFIX}${KColors.TOMATO}You're already in a tournament."
+    val TOURNAMENTCOMMAND_ALREADY_IN_DE = "${PREFIX}${KColors.TOMATO}Du bist bereits in einem Turnier."
+    val TOURNAMENTCOMMAND_NOT_IN_EN = "${PREFIX}${KColors.TOMATO}You aren't in a tournament."
+    val TOURNAMENTCOMMAND_NOT_IN_DE = "${PREFIX}${KColors.TOMATO}Du bist in keinem Turnier."
 
     // Queue
     val QUEUE_JOINED_EN = "${PREFIX}Entered queue for ${KColors.MEDIUMPURPLE}%kit%"

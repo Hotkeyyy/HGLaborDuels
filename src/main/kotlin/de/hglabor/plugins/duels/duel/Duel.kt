@@ -134,7 +134,10 @@ class Duel {
         alivePlayers.forEach { player ->
             player.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 40, 200))
 
-            async { val stats = PlayerStats.get(player); stats.addTotalGame() }
+            async {
+                val stats = PlayerStats.get(player); stats.addTotalGame()
+                StaffData.followedPlayerFromStaff
+            }
         }
 
         arena.pasteSchematic()

@@ -38,10 +38,10 @@ object ChallengeCommand : CommandExecutor {
                 if (args.size == 1) {
                     val target = Bukkit.getPlayer(args[0])
                     if (target != null) {
-                        /*if (player == target) {
+                        if (player == target) {
                             player.sendLocalizedMessage(Localization.CHALLENGE_COMMAND_CANT_DUEL_SELF_DE, Localization.CHALLENGE_COMMAND_CANT_DUEL_SELF_EN)
                             return false
-                        }*/
+                        }
 
                         Data.openedDuelGUI[player] = target
                         Data.openedKitInventory[player] = Data.KitInventories.DUEL

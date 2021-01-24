@@ -64,13 +64,9 @@ object PartyCommand : CommandExecutor {
                             val party = Party.getOrCreate(player, true)
                             if (party.leader == player)
                                 if (!party.invitedPlayers.contains(target))
-                                    if (!party.players.contains(target))
-                                        party.invitePlayer(target)
-                                    else
-                                        player.sendMessage("der ist schon in de rparty")
+                                    party.invitePlayer(target)
                                 else
-                                    player.sendMessage("du hast den schon eingealden")
-
+                                    player.sendLocalizedMessage(Localization.PARTY_COMMAND_PLAYER_ALREADY_INVITED_DE, Localization.PARTY_COMMAND_PLAYER_ALREADY_INVITED_EN, "%playerName%", target.name)
                         } else
                             player.sendLocalizedMessage(Localization.PARTY_COMMAND_PLAYER_ALREADY_IN_PARTY_DE, Localization.PARTY_COMMAND_PLAYER_ALREADY_IN_PARTY_EN, "%playerName%", target.name)
                     else
@@ -88,7 +84,7 @@ object PartyCommand : CommandExecutor {
                                 else
                                     player.sendLocalizedMessage(Localization.PARTY_COMMAND_CANT_JOIN_DE, Localization.PARTY_COMMAND_CANT_JOIN_EN, "%playerName%", target.name)
                             } else
-                                player.sendLocalizedMessage(Localization.PARTY_COMMAND_PLAYER_HAS_NO_PARTY_DE, Localization.PARTY_COMMAND_PLAYER_HAS_NO_PARTY_DE, "%playerName%", target.name)
+                                player.sendLocalizedMessage(Localization.PARTY_COMMAND_PLAYER_HAS_NO_PARTY_DE, Localization.PARTY_COMMAND_PLAYER_HAS_NO_PARTY_EN, "%playerName%", target.name)
                         else
                             player.sendLocalizedMessage(Localization.PLAYER_NOT_ONLINE_DE, Localization.PLAYER_NOT_ONLINE_EN, "%playerName%", args[1])
                     } else
@@ -103,7 +99,7 @@ object PartyCommand : CommandExecutor {
                                 if (party.players.contains(target)) {
                                     party.kick(target)
                                 } else
-                                    player.sendLocalizedMessage(Localization.PARTY_COMMAND_PLAYER_NOT_IN_OWN_DE, Localization.PARTY_COMMAND_PLAYER_NOT_IN_OWN_DE, "%playerName%", target.name)
+                                    player.sendLocalizedMessage(Localization.PARTY_COMMAND_PLAYER_NOT_IN_OWN_DE, Localization.PARTY_COMMAND_PLAYER_NOT_IN_OWN_EN, "%playerName%", target.name)
                             } else
                                 player.sendLocalizedMessage(Localization.PLAYER_NOT_ONLINE_DE, Localization.PLAYER_NOT_ONLINE_EN, "%playerName%", args[1])
                         } else

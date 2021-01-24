@@ -93,7 +93,7 @@ class Party(val leader: Player) {
         val one = TextComponent("  [")
         one.color = KColors.DARKGRAY
         val text = TextComponent("Click to join")
-        message.color = KColors.DODGERBLUE
+        message.color = KColors.MEDIUMPURPLE
         message.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party join ${leader.name}")
         val two = TextComponent("]")
         two.color = KColors.DARKGRAY

@@ -47,6 +47,7 @@ class PlayerStats(val uuid: UUID) {
         val document = MongoManager.playerStatsCollection.find(Filters.eq("uuid", uuid.toString())).first()
 
         if (document == null) {
+            values["totalGames"] = 0
             values["elo"] = 1000
             values["kills"] = 0
             values["deaths"] = 0

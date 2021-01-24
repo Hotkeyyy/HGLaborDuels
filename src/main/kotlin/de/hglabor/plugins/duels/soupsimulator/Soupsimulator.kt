@@ -150,7 +150,7 @@ class Soupsimulator(val player: Player) {
                 } else {
                     Task = SoupsimulatorTasks.SOUP
                     player.inventory.setItem(i, ItemStack(Material.MUSHROOM_STEW))
-                    player.level = i
+                    player.level = i + 1
                     again = false
                 }
             } while (again)
