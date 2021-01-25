@@ -34,6 +34,9 @@ class Archer : Kit(Kits.ARCHER) {
 
         player.inventory.setItem(1, ItemStack(Material.GOLDEN_APPLE, 8))
 
+        player.inventory.setItem(7, ItemStack(Material.IRON_AXE, 1))
+        player.inventory.setItem(8, ItemStack(Material.OAK_PLANKS, 24))
+
         object : BukkitRunnable() {
             override fun run() {
                 player.inventory.setItem(9, ItemStack(Material.ARROW))

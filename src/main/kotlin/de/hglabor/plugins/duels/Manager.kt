@@ -87,9 +87,9 @@ class Manager : KSpigot() {
 
             val playerSettings = PlayerSettings.get(it)
             playerSettings.update()
-            DataHolder.playerSettings.remove(it)*/
+            DataHolder.playerSettings.remove(it)
 
-            it.sound(Sound.BLOCK_BEACON_DEACTIVATE)
+            it.sound(Sound.BLOCK_BEACON_DEACTIVATE)*/
         }
         MongoManager.disconnect()
     }
@@ -100,7 +100,6 @@ class Manager : KSpigot() {
         OnPlayerChat.enable()
         OnPlayerQuit.enable()
         OnPlayerJoin.enable()
-        OnPlayerDeath.enable()
         OnChallenge.enable()
         OnAccept.enable()
         OnDamage.enable()

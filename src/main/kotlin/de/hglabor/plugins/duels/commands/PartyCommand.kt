@@ -5,6 +5,7 @@ import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.party.Party
 import de.hglabor.plugins.duels.party.Partys.hasParty
 import de.hglabor.plugins.duels.party.Partys.isInParty
+import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
 import org.bukkit.Bukkit
@@ -75,6 +76,7 @@ object PartyCommand : CommandExecutor {
 
                 } else if (args[0].equals("join", true)) {
                     if (!player.isInParty()) {
+                        if (!player.isInFight() && !player.isInSoupsimulator()) {
                         val target = Bukkit.getPlayer(args[1])
                         if (target != null)
                             if (target.hasParty()) {
@@ -87,6 +89,8 @@ object PartyCommand : CommandExecutor {
                                 player.sendLocalizedMessage(Localization.PARTY_COMMAND_PLAYER_HAS_NO_PARTY_DE, Localization.PARTY_COMMAND_PLAYER_HAS_NO_PARTY_EN, "%playerName%", target.name)
                         else
                             player.sendLocalizedMessage(Localization.PLAYER_NOT_ONLINE_DE, Localization.PLAYER_NOT_ONLINE_EN, "%playerName%", args[1])
+                    } else
+                            player.sendLocalizedMessage(Localization.CANT_DO_THAT_RIGHT_NOW_DE, Localization.CANT_DO_THAT_RIGHT_NOW_DE)
                     } else
                         player.sendLocalizedMessage(Localization.PARTY_COMMAND_ALREADY_IN_PARTY_DE, Localization.PARTY_COMMAND_ALREADY_IN_PARTY_EN)
 

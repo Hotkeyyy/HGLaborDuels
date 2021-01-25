@@ -1,6 +1,9 @@
 package de.hglabor.plugins.duels.kits
 
+import de.hglabor.plugins.duels.Manager
 import de.hglabor.plugins.duels.kits.kit.*
+import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.extensions.bukkit.feedSaturate
 import net.axay.kspigot.extensions.bukkit.heal
@@ -9,6 +12,8 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
+import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.scheduler.BukkitTask
 
 enum class KitType { SOUP, POT, NONE }
 enum class Specials { NINJA, NODAMAGE, DEADINWATER, PEARLCOOLDOWN, HITCOOLDOWN }
@@ -25,12 +30,15 @@ enum class Kits {
     NODEBUFF,
     ONEBAR,
     ONLYSWORD,
+    RANDOM,
     SPEED,
     SUMO,
     UNDERWATER;
 
     companion object {
-        val cooldown = hashMapOf<Player, Long>()
+        val cooldownStart = hashMapOf<Player, Long>()
+        val cooldownTime = hashMapOf<Player, Long>()
+        val cooldownTask = hashMapOf<Player, BukkitTask>()
         val queue = hashMapOf<Kits, ArrayList<Player>>()
         val playerQueue = hashMapOf<Player, Kits>()
         val inGame = hashMapOf<Kits, ArrayList<Player>>()
@@ -47,6 +55,12 @@ enum class Kits {
             }
         }
 
+        fun random(): Kits {
+            val kits = values().toMutableList()
+            kits.remove(RANDOM)
+            return kits.random()
+        }
+
         fun enable() {
             Anchor().enable()
             Archer().enable()
@@ -56,14 +70,56 @@ enum class Kits {
             Gladiator().enable()
             IceFishing().enable()
             Ninja().enable()
-            OnlySword().enable()
             NoDebuff().enable()
             Onebar().enable()
+            OnlySword().enable()
+            Random().enable()
             Speed().enable()
             Sumo().enable()
             Underwater().enable()
 
             values().forEach { inGame[it] = arrayListOf(); queue[it] = arrayListOf() }
+        }
+
+        fun setCooldown(player: Player, seconds: Long) {
+            val jetzt: Long = System.currentTimeMillis()
+            cooldownStart[player] = jetzt
+            cooldownTime[player] = seconds
+
+            cooldownTask[player] = object : BukkitRunnable() {
+                override fun run() {
+                    if (player.localization("de"))
+                        player.sendMessage(Localization.CAN_USE_KIT_AGAIN_DE)
+                    else
+                        player.sendMessage(Localization.CAN_USE_KIT_AGAIN_EN)
+                }
+            }.runTaskLater(Manager.INSTANCE, 20 * seconds)
+        }
+
+        fun hasCooldown(player: Player): Boolean {
+            val jetzt: Long = System.currentTimeMillis()
+            if (cooldownStart.containsKey(player)) {
+                val be = cooldownStart[player]
+                val rest: Long = (be!! + (1000 * 13)) - jetzt
+
+                if (rest > 0) {
+                    val second: Int = (rest / 1000).toInt()
+                    val ms = rest % 1000
+                    if (player.localization("de"))
+                        player.sendMessage("${Localization.PREFIX}Du musst noch ${KColors.DODGERBLUE}$second${KColors.DARKGRAY}:${KColors.DODGERBLUE}$ms ${(if (second == 1) " Sekunde" else " Sekunden")} ${KColors.GRAY}warten.")
+                    else
+                        player.sendMessage("${Localization.PREFIX}You still have to wait ${KColors.DODGERBLUE}$second${KColors.DARKGRAY}:${KColors.DODGERBLUE}$ms ${(if (second == 1) " second" else " seconds")}${KColors.GRAY}.")
+                    return true
+                }
+            }
+            return false
+        }
+
+        fun removeCooldown(player: Player) {
+            cooldownTask[player]?.cancel()
+            cooldownTask.remove(player)
+            cooldownTime.remove(player)
+            cooldownStart.remove(player)
         }
 
         fun Player.giveKit(kit: Kits) {

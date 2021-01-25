@@ -3,6 +3,7 @@ package de.hglabor.plugins.duels.guis
 import de.hglabor.plugins.duels.duel.Duel
 import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.kits.Kits.Companion.info
+import de.hglabor.plugins.duels.kits.Kits.Companion.random
 import de.hglabor.plugins.duels.kits.kitMap
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.utils.Data
@@ -19,6 +20,7 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
+import org.bukkit.inventory.ItemStack
 
 object QueueGUI {
     fun open(player: Player) {
@@ -34,16 +36,13 @@ object QueueGUI {
         inventory.setItem(26, itemStack(Material.WHITE_STAINED_GLASS_PANE) { meta { name = null } })
 
         for (kit in Kits.values()) {
-            val itemStack = kitMap[kit]?.itemInGUIs()
-            itemStack?.meta {
-                addLore {
-                    +"§8§m                  "
-                    +"§7In Queue §8» ${KColors.MEDIUMPURPLE}${Kits.queue[kit]?.size}"
-                    +"§7In Game §8» ${KColors.DODGERBLUE}${Kits.inGame[kit]?.size}"
-                }
-            }
-            inventory.addItem(itemStack)
+            val itemStack = getQueueItem(kit)
+            if (kit == Kits.RANDOM)
+                inventory.setItem(31, itemStack)
+            else
+                inventory.addItem(itemStack)
         }
+
         Data.openedQueue[player] = inventory
         player.openInventory(inventory)
     }
@@ -53,22 +52,29 @@ object QueueGUI {
             val blacklistedSlots = arrayListOf(9, 18, 17, 26)
             Data.openedQueue.keys.forEach {
                 var i = 10
-                for (kit in Kits.values()) {
-                    val itemStack = kitMap[kit]?.itemInGUIs()
-                    itemStack?.meta {
-                        addLore {
-                            +"§8§m                  "
-                            +"§7In Queue §8» ${KColors.MEDIUMPURPLE}${Kits.queue[kit]?.size}"
-                            +"§7In Game §8» ${KColors.DODGERBLUE}${Kits.inGame[kit]?.size}"
-                        }
-                    }
-                    Data.openedQueue[it]?.setItem(i, itemStack)
-                    i++
-                    while (blacklistedSlots.contains(i))
-                        i++
+                val kits = Kits.values().toMutableList()
+                kits.remove(Kits.RANDOM)
+                for (kit in kits) {
+                    Data.openedQueue[it]?.setItem(i, getQueueItem(kit))
+
+                    do { i++ } while (blacklistedSlots.contains(i))
                 }
+                Data.openedQueue[it]?.setItem(31, getQueueItem(Kits.RANDOM))
             }
         }
+    }
+
+    fun getQueueItem(kit: Kits) : ItemStack {
+        val itemStack = kitMap[kit]?.itemInGUIs()!!
+        itemStack.meta {
+            addLore {
+                +"§8§m                  "
+                +"§7In Queue §8» ${KColors.MEDIUMPURPLE}${Kits.queue[kit]?.size}"
+                if (kit != Kits.RANDOM)
+                +"§7In Game §8» ${KColors.DODGERBLUE}${Kits.inGame[kit]?.size}"
+            }
+        }
+        return itemStack
     }
 
     fun enable() {
@@ -112,8 +118,11 @@ object QueueGUI {
     }
 
     private fun startNewDuelIfEnoughPlayersInQueue(kit: Kits) {
-        if (Kits.queue[kit]!!.size > 1) {
-            Duel.create(Kits.queue[kit]?.first()!!, Kits.queue[kit]?.last()!!, kit)
-        }
+        var finalKit = kit
+        if (finalKit == Kits.RANDOM)
+            finalKit = random()
+
+        if (Kits.queue[kit]!!.size >= 2)
+            Duel.create(Kits.queue[kit]?.first()!!, Kits.queue[kit]?.last()!!, finalKit)
     }
 }

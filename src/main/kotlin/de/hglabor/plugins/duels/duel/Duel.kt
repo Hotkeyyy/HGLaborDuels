@@ -122,6 +122,7 @@ class Duel {
                 Kits.inGame[kit]?.add(it)
                 Kits.playerQueue.remove(it)
                 Kits.queue[kit]!!.remove(it)
+                Kits.queue[Kits.random()]?.remove(it)
             }
             alivePlayers.filter { it.isInSoupsimulator() }.forEach { Soupsimulator.forceStop(it) }
             Data.duelFromID[ID] = this
@@ -203,11 +204,13 @@ class Duel {
     }
 
     fun playerDied(player: Player, germanMessage: String, englishMessage: String) {
+        Data.inFight.remove(player)
         alivePlayers.remove(player)
         val newAlivePlayers = alivePlayers
         alivePlayers = newAlivePlayers
         savePlayerdata(player)
         Kits.inGame[kit]?.remove(player)
+        Kits.removeCooldown(player)
 
         sendMessage(germanMessage, englishMessage)
 
@@ -222,8 +225,10 @@ class Duel {
     }
 
     fun playerLeft(player: Player) {
+        Data.inFight.remove(player)
         alivePlayers.remove(player)
         Kits.inGame[kit]?.remove(player)
+        Kits.removeCooldown(player)
         savePlayerdata(player)
         sendMessage("${teamColor(player)}${player.name} ${KColors.GRAY}hat den Kampf verlassen.",
             "${teamColor(player)}${player.name} ${KColors.GRAY}left the fight.")
@@ -373,7 +378,7 @@ class Duel {
 
     fun stop() {
         state = GameState.ENDED
-        alivePlayers.forEach { savePlayerdata(it); Kits.inGame[kit]?.remove(it) }
+        alivePlayers.forEach { savePlayerdata(it); Kits.inGame[kit]?.remove(it); Kits.removeCooldown(it) }
         sendResults()
 
         taskRunLater(45, true) {
@@ -386,13 +391,26 @@ class Duel {
     }
 
     private fun sendResults() {
+        var teamOnePlayers = ""
+        for (players in teamOne) {
+            teamOnePlayers += "${KColors.LIGHTSKYBLUE}${players.name}"
+            if (teamOne.last() != players)
+                teamOnePlayers += "§8, "
+        }
+        var teamTwoPlayers = ""
+        for (players in teamTwo) {
+            teamTwoPlayers += "${KColors.HOTPINK}${players.name}"
+            if (teamOne.last() != players)
+                teamOnePlayers += "§8, "
+        }
+
         sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                        ")
         if (winner == teamOne) {
-            sendMessage("${KColors.SPRINGGREEN}Winner: ${KColors.DEEPSKYBLUE}Team One")
-            sendMessage("${KColors.TOMATO}Loser: ${KColors.DEEPPINK}Team Two")
+            sendMessage("${KColors.SPRINGGREEN}Winner: ${KColors.DEEPSKYBLUE}Team One §8($teamOnePlayers§8)")
+            sendMessage("${KColors.TOMATO}Loser: ${KColors.DEEPPINK}Team Two §8($teamTwoPlayers§8)")
         } else {
-            sendMessage("${KColors.SPRINGGREEN}Winner: ${KColors.DEEPPINK}Team Two")
-            sendMessage("${KColors.TOMATO}Loser: ${KColors.DEEPSKYBLUE}Team One")
+            sendMessage("${KColors.SPRINGGREEN}Winner: ${KColors.DEEPPINK}Team Two §8($teamTwoPlayers§8)")
+            sendMessage("${KColors.TOMATO}Loser: ${KColors.DEEPSKYBLUE}Team One §8($teamOnePlayers§8)")
         }
         sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                        ")
     }

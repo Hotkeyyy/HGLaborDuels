@@ -6,6 +6,7 @@ import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
+import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -23,12 +24,12 @@ object SpecCommand : CommandExecutor {
                         if (t.isInFight()) {
                             if (PlayerSettings.get(t).ifAllowSpectators())
                                 Data.duelFromPlayer(t).addSpectator(player, true)
-                            //else
+                            else
+                                player.sendLocalizedMessage(Localization.SPEC_COMMAND_DENIED_DE, Localization.SPEC_COMMAND_DENIED_EN, "%playerName%", t.displayName)
 
                         } else {
                             if (player.localization("de"))
-                                player.sendMessage(
-                                    Localization.SPEC_COMMAND_PLAYER_NOT_FIGHTING_DE.replace(
+                                player.sendMessage(Localization.SPEC_COMMAND_PLAYER_NOT_FIGHTING_DE.replace(
                                         "%playerName%", t.displayName))
                             else
                                 player.sendMessage(

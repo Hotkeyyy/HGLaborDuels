@@ -129,7 +129,7 @@ object PlayerSettingsGUI {
                             +"${KColors.MEDIUMPURPLE}Keine"
                             +"${KColors.DIMGRAY}Alle"
                             +"${KColors.DIMGRAY}Gegner"
-                        } else if (settings.chatInFight() == PlayerSettings.Companion.Chat.ENEMY) {
+                        } else if (settings.chatInFight() == PlayerSettings.Companion.Chat.FIGHT) {
                             +"${KColors.MEDIUMPURPLE}Gegner"
                             +"${KColors.DIMGRAY}Keine"
                             +"${KColors.DIMGRAY}Alle"
@@ -143,7 +143,7 @@ object PlayerSettingsGUI {
                             +"${KColors.MEDIUMPURPLE}None"
                             +"${KColors.DIMGRAY}All"
                             +"${KColors.DIMGRAY}Enemy"
-                        } else if (settings.chatInFight() == PlayerSettings.Companion.Chat.ENEMY) {
+                        } else if (settings.chatInFight() == PlayerSettings.Companion.Chat.FIGHT) {
                             +"${KColors.MEDIUMPURPLE}Enemy"
                             +"${KColors.DIMGRAY}None"
                             +"${KColors.DIMGRAY}All"
@@ -191,8 +191,8 @@ object PlayerSettingsGUI {
 
                     if (it.currentItem!!.type == Material.WRITABLE_BOOK) {
                         if (settings.chatInFight() == PlayerSettings.Companion.Chat.ALL) 
-                            settings.setChatInFight(PlayerSettings.Companion.Chat.ENEMY)
-                        else if (settings.chatInFight() == PlayerSettings.Companion.Chat.ENEMY)
+                            settings.setChatInFight(PlayerSettings.Companion.Chat.FIGHT)
+                        else if (settings.chatInFight() == PlayerSettings.Companion.Chat.FIGHT)
                             settings.setChatInFight(PlayerSettings.Companion.Chat.NONE)
                         else if (settings.chatInFight() == PlayerSettings.Companion.Chat.NONE)
                         settings.setChatInFight(PlayerSettings.Companion.Chat.ALL)

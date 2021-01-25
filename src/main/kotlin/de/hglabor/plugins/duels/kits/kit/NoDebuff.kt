@@ -1,18 +1,14 @@
 package de.hglabor.plugins.duels.kits.kit
 
-import de.hglabor.plugins.duels.Manager
 import de.hglabor.plugins.duels.arenas.ArenaTags
 import de.hglabor.plugins.duels.duel.Duel
 import de.hglabor.plugins.duels.guis.ChooseKitGUI
 import de.hglabor.plugins.duels.kits.*
-import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.party.Party
 import de.hglabor.plugins.duels.tournament.Tournament
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.duel
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
-import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
-import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.events.isRightClick
 import net.axay.kspigot.items.itemStack
@@ -27,7 +23,6 @@ import org.bukkit.potion.PotionData
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.potion.PotionType
-import org.bukkit.scheduler.BukkitRunnable
 
 class NoDebuff : Kit(Kits.NODEBUFF) {
 
@@ -92,6 +87,7 @@ class NoDebuff : Kit(Kits.NODEBUFF) {
                         Tournament.createPublic(it.player, kits)
                 }
             ))
+        kitMap[kits] = this
 
         listen<PlayerInteractEvent> {
             val player = it.player
@@ -100,39 +96,12 @@ class NoDebuff : Kit(Kits.NODEBUFF) {
                     val duel = Data.duelFromPlayer(player)
                     if (kitMap[duel.kit]!!.specials.contains(Specials.PEARLCOOLDOWN)) {
                         if (player.inventory.itemInMainHand.type == Material.ENDER_PEARL) {
-                            val jetzt: Long = System.currentTimeMillis()
-                            if (Kits.cooldown.containsKey(player)) {
-                                val be = Kits.cooldown[player]
-                                val rest: Long = (be!! + (1000 * 5)) - jetzt
-
-                                if (rest > 0) {
-                                    val second: Int = (rest / 1000).toInt()
-                                    val ms = rest % 1000
-                                    if (player.localization("de"))
-                                        player.sendMessage("${Localization.PREFIX}Du musst noch ${KColors.DODGERBLUE}$second${KColors.DARKGRAY}:${KColors.DODGERBLUE}$ms${(if (second == 1) " Sekunde" else " Sekunden")} ${KColors.GRAY}warten.")
-                                    else
-                                        player.sendMessage("${Localization.PREFIX}You still have to wait ${KColors.DODGERBLUE}$second${KColors.DARKGRAY}:${KColors.DODGERBLUE}$ms${(if (second == 1) " second" else " seconds")}${KColors.GRAY}.")
-                                    it.isCancelled = true
-                                    return@listen
-                                }
-                            }
-                            Kits.cooldown[player] = jetzt
-
-                            object : BukkitRunnable() {
-                                override fun run() {
-                                    if (player.localization("de"))
-                                        player.sendMessage(Localization.CAN_USE_KIT_AGAIN_DE)
-                                    else
-                                        player.sendMessage(Localization.CAN_USE_KIT_AGAIN_EN)
-                                }
-                            }.runTaskLater(Manager.INSTANCE, 20 * 8)
-
+                            if (!Kits.hasCooldown(player))
+                                Kits.setCooldown(player, 15)
                         }
                     }
                 }
             }
         }
-
-        kitMap[kits] = this
     }
 }

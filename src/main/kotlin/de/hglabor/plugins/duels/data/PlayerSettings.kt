@@ -21,7 +21,7 @@ class PlayerSettings(val player: Player) {
         }
 
         enum class Knockback { OLD, NEW }
-        enum class Chat { ALL, ENEMY, NONE }
+        enum class Chat { ALL, FIGHT, NONE }
     }
 
     private var values = mutableMapOf<String, Any>()

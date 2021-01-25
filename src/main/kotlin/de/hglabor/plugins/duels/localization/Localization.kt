@@ -107,8 +107,8 @@ object Localization {
     val SPEC_COMMAND_PLAYER_NOT_FIGHTING_DE = "${PREFIX}${KColors.TOMATO}%playerName% ist nicht am Kämpfen."
     val SPEC_COMMAND_HELP_EN = "${PREFIX}${KColors.GRAY}Please use ${KColors.DODGERBLUE}/spec ${KColors.DARKGRAY}<${KColors.DEEPSKYBLUE}Player${KColors.DARKGRAY}>"
     val SPEC_COMMAND_HELP_DE = "${PREFIX}${KColors.GRAY}Bitte benutze ${KColors.DODGERBLUE}/spec ${KColors.DARKGRAY}<${KColors.DEEPSKYBLUE}Spieler${KColors.DARKGRAY}>"
-    val SPEC_COMMAND_DENIED_EN = "${PREFIX}${KColors.GRAY}Bitte benutze ${KColors.DODGERBLUE}/spec ${KColors.DARKGRAY}<${KColors.DEEPSKYBLUE}Spieler${KColors.DARKGRAY}>"
-    val SPEC_COMMAND_DENIED_DE = "${PREFIX}${KColors.GRAY}Bitte benutze ${KColors.DODGERBLUE}/spec ${KColors.DARKGRAY}<${KColors.DEEPSKYBLUE}Spieler${KColors.DARKGRAY}>"
+    val SPEC_COMMAND_DENIED_EN = "${PREFIX}${KColors.TOMATO}%playerName% doesnt allow spectators."
+    val SPEC_COMMAND_DENIED_DE = "${PREFIX}${KColors.TOMATO}%playerName% möchte nicht, dass man zuguckt."
 
     // StatsCommand
     val STATS_COMMAND_PLAYER_NOT_FOUND_EN = "${PREFIX}${KColors.TOMATO}Player %playerName% not found."

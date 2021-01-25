@@ -12,7 +12,6 @@ import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
 import de.hglabor.plugins.staff.utils.StaffData.isInStaffMode
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
-import net.axay.kspigot.extensions.bukkit.getHandItem
 import net.axay.kspigot.extensions.events.isRightClick
 import net.axay.kspigot.runnables.async
 import net.axay.kspigot.utils.hasMark
@@ -22,30 +21,32 @@ import org.bukkit.inventory.EquipmentSlot
 object OnInteractWithItem {
     fun enable() {
         listen<PlayerInteractEvent> {
-            if (it.action.isRightClick) {
+            if(it.hand == EquipmentSlot.OFF_HAND) return@listen
 
+            if (it.action.isRightClick) {
+                val item = it.player.inventory.itemInMainHand
                 // Staff things
-                if (it.player.getHandItem(EquipmentSlot.HAND)?.hasMark("stopspec")!!) {
+                if (item.hasMark("stopspec")) {
                     it.isCancelled = true
                     Data.duelFromSpec[it.player]?.removeSpectator(it.player, true, true)
                 }
-                if (it.player.getHandItem(EquipmentSlot.HAND)?.hasMark("createarenaitem")!!) {
+                if (item.hasMark("createarenaitem")) {
                     it.isCancelled = true
                     it.player.performCommand("arena create")
                 }
 
                 // Main Inventory things
-                if (it.player.getHandItem(EquipmentSlot.HAND)?.hasMark("settings")!!) {
+                if (item.hasMark("settings")) {
                     it.isCancelled = true
                     PlayerSettingsGUI.open(it.player)
                 }
 
-                if (it.player.getHandItem(EquipmentSlot.HAND)?.hasMark("queue")!!) {
+                if (item.hasMark("queue")) {
                     it.isCancelled = true
                     QueueGUI.open(it.player)
                 }
 
-                if (it.player.getHandItem(EquipmentSlot.HAND)?.hasMark("createparty")!!) {
+                if (item.hasMark("createparty")) {
                     it.isCancelled = true
                     Party(it.player).create(true)
                     async { PartyInventory.giveItems(it.player) }
@@ -53,7 +54,7 @@ object OnInteractWithItem {
 
                 // Party Inventory things
 
-                if (it.player.getHandItem(EquipmentSlot.HAND)?.hasMark("partygame")!!) {
+                if (item.hasMark("partygame")) {
                     it.isCancelled = true
                     if (Party.get(it.player)?.players?.size!! > 1)
                         PartyGameGUI.open(it.player)
@@ -62,7 +63,7 @@ object OnInteractWithItem {
                             "${Localization.PARTY_PREFIX}${KColors.TOMATO}There aren't enough players in your party.")
                 }
 
-                if (it.player.getHandItem(EquipmentSlot.HAND)?.hasMark("partyinfo")!!) {
+                if (item.hasMark("partyinfo")) {
                     it.isCancelled = true
                     Party.get(it.player)?.sendInfo(it.player)
                 }

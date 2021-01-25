@@ -16,7 +16,6 @@ import org.bukkit.scoreboard.Scoreboard
 import org.bukkit.scoreboard.Team
 
 object LobbyScoreboard {
-    val hasScoreboard = arrayListOf<Player>()
 
     fun setScoreboard(player: Player) {
         val sb = Bukkit.getScoreboardManager()!!.newScoreboard
@@ -46,12 +45,6 @@ object LobbyScoreboard {
 
         obj.getScore(updateTeam(sb, "hglabor", "${KColors.GRAY}${KColors.ITALIC}HGLabor.de",
             "", ChatColor.WHITE)).score = 0
-
-        player.scoreboard = sb
-    }
-
-    private fun setEmptyScoreBoard(player: Player) {
-        val sb = Bukkit.getScoreboardManager()!!.newScoreboard
 
         player.scoreboard = sb
     }
@@ -117,7 +110,7 @@ object LobbyScoreboard {
                     else
                         StaffScoreboard.setScoreboard(all)
                 else if (all.isInFight())
-                   setEmptyScoreBoard(all)
+                   FightSB.setScoreboard(Data.duelFromPlayer(all), all)
                 else
                     updateScoreboard(all)
             }
