@@ -4,8 +4,10 @@ import de.hglabor.plugins.duels.data.DataHolder
 import de.hglabor.plugins.duels.data.PlayerStats
 import de.hglabor.plugins.duels.duel.Duel
 import de.hglabor.plugins.duels.duel.GameState
+import de.hglabor.plugins.duels.kits.Kit
 import de.hglabor.plugins.duels.kits.Kits.Companion.info
 import de.hglabor.plugins.duels.kits.Specials
+import de.hglabor.plugins.duels.kits.kitMap
 import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
@@ -13,8 +15,11 @@ import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.runnables.async
 import org.bukkit.Bukkit
+import org.bukkit.Material
+import org.bukkit.entity.AbstractArrow
 import org.bukkit.entity.Arrow
 import org.bukkit.entity.Player
+import org.bukkit.entity.Trident
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
@@ -22,32 +27,26 @@ import org.bukkit.event.entity.EntityDamageEvent
 
 object OnDamage {
 
+    val NERFED_ITEMS = arrayListOf("_PICKAXE", "_AXE", "_SHOVEL", "TRIDENT")
+    val HANDLED_CAUSES =
+        arrayListOf(EntityDamageEvent.DamageCause.ENTITY_ATTACK, EntityDamageEvent.DamageCause.PROJECTILE)
+
     fun enable() {
         listen<EntityDamageEvent> {
             if (it.entity is Player) {
                 val player = it.entity as Player
+                val cause = it.cause
                 if (player.isInFight()) {
                     val duel = Data.duelFromPlayer(player)
                     if (duel.state == GameState.RUNNING) {
                         if (duel.kit.info.specials.contains(Specials.NODAMAGE))
                             it.damage = 0.0
-
-                        if (it.cause != EntityDamageEvent.DamageCause.ENTITY_ATTACK &&
-                            it.cause != EntityDamageEvent.DamageCause.PROJECTILE
-                        )
+                        if (!HANDLED_CAUSES.contains(cause)) {
                             if (player.health - it.damage <= 0.0) {
                                 it.isCancelled = true
-                                duel.playerDied(
-                                    player,
-                                    getDeathMessageDE(duel, player, player.lastDamageCause!!.cause),
-                                    getDeathMessageEN(duel, player, player.lastDamageCause!!.cause)
-                                )
-
-                                if (duel.lastAttackerOfPlayer[player] != null) {
-                                    val killerStats = PlayerStats.get(duel.lastAttackerOfPlayer[player]!!)
-                                    killerStats.addKill()
-                                }
+                                playerDied(duel, player, cause)
                             }
+                        }
                     } else {
                         it.isCancelled = true
                     }
@@ -61,63 +60,17 @@ object OnDamage {
         listen<EntityDamageByEntityEvent>(priority = EventPriority.HIGHEST) {
             if (it.entity is Player) {
                 val player = it.entity as Player
-                if (it.cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-                    if (it.damager is Player) {
-                        val itemName: String = player.inventory.itemInMainHand.type.name
+                if (player.isInFight()) {
+                    var damager: Player? = null
+                    var damage = it.damage
+                    val duel = Data.duelFromPlayer(player)
 
-                        if (player.isInFight() && (it.damager as Player).isInFight()) {
-                            val damager = it.damager as Player
-                            var damage = it.damage
-                            val duel = Data.duelFromPlayer(player)
-
-                            if (duel.state == GameState.STARTING)
-                                it.isCancelled = true
-
-                            if (duel.state == GameState.RUNNING) {
-                                if (!duel.kit.info.specials.contains(Specials.HITCOOLDOWN)) {
-                                    if (itemName.endsWith("_PICKAXE") || itemName.endsWith("_AXE") || itemName.endsWith(
-                                            "_SHOVEL"
-                                        ) || itemName.endsWith("TRIDENT")
-                                    ) {
-                                        damage = it.damage * 0.25
-
-                                    } else if (itemName.endsWith("_SWORD")) {
-                                        damage = it.damage * 0.5
-                                    }
-
-                                    if (duel.kit.info.specials.contains(Specials.NODAMAGE))
-                                        damage = 0.0
-
-                                    if (!it.isCancelled) {
-                                        duel.hits[damager] = duel.hits[it.damager]!! + 1
-
-                                        duel.lastHitOfPlayer[damager] = player
-                                        duel.lastAttackerOfPlayer[player] = damager
-
-                                        duel.currentCombo[damager] = duel.currentCombo[it.damager]!! + 1
-                                        duel.currentCombo[player] = 0
-                                        if (duel.longestCombo[damager]!! < duel.currentCombo[damager]!!) {
-                                            duel.longestCombo[damager] = duel.currentCombo[damager]!!
-                                        }
-
-                                        async { DataHolder.playerStats[player]?.addTotalHit() }
-                                    }
-
-                                    it.damage = damage
-
-                                    if (player.health - damage <= 0.0) {
-                                        it.isCancelled = true
-                                        duel.playerDied(
-                                            player,
-                                            getDeathMessageDE(duel, player, player.lastDamageCause!!.cause),
-                                            getDeathMessageEN(duel, player, player.lastDamageCause!!.cause)
-                                        )
-
-                                        if (duel.lastAttackerOfPlayer[player] != null) {
-                                            val killerStats = PlayerStats.get(duel.lastAttackerOfPlayer[player]!!)
-                                            killerStats.addKill()
-                                        }
-                                    }
+                    if (it.cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+                        if (it.damager is Player) {
+                            damager = it.damager as Player
+                            if (damager.isInFight()) {
+                                if (duel.state == GameState.RUNNING) {
+                                    damage = getFinalDamage(kitMap[duel.kit]!!, damage, damager.inventory.itemInMainHand.type)
                                 } else {
                                     it.isCancelled = true
                                 }
@@ -125,55 +78,81 @@ object OnDamage {
                                 it.isCancelled = true
                             }
                         }
-                    }
+                    } else if (it.cause == EntityDamageEvent.DamageCause.PROJECTILE) {
+                        if (it.damager is Arrow || it.damager is Trident) {
+                            val projectile: AbstractArrow
+                            if (it.damager is Arrow) {
+                                projectile = it.damager as Arrow
+                                damage *= 0.67
+                            } else
+                                projectile = it.damager as Trident
 
-                } else if (it.cause == EntityDamageEvent.DamageCause.PROJECTILE) {
-                    val arrow = it.damager as Arrow
-                    if (arrow.shooter is Player) {
-                        val damager = arrow.shooter as Player
-                        if (player.isInFight() && damager.isInFight()) {
-                            val duel = Data.duelFromPlayer(player)
-                            val damage = it.damage * 0.67
-                            it.damage = damage
+                            if (projectile.shooter is Player) {
+                                damager = projectile.shooter as Player
+                                if (!damager.isInFight())
+                                    it.isCancelled = true
+                                if (duel.state != GameState.RUNNING)
+                                    it.isCancelled = true
 
-                            if (player.health - damage <= 0.0) {
                                 it.isCancelled = true
-                                duel.playerDied(
-                                    player,
-                                    "${duel.teamColor(player)}${player.name} ${KColors.GRAY}wurde von ${
-                                        duel.teamColor(
-                                            damager
-                                        )
-                                    }${damager.name} ${KColors.GRAY}erschossen",
-                                    "${duel.teamColor(player)}${player.name} ${KColors.GRAY}was shot by ${
-                                        duel.teamColor(
-                                            damager
-                                        )
-                                    }${damager.name} ${KColors.GRAY}"
-                                )
-
-                                val killerStats = PlayerStats.get(damager)
-                                killerStats.addKill()
                             }
                         }
                     }
-                }
-            }
+                    if (!it.isCancelled) {
+                        it.damage = damage
+                        if (damager != null) {
+                            duel.hits[damager] = duel.hits[damager]!! + 1
 
+                            duel.lastHitOfPlayer[damager] = player
+                            duel.lastAttackerOfPlayer[player] = damager
+
+                            duel.currentCombo[damager] = duel.currentCombo[damager]!! + 1
+                            duel.currentCombo[player] = 0
+                            if (duel.longestCombo[damager]!! < duel.currentCombo[damager]!!) {
+                                duel.longestCombo[damager] = duel.currentCombo[damager]!!
+                            }
+
+                            async { DataHolder.playerStats[damager]?.addTotalHit() }
+                        }
+
+                        if (player.health - damage <= 0.0) {
+                            it.isCancelled = true
+                            playerDied(duel, player, it.cause)
+                        }
+                    }
+                }
+            } else {
+                it.isCancelled = true
+            }
         }
+    }
+
+    fun playerDied(duel: Duel, player: Player, cause: EntityDamageEvent.DamageCause) {
+        duel.playerDied(player, getDeathMessageDE(duel, player, cause), getDeathMessageEN(duel, player, cause))
+
+        if (duel.lastAttackerOfPlayer[player] != null)
+            PlayerStats.get(duel.lastAttackerOfPlayer[player]!!).addKill()
+    }
+
+    fun getFinalDamage(kit: Kit, damage: Double, material: Material): Double {
+        val itemName = material.name
+        var finalDamage = damage
+
+
+        if (kit.specials.contains(Specials.NODAMAGE))
+            finalDamage = 0.0
+        if (itemName.contains("_SWORD"))
+            finalDamage *= 0.5
+        for (nerfedItem in NERFED_ITEMS)
+            if (itemName.endsWith(nerfedItem))
+                finalDamage *= 0.2
+
+        return finalDamage
     }
 
     fun getDeathMessageDE(duel: Duel, player: Player, damageCause: EntityDamageEvent.DamageCause): String {
         var deathMessage: String
-        if (damageCause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-            if (duel.lastAttackerOfPlayer[player] != null) {
-                deathMessage =
-                    "${duel.teamColor(player)}${player.name} ${KColors.GRAY}wurde von ${duel.teamColor(player)}${duel.lastAttackerOfPlayer[player]?.name} ${KColors.GRAY}getötet."
-                val killerStats = PlayerStats.get(duel.lastAttackerOfPlayer[player]!!)
-                killerStats.addKill()
-                return deathMessage
-            }
-        }
+
         when (damageCause) {
             EntityDamageEvent.DamageCause.FALL ->
                 deathMessage =
@@ -187,21 +166,21 @@ object OnDamage {
                 deathMessage = "${duel.teamColor(player)}${player.name} ${KColors.GRAY}ist erstickt."
             EntityDamageEvent.DamageCause.PROJECTILE ->
                 deathMessage = "${duel.teamColor(player)}${player.name} ${KColors.GRAY}wurde erschossen xd"
-            else ->
-                deathMessage = "${duel.teamColor(player)}${player.name} ${KColors.GRAY}ist gestorben."
+            EntityDamageEvent.DamageCause.ENTITY_ATTACK -> {
+                val killer = duel.lastAttackerOfPlayer[player]!!
+                deathMessage ="${duel.teamColor(player)}${player.name} ${KColors.GRAY}wurde von ${duel.teamColor(killer)}${killer.name} ${KColors.GRAY}getötet."
+            }
+            EntityDamageEvent.DamageCause.PROJECTILE -> {
+                val killer = duel.lastAttackerOfPlayer[player]!!
+                deathMessage ="${duel.teamColor(player)}${player.name} ${KColors.GRAY}wurde von ${duel.teamColor(killer)}${killer.name} ${KColors.GRAY}erschossen."
+            }
+            else -> deathMessage = "${duel.teamColor(player)}${player.name} ${KColors.GRAY}ist gestorben."
         }
         return deathMessage
     }
 
     fun getDeathMessageEN(duel: Duel, player: Player, damageCause: EntityDamageEvent.DamageCause): String {
         var deathMessage: String
-        if (damageCause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-            if (duel.lastAttackerOfPlayer[player] != null) {
-                deathMessage =
-                    "${duel.teamColor(player)}${player.name} ${KColors.GRAY}was killed by ${duel.teamColor(duel.lastAttackerOfPlayer[player]!!)}${duel.lastAttackerOfPlayer[player]?.name}${KColors.GRAY}."
-                return deathMessage
-            }
-        }
         when (damageCause) {
             EntityDamageEvent.DamageCause.FALL ->
                 deathMessage = "${duel.teamColor(player)}${player.name} ${KColors.GRAY}fell too far."
@@ -213,9 +192,18 @@ object OnDamage {
                 deathMessage = "${duel.teamColor(player)}${player.name} ${KColors.GRAY}suffocated."
             EntityDamageEvent.DamageCause.PROJECTILE ->
                 deathMessage = "${duel.teamColor(player)}${player.name} ${KColors.GRAY}was shot xd"
+            EntityDamageEvent.DamageCause.ENTITY_ATTACK -> {
+                val killer = duel.lastAttackerOfPlayer[player]!!
+                deathMessage ="${duel.teamColor(player)}${player.name} ${KColors.GRAY}was killed by ${duel.teamColor(killer)}${killer.name} ${KColors.GRAY}."
+            }
+            EntityDamageEvent.DamageCause.PROJECTILE -> {
+                val killer = duel.lastAttackerOfPlayer[player]!!
+                deathMessage ="${duel.teamColor(player)}${player.name} ${KColors.GRAY}was shot by ${duel.teamColor(killer)}${killer.name} ${KColors.GRAY}."
+            }
             else ->
                 deathMessage = "${duel.teamColor(player)}${player.name} ${KColors.GRAY}died."
         }
         return deathMessage
     }
+
 }

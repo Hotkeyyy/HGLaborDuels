@@ -101,7 +101,7 @@ class PlayerStats(val uuid: UUID) {
         values["soupsimulatorHighscore"] = score
     }
 
-    private fun toDocument(): Document {
+    fun toDocument(): Document {
         val document = Document("uuid", uuid.toString())
         values.forEach(document::append)
         return document

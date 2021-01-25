@@ -76,7 +76,7 @@ class Arena(var loc: Pair<Int, Int>, val arenaName: String) {
                 block.type = Material.AIR
             }
         }
-        //Data.usedLocationMultipliersXZ.remove(loc)
+        Data.usedLocationMultipliersXZ.remove(loc)
     }
 }
 

@@ -1,6 +1,7 @@
 package de.hglabor.plugins.duels.commands
 
 import de.hglabor.plugins.duels.data.PlayerStats
+import de.hglabor.plugins.duels.database.MongoManager
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
@@ -23,7 +24,25 @@ object StatsCommand : CommandExecutor {
             var target: OfflinePlayer
             var targetIsOtherPlayer = false
 
+            /* player.sendMessage("${KColors.TOMATO}Stats are disbaled until the final release")
+            return false*/
+
             if (args.size == 1) {
+                if (args[0].equals("reset", true)) {
+                    MongoManager.playerStatsCollection.drop()
+                    return true
+                }
+
+                if (args[0].equals("yes", true)) {
+                    player.sendMessage(PlayerStats.get(player).toDocument().toString())
+                    return true
+                }
+
+                if (args[0].equals("add", true)) {
+                    player.sendMessage("d")
+                    return true
+                }
+
                 targetName = args[0]
                 target = Bukkit.getOfflinePlayer(targetName)
                 if (PlayerStats.exist(target.uniqueId)) {

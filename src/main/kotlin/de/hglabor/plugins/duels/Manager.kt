@@ -3,11 +3,15 @@ package de.hglabor.plugins.duels
 import de.hglabor.plugins.duels.arenas.ArenaTags
 import de.hglabor.plugins.duels.arenas.Arenas
 import de.hglabor.plugins.duels.commands.*
+import de.hglabor.plugins.duels.data.DataHolder
+import de.hglabor.plugins.duels.data.PlayerSettings
+import de.hglabor.plugins.duels.data.PlayerStats
 import de.hglabor.plugins.duels.database.MongoManager
 import de.hglabor.plugins.duels.duel.overview.DuelPlayerDataOverviewGUI
 import de.hglabor.plugins.duels.duel.overview.DuelTeamOverviewGUI
 import de.hglabor.plugins.duels.eventmanager.*
 import de.hglabor.plugins.duels.eventmanager.arena.CreateArenaListener
+import de.hglabor.plugins.duels.eventmanager.arena.OnChunkUnload
 import de.hglabor.plugins.duels.eventmanager.duel.*
 import de.hglabor.plugins.duels.eventmanager.soupsimulator.SoupsimulatorEvents
 import de.hglabor.plugins.duels.functionality.SoupHealing
@@ -81,7 +85,7 @@ class Manager : KSpigot() {
     override fun shutdown() {
         broadcast("${Localization.PREFIX}${KColors.TOMATO}DISABLING PLUGIN ${KColors.DARKGRAY}(maybe a reload)")
         onlinePlayers.forEach {
-            /*val playerStats = PlayerStats.get(it)
+            val playerStats = PlayerStats.get(it)
             playerStats.update()
             DataHolder.playerStats.remove(it)
 
@@ -89,7 +93,7 @@ class Manager : KSpigot() {
             playerSettings.update()
             DataHolder.playerSettings.remove(it)
 
-            it.sound(Sound.BLOCK_BEACON_DEACTIVATE)*/
+            it.sound(Sound.BLOCK_BEACON_DEACTIVATE)
         }
         MongoManager.disconnect()
     }
@@ -117,6 +121,7 @@ class Manager : KSpigot() {
         Kits.enable()
         SoupsimulatorEvents.enable()
         CreateArenaListener.enable()
+        OnChunkUnload.enable()
 
         DuelPlayerDataOverviewGUI.enable()
         DuelTeamOverviewGUI.enable()

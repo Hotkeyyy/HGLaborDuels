@@ -3,6 +3,7 @@ package de.hglabor.plugins.duels.party
 import de.hglabor.plugins.duels.functionality.MainInventory
 import de.hglabor.plugins.duels.functionality.PartyInventory
 import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
 import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
@@ -129,11 +130,10 @@ class Party(val leader: Player) {
         sendLocalizedMessage(
             Localization.PARTY_PLAYER_LEFT_DE,
             Localization.PARTY_PLAYER_LEFT_EN,
-            "%playerName%",
-            player.name
-        )
+            "%playerName%", player.name)
         player.sendLocalizedMessage(Localization.PARTY_YOU_LEFT_DE, Localization.PARTY_YOU_LEFT_EN)
-        player.reset()
+        if (!player.isInFight())
+            player.reset()
     }
 
     fun kick(player: Player) {

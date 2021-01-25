@@ -45,7 +45,7 @@ class Duel {
             duel.kit = kit
             if (teamOneLeader.isInParty()) duel.teamOne = Party.get(teamOneLeader)!!.players
             else duel.teamOne = arrayListOf(teamOneLeader)
-            
+
             if (teamTwoLeader.isInParty()) duel.teamTwo = Party.get(teamTwoLeader)!!.players
             else duel.teamTwo = arrayListOf(teamTwoLeader)
             duel.kit = kit
@@ -60,7 +60,12 @@ class Duel {
             duel.start()
         }
 
-        fun createTournament(teamOne: ArrayList<Player>, teamTwo: ArrayList<Player>, kit: Kits, tournament: Tournament) {
+        fun createTournament(
+            teamOne: ArrayList<Player>,
+            teamTwo: ArrayList<Player>,
+            kit: Kits,
+            tournament: Tournament
+        ) {
             val duel = Duel()
             duel.kit = kit
             duel.teamOne = teamOne
@@ -122,7 +127,8 @@ class Duel {
                 Kits.inGame[kit]?.add(it)
                 Kits.playerQueue.remove(it)
                 Kits.queue[kit]!!.remove(it)
-                Kits.queue[Kits.random()]?.remove(it)
+                Kits.queue[Kits.RANDOM]?.remove(it)
+                PlayerStats.get(it).addTotalGame()
             }
             alivePlayers.filter { it.isInSoupsimulator() }.forEach { Soupsimulator.forceStop(it) }
             Data.duelFromID[ID] = this
@@ -136,7 +142,6 @@ class Duel {
             player.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 40, 200))
 
             async {
-                val stats = PlayerStats.get(player); stats.addTotalGame()
                 StaffData.followedPlayerFromStaff
             }
         }
@@ -193,6 +198,7 @@ class Duel {
             }
             player.addPotionEffect(PotionEffect(PotionEffectType.SLOW, Int.MAX_VALUE, 200))
             player.addPotionEffect(PotionEffect(PotionEffectType.JUMP, Int.MAX_VALUE, 200))
+            player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 200, false, false))
         }
     }
 
@@ -230,8 +236,10 @@ class Duel {
         Kits.inGame[kit]?.remove(player)
         Kits.removeCooldown(player)
         savePlayerdata(player)
-        sendMessage("${teamColor(player)}${player.name} ${KColors.GRAY}hat den Kampf verlassen.",
-            "${teamColor(player)}${player.name} ${KColors.GRAY}left the fight.")
+        sendMessage(
+            "${teamColor(player)}${player.name} ${KColors.GRAY}hat den Kampf verlassen.",
+            "${teamColor(player)}${player.name} ${KColors.GRAY}left the fight."
+        )
 
 
         if (ifTeamDied(getTeam(player))) {
@@ -400,8 +408,8 @@ class Duel {
         var teamTwoPlayers = ""
         for (players in teamTwo) {
             teamTwoPlayers += "${KColors.HOTPINK}${players.name}"
-            if (teamOne.last() != players)
-                teamOnePlayers += "§8, "
+            if (teamTwo.last() != players)
+                teamTwoPlayers += "§8, "
         }
 
         sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                        ")
@@ -430,6 +438,7 @@ class Duel {
             it.reset()
             Data.inFight.remove(it)
         }
+        arena.removeSchematic()
     }
 
     fun sendMessage(germanMessage: String, englishMessage: String) {
