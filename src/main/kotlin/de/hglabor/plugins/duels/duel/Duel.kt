@@ -23,6 +23,7 @@ import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
 import net.axay.kspigot.items.name
+import net.axay.kspigot.runnables.KSpigotRunnable
 import net.axay.kspigot.runnables.async
 import net.axay.kspigot.runnables.task
 import net.axay.kspigot.runnables.taskRunLater
@@ -55,8 +56,8 @@ class Duel {
         fun create(teamOne: ArrayList<Player>, teamTwo: ArrayList<Player>, kit: Kits) {
             val duel = Duel()
             duel.kit = kit
-            duel.teamOne = teamOne
-            duel.teamTwo = teamTwo
+            duel.teamOne.addAll(teamOne)
+            duel.teamTwo.addAll(teamTwo)
             duel.start()
         }
 
@@ -79,6 +80,7 @@ class Duel {
     lateinit var kit: Kits
     val ID = Data.getFreeGameID()
     var state = GameState.STARTING
+    lateinit var countdownTask: KSpigotRunnable
 
     var ifTournament = false
     var tournament: Tournament? = null
@@ -117,10 +119,10 @@ class Duel {
                 presoups[it] = 0; missedPots[it] = 0; wastedHealth[it] = 0
                 playersAndSpecs.add(it)
                 totalPlayers.add(it)
-                Data.inFight.add(it)
                 Data.challengeKit.remove(it)
                 Data.challenged.remove(it)
                 Data.duelIDFromPlayer[it] = ID
+                Data.inFight.add(it)
                 Soupsimulator.get(it)?.stop()
                 it.isGlowing = false
                 it.inventory.clear()
@@ -162,7 +164,7 @@ class Duel {
         state = GameState.COUNTDOWN
         var count = 3
         var colorcode = 'a'
-        task(true, 20, period = 20, howOften = 4) {
+        countdownTask = task(true, 20, period = 20, howOften = 4) {
             if (count == 2) colorcode = 'e'
             if (count == 1) colorcode = 'c'
             if (count != 0) {
@@ -184,21 +186,29 @@ class Duel {
                 state = GameState.RUNNING
             }
             count--
-        }
+        }!!
     }
 
     fun teleportPlayersToSpawns() {
         alivePlayers.forEach { player ->
-            if (teamOne.contains(player)) {
+            if (teamOne.contains(player))
                 player.teleport(arena.spawn1Loc)
-                direction(player, arena.spawn2Loc)
-            } else {
+            else
                 player.teleport(arena.spawn2Loc)
-                direction(player, arena.spawn1Loc)
-            }
+
             player.addPotionEffect(PotionEffect(PotionEffectType.SLOW, Int.MAX_VALUE, 200))
             player.addPotionEffect(PotionEffect(PotionEffectType.JUMP, Int.MAX_VALUE, 200))
             player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 200, false, false))
+        }
+        setDirectionOfPlayers()
+    }
+
+    fun setDirectionOfPlayers() {
+        alivePlayers.forEach { player ->
+            if (teamOne.contains(player))
+                direction(player, arena.spawn2Loc)
+             else
+                direction(player, arena.spawn1Loc)
         }
     }
 
@@ -371,10 +381,9 @@ class Duel {
         Data.duelFromSpec[player] = this
     }
 
-    fun removeSpectator(player: Player, notifyPlayers: Boolean, removeFromDuel: Boolean) {
+    fun removeSpectator(player: Player, notifyPlayers: Boolean) {
         player.reset()
-        if (removeFromDuel)
-            specs.remove(player)
+        specs.remove(player)
         playersAndSpecs.remove(player)
         if (notifyPlayers)
             if (player.localization("de"))
@@ -386,6 +395,7 @@ class Duel {
 
     fun stop() {
         state = GameState.ENDED
+        countdownTask.cancel()
         alivePlayers.forEach { savePlayerdata(it); Kits.inGame[kit]?.remove(it); Kits.removeCooldown(it) }
         sendResults()
 
@@ -424,19 +434,21 @@ class Duel {
     }
 
     private fun resetAll() {
-        specs.forEach { removeSpectator(it, false, false) }
+       // specs.iterator().forEachRemaining { removeSpectator(it, false) }
 
-        alivePlayers.forEach {
-            savePlayerdata(it)
+        playersAndSpecs.iterator().forEachRemaining {
+            if (!specs.contains(it))
+                savePlayerdata(it)
             if (StaffData.followingStaffFromPlayer.contains(it)) {
                 if (StaffData.followingStaffFromPlayer[it]!!.isNotEmpty()) {
-                    StaffData.followingStaffFromPlayer[it]!!.forEach { staff ->
+                    StaffData.followingStaffFromPlayer[it]!!.iterator().forEachRemaining { staff ->
                         staff.teleport(SpawnUtils.getSpawn())
                     }
                 }
             }
             it.reset()
             Data.inFight.remove(it)
+            Data.duelFromSpec.remove(it)
         }
         arena.removeSchematic()
     }
@@ -456,7 +468,7 @@ class Duel {
         }
     }
 
-    private fun getTeam(player: Player): ArrayList<Player> {
+    fun getTeam(player: Player): ArrayList<Player> {
         return if (teamOne.contains(player))
             teamOne
         else
@@ -470,7 +482,7 @@ class Duel {
             KColors.DEEPPINK
     }
 
-    private fun getOtherTeam(player: Player): ArrayList<Player> {
+    fun getOtherTeam(player: Player): ArrayList<Player> {
         return if (teamOne.contains(player))
             teamTwo
         else

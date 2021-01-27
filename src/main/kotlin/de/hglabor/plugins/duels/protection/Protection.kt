@@ -102,8 +102,9 @@ object Protection {
         listen<EntityRegainHealthEvent> {
             if (it.entity is Player) {
                 if ((it.entity as Player).isInSoupsimulator()) {
-                    if (it.regainReason == EntityRegainHealthEvent.RegainReason.REGEN || it.regainReason == EntityRegainHealthEvent.RegainReason.EATING ||
-                        it.regainReason == EntityRegainHealthEvent.RegainReason.SATIATED) {
+                    it.isCancelled = true
+                } else {
+                    if (it.regainReason == EntityRegainHealthEvent.RegainReason.EATING || it.regainReason == EntityRegainHealthEvent.RegainReason.SATIATED) {
                         it.isCancelled = true
                     }
                 }

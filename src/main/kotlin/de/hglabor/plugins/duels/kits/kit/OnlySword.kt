@@ -1,16 +1,11 @@
 package de.hglabor.plugins.duels.kits.kit
 
 import de.hglabor.plugins.duels.arenas.ArenaTags
-import de.hglabor.plugins.duels.duel.Duel
 import de.hglabor.plugins.duels.guis.ChooseKitGUI
 import de.hglabor.plugins.duels.kits.Kit
 import de.hglabor.plugins.duels.kits.KitType
 import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.kits.kitMap
-import de.hglabor.plugins.duels.party.Party
-import de.hglabor.plugins.duels.tournament.Tournament
-import de.hglabor.plugins.duels.utils.Data
-import de.hglabor.plugins.duels.utils.PlayerFunctions.duel
 import net.axay.kspigot.items.flag
 import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
@@ -44,23 +39,7 @@ class OnlySword : Kit(Kits.ONLYSWORD) {
     }
 
     override fun enable() {
-        ChooseKitGUI.addContent(
-            ChooseKitGUI.KitsGUICompoundElement(
-                itemInGUIs(),
-                onClick = {
-                    it.player.closeInventory()
-                    if (Data.openedKitInventory[it.player] == Data.KitInventories.DUEL)
-                        Data.openedDuelGUI[it.player]?.let { it1 -> it.player.duel(it1, kits) }
-
-                    else if (Data.openedKitInventory[it.player] == Data.KitInventories.SPLITPARTY) {
-                        val team = Party.get(it.player)!!
-                        Duel.create(team.getSplitTeams().first, team.getSplitTeams().second, kits)
-
-                    } else if (Data.openedKitInventory[it.player] == Data.KitInventories.TOURNAMENT)
-                        Tournament.createPublic(it.player, kits)
-                }
-            ))
+        ChooseKitGUI.addContent(ChooseKitGUI.KitsGUICompoundElement(itemInGUIs()))
         kitMap[kits] = this
     }
-
 }

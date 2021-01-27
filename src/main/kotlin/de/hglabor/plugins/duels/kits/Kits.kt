@@ -16,7 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 
 enum class KitType { SOUP, POT, NONE }
-enum class Specials { NINJA, NODAMAGE, DEADINWATER, PEARLCOOLDOWN, HITCOOLDOWN }
+enum class Specials { NINJA, NODAMAGE, DEADINWATER, PEARLCOOLDOWN, HITCOOLDOWN, JUMPANDRUN, INVINICIBLE }
 
 enum class Kits {
     ANCHOR,
@@ -26,6 +26,7 @@ enum class Kits {
     FEAST,
     GLADIATOR,
     ICEFISHING,
+    JUMPANDRUN,
     NINJA,
     NODEBUFF,
     ONEBAR,
@@ -33,6 +34,7 @@ enum class Kits {
     RANDOM,
     SPEED,
     SUMO,
+    UHC,
     UNDERWATER;
 
     companion object {
@@ -69,6 +71,7 @@ enum class Kits {
             Feast().enable()
             Gladiator().enable()
             IceFishing().enable()
+            JumpAndRun().enable()
             Ninja().enable()
             NoDebuff().enable()
             Onebar().enable()
@@ -76,6 +79,7 @@ enum class Kits {
             Random().enable()
             Speed().enable()
             Sumo().enable()
+            UHC().enable()
             Underwater().enable()
 
             values().forEach { inGame[it] = arrayListOf(); queue[it] = arrayListOf() }

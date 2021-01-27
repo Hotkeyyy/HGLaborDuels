@@ -10,36 +10,47 @@ import com.sk89q.worldedit.math.Vector3
 import com.sk89q.worldedit.regions.CuboidRegion
 import com.sk89q.worldedit.session.ClipboardHolder
 import de.hglabor.plugins.duels.utils.Data
+import net.axay.kspigot.runnables.taskRunLater
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.World
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 import java.io.FileInputStream
+
 
 class Arena(var loc: Pair<Int, Int>, val arenaName: String) {
     val file = File("arenas//arenas.yml")
     val yamlConfiguration = YamlConfiguration.loadConfiguration(file)
 
+    var bukkitWorld: BukkitWorld
+    val world: World
+
     var spawn1Loc: Location
     var spawn2Loc: Location
 
     init {
-        spawn1Loc = Location(Bukkit.getWorld("FightWorld"),
-            yamlConfiguration["${arenaName}.spawns.spawnOne.x"] as Double,
+        /*if (Arenas.getArenaInfos(arenaName).first == ArenaTags.NETHER) {
+            world = Bukkit.getWorld("NetherFightWorld")!!
+            bukkitWorld = BukkitWorld(Bukkit.getWorld("NetherFightWorld"))
+        } else {*/
+        world = Bukkit.getWorld("FightWorld")!!
+        bukkitWorld = BukkitWorld(world)
+
+        spawn1Loc = Location(world, yamlConfiguration["${arenaName}.spawns.spawnOne.x"] as Double,
             yamlConfiguration["${arenaName}.spawns.spawnOne.y"] as Double + 2,
             yamlConfiguration["${arenaName}.spawns.spawnOne.z"] as Double)
-        spawn2Loc = Location(Bukkit.getWorld("FightWorld"),
+        spawn2Loc = Location(world,
             yamlConfiguration["${arenaName}.spawns.spawnTwo.x"] as Double,
             yamlConfiguration["${arenaName}.spawns.spawnTwo.y"] as Double + 2,
             yamlConfiguration["${arenaName}.spawns.spawnTwo.z"] as Double)
-        spawn1Loc =
-            Location(Bukkit.getWorld("FightWorld"),
+        spawn1Loc = Location(world,
                 loc.first * Data.locationMultiplier,
                 100.0,
                 loc.second * Data.locationMultiplier).subtract(spawn1Loc).add(0.0, 2.0, 0.0)
         spawn2Loc =
-            Location(Bukkit.getWorld("FightWorld"),
+            Location(world,
                 loc.first * Data.locationMultiplier,
                 100.0,
                 loc.second * Data.locationMultiplier).subtract(spawn2Loc).add(0.0, 2.0, 0.0)
@@ -47,8 +58,7 @@ class Arena(var loc: Pair<Int, Int>, val arenaName: String) {
     }
 
     fun pasteSchematic() {
-        WorldEdit.getInstance().editSessionFactory.getEditSession(
-            BukkitWorld(Bukkit.getWorld("FightWorld")), -1).use { editSession ->
+        WorldEdit.getInstance().editSessionFactory.getEditSession(bukkitWorld, -1).use { editSession ->
             val operation = ClipboardHolder(Arenas.allArenas[arenaName]?.second)
                 .createPaste(editSession)
                 .to(BlockVector3.at(loc.first * Data.locationMultiplier, 100.0, loc.second * Data.locationMultiplier))
@@ -66,17 +76,19 @@ class Arena(var loc: Pair<Int, Int>, val arenaName: String) {
         val v2: BlockVector3 =
             Vector3.at(loc.first * Data.locationMultiplier + 150, 95.0 + 75, loc.second * Data.locationMultiplier + 150)
                 .toBlockPoint()
-        val region = CuboidRegion(BukkitWorld(Bukkit.getWorld("FightWorld")), v1, v2)
+        val region = CuboidRegion(bukkitWorld, v1, v2)
+
         for (bv: BlockVector3 in region) {
             val x = bv.blockX
             val y = bv.blockY
             val z = bv.blockZ
-            val block = Location(Bukkit.getWorld("FightWorld"), x.toDouble(), y.toDouble(), z.toDouble()).block
+            val block = Location(world, x.toDouble(), y.toDouble(), z.toDouble()).block
             if (block.type != Material.AIR) {
                 block.type = Material.AIR
             }
         }
-        Data.usedLocationMultipliersXZ.remove(loc)
+
+        taskRunLater(400L, false) { Data.usedLocationMultipliersXZ.remove(loc) }
     }
 }
 

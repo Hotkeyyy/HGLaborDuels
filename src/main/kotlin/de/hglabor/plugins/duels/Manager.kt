@@ -15,6 +15,7 @@ import de.hglabor.plugins.duels.eventmanager.arena.OnChunkUnload
 import de.hglabor.plugins.duels.eventmanager.duel.*
 import de.hglabor.plugins.duels.eventmanager.soupsimulator.SoupsimulatorEvents
 import de.hglabor.plugins.duels.functionality.SoupHealing
+import de.hglabor.plugins.duels.guis.ChooseKitGUI
 import de.hglabor.plugins.duels.guis.PlayerSettingsGUI
 import de.hglabor.plugins.duels.guis.QueueGUI
 import de.hglabor.plugins.duels.kits.Kits
@@ -122,10 +123,12 @@ class Manager : KSpigot() {
         SoupsimulatorEvents.enable()
         CreateArenaListener.enable()
         OnChunkUnload.enable()
+        OnBlockForm.enable()
 
         DuelPlayerDataOverviewGUI.enable()
         DuelTeamOverviewGUI.enable()
         PlayerSettingsGUI.enable()
+        ChooseKitGUI.enable()
         QueueGUI.enable()
 
         getCommand("challenge")!!.setExecutor(ChallengeCommand)

@@ -28,7 +28,7 @@ object OnInteractWithItem {
                 // Staff things
                 if (item.hasMark("stopspec")) {
                     it.isCancelled = true
-                    Data.duelFromSpec[it.player]?.removeSpectator(it.player, true, true)
+                    Data.duelFromSpec[it.player]?.removeSpectator(it.player, true)
                 }
                 if (item.hasMark("createarenaitem")) {
                     it.isCancelled = true

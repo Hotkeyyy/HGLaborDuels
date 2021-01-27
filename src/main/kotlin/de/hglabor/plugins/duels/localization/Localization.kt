@@ -185,6 +185,8 @@ object Localization {
     // Kit
     val CAN_USE_KIT_AGAIN_EN = "${PREFIX}You can use your kit again."
     val CAN_USE_KIT_AGAIN_DE = "${PREFIX}Du kannst dein Kit wieder benutzen."
+    val CANT_USE_KIT_IN_PARTY_EN = "${PREFIX}This kit cant be used while you or your enemy is in a party."
+    val CANT_USE_KIT_IN_PARTY_DE = "${PREFIX}Das Kit kann nicht benutzt werden, während du oder dein Gegner in einer Party ist."
 
     // CreateArenaInventory
     val ARENA_INVENTORY_ITEM_NAME_EN = "${KColors.DEEPSKYBLUE}Open Arena GUI ${KColors.DARKGRAY}* ${KColors.GRAY}Right click"

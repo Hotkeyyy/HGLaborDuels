@@ -3,6 +3,7 @@ package de.hglabor.plugins.duels.utils
 import de.hglabor.plugins.duels.duel.Duel
 import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.soupsimulator.Soupsimulator
+import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
@@ -10,6 +11,8 @@ import org.bukkit.inventory.Inventory
 object Data {
     val droppedItemInSoupsimulator = arrayListOf<Entity>()
     val soupsimulator = hashMapOf<Player, Soupsimulator>()
+
+    val breakableBlocks = arrayListOf<Block>()
 
     val gameIDs = arrayListOf<String>()
     val inFight = arrayListOf<Player>()

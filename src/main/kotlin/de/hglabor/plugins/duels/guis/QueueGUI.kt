@@ -25,20 +25,22 @@ import org.bukkit.inventory.ItemStack
 object QueueGUI {
     fun open(player: Player) {
 
-        val inventory = Bukkit.createInventory(null, 36, "${KColors.DODGERBLUE}Queue")
+        val inventory = Bukkit.createInventory(null, 45, "${KColors.DODGERBLUE}Queue")
         for (i in 0..8)
             inventory.setItem(i, itemStack(Material.WHITE_STAINED_GLASS_PANE) { meta { name = null } })
-        for (i in 27..35)
+        for (i in 36..44)
             inventory.setItem(i, itemStack(Material.WHITE_STAINED_GLASS_PANE) { meta { name = null } })
         inventory.setItem(9, itemStack(Material.WHITE_STAINED_GLASS_PANE) { meta { name = null } })
         inventory.setItem(17, itemStack(Material.WHITE_STAINED_GLASS_PANE) { meta { name = null } })
         inventory.setItem(18, itemStack(Material.WHITE_STAINED_GLASS_PANE) { meta { name = null } })
         inventory.setItem(26, itemStack(Material.WHITE_STAINED_GLASS_PANE) { meta { name = null } })
+        inventory.setItem(27, itemStack(Material.WHITE_STAINED_GLASS_PANE) { meta { name = null } })
+        inventory.setItem(35, itemStack(Material.WHITE_STAINED_GLASS_PANE) { meta { name = null } })
 
         for (kit in Kits.values()) {
             val itemStack = getQueueItem(kit)
             if (kit == Kits.RANDOM)
-                inventory.setItem(31, itemStack)
+                inventory.setItem(40, itemStack)
             else
                 inventory.addItem(itemStack)
         }
@@ -49,7 +51,7 @@ object QueueGUI {
 
     fun updateItems() {
         async {
-            val blacklistedSlots = arrayListOf(9, 18, 17, 26)
+            val blacklistedSlots = arrayListOf(9, 18, 17, 26, 27, 35)
             Data.openedQueue.keys.forEach {
                 var i = 10
                 val kits = Kits.values().toMutableList()
@@ -59,7 +61,7 @@ object QueueGUI {
 
                     do { i++ } while (blacklistedSlots.contains(i))
                 }
-                Data.openedQueue[it]?.setItem(31, getQueueItem(Kits.RANDOM))
+                Data.openedQueue[it]?.setItem(40, getQueueItem(Kits.RANDOM))
             }
         }
     }
@@ -82,12 +84,13 @@ object QueueGUI {
             val player = it.whoClicked as Player
 
             if (it.view.title == "${KColors.DODGERBLUE}Queue") {
+                it.isCancelled = true
                 if (it.currentItem?.type != Material.WHITE_STAINED_GLASS_PANE) {
                     val itemName = it.currentItem?.itemMeta?.displayName
-                    val kitName = itemName?.removeRange(0, 14)!!.toUpperCase().replace(" ", "")
+                    val kitName = itemName?.removeRange(0, 14)?.toUpperCase()?.replace(" ", "")
                     val kit: Kits
                     try {
-                        kit = Kits.valueOf(kitName)
+                        kit = Kits.valueOf(kitName!!)
                     } catch (e: IllegalArgumentException) {
                         return@listen
                     }
@@ -123,6 +126,8 @@ object QueueGUI {
             finalKit = random()
 
         if (Kits.queue[kit]!!.size >= 2)
-            Duel.create(Kits.queue[kit]?.first()!!, Kits.queue[kit]?.last()!!, finalKit)
+            Kits.queue[kit]?.first()?.let { Kits.queue[kit]?.last()?.let { it1 ->
+                Duel.create(it, it1, finalKit) }
+            }
     }
 }

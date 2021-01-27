@@ -15,13 +15,25 @@ object OnMove {
         listen<PlayerMoveEvent> {
             val player = it.player
             if (player.isInFight()) {
-                val duel = Data.duelFromPlayer(player)
-                if (duel.state == GameState.COUNTDOWN)
+                val duel = Data.duelFromID[Data.duelIDFromPlayer[player]]
+                if (duel?.state == GameState.COUNTDOWN)
                     it.isCancelled = true
-                if (duel.kit.info.specials.contains(Specials.DEADINWATER)) {
+                if (duel?.kit?.info?.specials?.contains(Specials.DEADINWATER) == true) {
                     if (duel.state == GameState.RUNNING) {
                         if (player.isFeetInWater) {
                             duel.playerDied(player,  "${duel.teamColor(player)}${player.name} ${KColors.GRAY}ist gestorben.", "${duel.teamColor(player)}${player.name} ${KColors.GRAY}died.")
+                        }
+                    }
+                } else if(duel?.kit?.info?.specials?.contains(Specials.JUMPANDRUN) == true) {
+                    if (duel.state == GameState.RUNNING) {
+                        if (player.isFeetInWater) {
+                            if (duel.teamOne.contains(player)) {
+                                player.teleport(duel.arena.spawn1Loc)
+                                duel.direction(player, duel.arena.spawn2Loc)
+                            } else {
+                                player.teleport(duel.arena.spawn2Loc)
+                                duel.direction(player, duel.arena.spawn1Loc)
+                            }
                         }
                     }
                 }

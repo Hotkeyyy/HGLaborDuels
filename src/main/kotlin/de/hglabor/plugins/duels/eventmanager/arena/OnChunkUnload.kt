@@ -7,7 +7,7 @@ object OnChunkUnload {
     fun enable() {
         listen<ChunkUnloadEvent> {
             if (it.world.name == "FightWorld")
-                it.chunk.entities.iterator().forEachRemaining { entity -> entity.remove() }
+                it.chunk.entities.forEach { entity -> entity.remove() }
         }
     }
 }

@@ -39,6 +39,7 @@ object StatsCommand : CommandExecutor {
                 }
 
                 if (args[0].equals("add", true)) {
+                    PlayerStats.get(player).addTotalGame()
                     player.sendMessage("d")
                     return true
                 }

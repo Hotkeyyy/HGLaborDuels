@@ -15,7 +15,13 @@ object OnBuild {
                 it.isCancelled = true
             if (!player.isInFight()) return@listen
             val duel = Data.duelFromPlayer(player)
-            it.isCancelled = !duel.blocksPlacedDuringGame.contains(it.block)
+            val isBreakable = duel.blocksPlacedDuringGame.contains(it.block) || Data.breakableBlocks.contains(it.block)
+            if (isBreakable) {
+                it.isCancelled = false
+                duel.blocksPlacedDuringGame.remove(it.block)
+                Data.breakableBlocks.contains(it.block)
+            } else
+                it.isCancelled = true
         }
 
         listen<BlockPlaceEvent> {

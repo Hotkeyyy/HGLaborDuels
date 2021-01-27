@@ -39,6 +39,8 @@ object OnDamage {
                 if (player.isInFight()) {
                     val duel = Data.duelFromPlayer(player)
                     if (duel.state == GameState.RUNNING) {
+                        if (duel.kit.info.specials.contains(Specials.INVINICIBLE))
+                            it.isCancelled = true
                         if (duel.kit.info.specials.contains(Specials.NODAMAGE))
                             it.damage = 0.0
                         if (!HANDLED_CAUSES.contains(cause)) {
@@ -80,21 +82,11 @@ object OnDamage {
                         }
                     } else if (it.cause == EntityDamageEvent.DamageCause.PROJECTILE) {
                         if (it.damager is Arrow || it.damager is Trident) {
-                            val projectile: AbstractArrow
-                            if (it.damager is Arrow) {
-                                projectile = it.damager as Arrow
+                            val d = it.damager as AbstractArrow
+                            if (d.shooter is Player)
+                                damager = d.shooter as Player
+                            if (d is Arrow) {
                                 damage *= 0.67
-                            } else
-                                projectile = it.damager as Trident
-
-                            if (projectile.shooter is Player) {
-                                damager = projectile.shooter as Player
-                                if (!damager.isInFight())
-                                    it.isCancelled = true
-                                if (duel.state != GameState.RUNNING)
-                                    it.isCancelled = true
-
-                                it.isCancelled = true
                             }
                         }
                     }
@@ -141,8 +133,10 @@ object OnDamage {
 
         if (kit.specials.contains(Specials.NODAMAGE))
             finalDamage = 0.0
-        if (itemName.contains("_SWORD"))
+        if (itemName.contains("_SWORD") && !itemName.contains("DIAMOND"))
             finalDamage *= 0.5
+        if (itemName.contains("_SWORD") && itemName.contains("DIAMOND"))
+            finalDamage *= 0.87
         for (nerfedItem in NERFED_ITEMS)
             if (itemName.endsWith(nerfedItem))
                 finalDamage *= 0.2
@@ -164,8 +158,6 @@ object OnDamage {
                     "${duel.teamColor(player)}${player.name} ${KColors.GRAY}hat versucht in Lava zu schwimmen."
             EntityDamageEvent.DamageCause.SUFFOCATION ->
                 deathMessage = "${duel.teamColor(player)}${player.name} ${KColors.GRAY}ist erstickt."
-            EntityDamageEvent.DamageCause.PROJECTILE ->
-                deathMessage = "${duel.teamColor(player)}${player.name} ${KColors.GRAY}wurde erschossen xd"
             EntityDamageEvent.DamageCause.ENTITY_ATTACK -> {
                 val killer = duel.lastAttackerOfPlayer[player]!!
                 deathMessage ="${duel.teamColor(player)}${player.name} ${KColors.GRAY}wurde von ${duel.teamColor(killer)}${killer.name} ${KColors.GRAY}getötet."
@@ -190,15 +182,13 @@ object OnDamage {
                 deathMessage = "${duel.teamColor(player)}${player.name} ${KColors.GRAY}tried to swim in lava."
             EntityDamageEvent.DamageCause.SUFFOCATION ->
                 deathMessage = "${duel.teamColor(player)}${player.name} ${KColors.GRAY}suffocated."
-            EntityDamageEvent.DamageCause.PROJECTILE ->
-                deathMessage = "${duel.teamColor(player)}${player.name} ${KColors.GRAY}was shot xd"
             EntityDamageEvent.DamageCause.ENTITY_ATTACK -> {
                 val killer = duel.lastAttackerOfPlayer[player]!!
-                deathMessage ="${duel.teamColor(player)}${player.name} ${KColors.GRAY}was killed by ${duel.teamColor(killer)}${killer.name} ${KColors.GRAY}."
+                deathMessage ="${duel.teamColor(player)}${player.name} ${KColors.GRAY}was killed by ${duel.teamColor(killer)}${killer.name}${KColors.GRAY}."
             }
             EntityDamageEvent.DamageCause.PROJECTILE -> {
                 val killer = duel.lastAttackerOfPlayer[player]!!
-                deathMessage ="${duel.teamColor(player)}${player.name} ${KColors.GRAY}was shot by ${duel.teamColor(killer)}${killer.name} ${KColors.GRAY}."
+                deathMessage ="${duel.teamColor(player)}${player.name} ${KColors.GRAY}was shot by ${duel.teamColor(killer)}${killer.name}${KColors.GRAY}."
             }
             else ->
                 deathMessage = "${duel.teamColor(player)}${player.name} ${KColors.GRAY}died."

@@ -8,6 +8,7 @@ import de.hglabor.plugins.duels.party.Partys.isInParty
 import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
+import net.axay.kspigot.runnables.async
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -64,9 +65,10 @@ object PartyCommand : CommandExecutor {
                         if (!target.isInParty()) {
                             val party = Party.getOrCreate(player, true)
                             if (party.leader == player)
-                                if (!party.invitedPlayers.contains(target))
+                                if (!party.invitedPlayers.contains(target)) {
+                                    async { PartyInventory.giveItems(player) }
                                     party.invitePlayer(target)
-                                else
+                                } else
                                     player.sendLocalizedMessage(Localization.PARTY_COMMAND_PLAYER_ALREADY_INVITED_DE, Localization.PARTY_COMMAND_PLAYER_ALREADY_INVITED_EN, "%playerName%", target.name)
                         } else
                             player.sendLocalizedMessage(Localization.PARTY_COMMAND_PLAYER_ALREADY_IN_PARTY_DE, Localization.PARTY_COMMAND_PLAYER_ALREADY_IN_PARTY_EN, "%playerName%", target.name)

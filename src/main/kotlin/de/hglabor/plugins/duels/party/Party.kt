@@ -78,9 +78,9 @@ class Party(val leader: Player) {
         async {
             players.filter { it != leader }.forEach {
                 if (it.localization("de"))
-                    it.sendMessage("${Localization.PARTY_PREFIX}${KColors.MAGENTA}${leader.name} hat ${KColors.MEDIUMPURPLE}${invited.name} §7eingeladen.")
+                    it.sendMessage("${Localization.PARTY_PREFIX}${KColors.MAGENTA}${leader.name} §7hat ${KColors.MEDIUMPURPLE}${invited.name} §7eingeladen.")
                 else
-                    it.sendMessage("${Localization.PARTY_PREFIX}${KColors.MAGENTA}${leader.name} invited ${KColors.MEDIUMPURPLE}${invited.name}§7.")
+                    it.sendMessage("${Localization.PARTY_PREFIX}${KColors.MAGENTA}${leader.name} §7invited ${KColors.MEDIUMPURPLE}${invited.name}§7.")
             }
         }
         invited.sendLocalizedMessage(
