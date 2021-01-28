@@ -21,6 +21,7 @@ import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
 import de.hglabor.plugins.staff.utils.StaffData
 import net.axay.kspigot.chat.KColors
+import net.axay.kspigot.extensions.broadcast
 import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
 import net.axay.kspigot.items.name
@@ -114,10 +115,10 @@ class Duel {
 
     private fun init() {
         arena = Arena(loc, Arenas.getRandomArena(kit.info.arenaTag))
+        knockbackType = getKnockbackForDuel()
         async {
             alivePlayers.addAll(teamOne)
             alivePlayers.addAll(teamTwo)
-            knockbackType = getKnockbackForDuel()
             alivePlayers.forEach {
                 hits[it] = 0; currentCombo[it] = 0; longestCombo[it] = 0
                 presoups[it] = 0; missedPots[it] = 0; wastedHealth[it] = 0
@@ -157,6 +158,11 @@ class Duel {
                     newKB++
             }
         }
+
+        if (newKB > oldKB*2)
+            broadcast("old")
+        else
+            broadcast("new")
 
         return if (newKB > oldKB*2)
             PlayerSettings.Companion.Knockback.OLD
