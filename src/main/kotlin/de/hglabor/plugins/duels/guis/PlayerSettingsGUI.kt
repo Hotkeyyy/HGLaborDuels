@@ -128,28 +128,28 @@ object PlayerSettingsGUI {
                         if (settings.chatInFight() == PlayerSettings.Companion.Chat.NONE) {
                             +"${KColors.MEDIUMPURPLE}Keine"
                             +"${KColors.DIMGRAY}Alle"
-                            +"${KColors.DIMGRAY}Gegner"
+                            +"${KColors.DIMGRAY}Kampf"
                         } else if (settings.chatInFight() == PlayerSettings.Companion.Chat.FIGHT) {
-                            +"${KColors.MEDIUMPURPLE}Gegner"
+                            +"${KColors.MEDIUMPURPLE}Kampf"
                             +"${KColors.DIMGRAY}Keine"
                             +"${KColors.DIMGRAY}Alle"
                         } else {
                             +"${KColors.MEDIUMPURPLE}Alle"
-                            +"${KColors.DIMGRAY}Gegner"
+                            +"${KColors.DIMGRAY}Kampf"
                             +"${KColors.DIMGRAY}Keine"
                         }
                     } else {
                         if (settings.chatInFight() == PlayerSettings.Companion.Chat.NONE) {
                             +"${KColors.MEDIUMPURPLE}None"
                             +"${KColors.DIMGRAY}All"
-                            +"${KColors.DIMGRAY}Enemy"
+                            +"${KColors.DIMGRAY}Fight"
                         } else if (settings.chatInFight() == PlayerSettings.Companion.Chat.FIGHT) {
-                            +"${KColors.MEDIUMPURPLE}Enemy"
+                            +"${KColors.MEDIUMPURPLE}Fight"
                             +"${KColors.DIMGRAY}None"
                             +"${KColors.DIMGRAY}All"
                         } else {
                             +"${KColors.MEDIUMPURPLE}All"
-                            +"${KColors.DIMGRAY}Enemy"
+                            +"${KColors.DIMGRAY}Fight"
                             +"${KColors.DIMGRAY}None"
                         }
                     }

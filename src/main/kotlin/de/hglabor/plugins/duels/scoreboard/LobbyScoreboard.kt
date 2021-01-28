@@ -1,6 +1,7 @@
 package de.hglabor.plugins.duels.scoreboard
 
 import de.hglabor.plugins.duels.Manager
+import de.hglabor.plugins.duels.duel.GameState
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import de.hglabor.plugins.staff.utils.StaffData
@@ -110,7 +111,10 @@ object LobbyScoreboard {
                     else
                         StaffScoreboard.setScoreboard(all)
                 else if (all.isInFight())
-                   FightSB.setScoreboard(Data.duelFromPlayer(all), all)
+                    if (Data.duelFromPlayer(all).state == GameState.COUNTDOWN)
+                        FightSB.setCountdownScoreboard(Data.duelFromPlayer(all), all)
+                    else
+                        FightSB.setGameScoreboard(Data.duelFromPlayer(all), all)
                 else
                     updateScoreboard(all)
             }

@@ -65,6 +65,9 @@ class Soupsimulator(val player: Player) {
         var count = 3
         var colorcode = 'a'
         task(true, 20, 20, 4) {
+            if (state != GameState.COUNTDOWN) {
+                it.cancel(); return@task
+            }
             if (count == 2) colorcode = 'e'
             if (count == 1) colorcode = 'c'
             if (count != 0) {

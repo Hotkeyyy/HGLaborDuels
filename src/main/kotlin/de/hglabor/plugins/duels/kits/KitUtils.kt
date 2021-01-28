@@ -5,7 +5,7 @@ import net.axay.kspigot.items.flag
 import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
 import net.axay.kspigot.items.name
-import net.axay.kspigot.utils.hasMark
+import net.axay.kspigot.utils.mark
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
@@ -52,7 +52,7 @@ object KitUtils {
         return itemStack(Material.GOLDEN_APPLE) {
             amount = itemAmount
             meta { name = "${KColors.GOLD}Golden Head" }
-            hasMark("goldenHead")
+            mark("goldenHead")
         }
     }
 }

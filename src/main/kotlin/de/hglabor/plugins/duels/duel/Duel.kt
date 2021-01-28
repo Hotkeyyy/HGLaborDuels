@@ -3,6 +3,7 @@ package de.hglabor.plugins.duels.duel
 import de.hglabor.plugins.duels.Manager
 import de.hglabor.plugins.duels.arenas.Arena
 import de.hglabor.plugins.duels.arenas.Arenas
+import de.hglabor.plugins.duels.data.PlayerSettings
 import de.hglabor.plugins.duels.data.PlayerStats
 import de.hglabor.plugins.duels.kits.KitType
 import de.hglabor.plugins.duels.kits.Kits
@@ -28,6 +29,7 @@ import net.axay.kspigot.runnables.async
 import net.axay.kspigot.runnables.task
 import net.axay.kspigot.runnables.taskRunLater
 import net.axay.kspigot.utils.mark
+import net.axay.kspigot.utils.unmark
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.*
 import org.bukkit.block.Block
@@ -80,7 +82,8 @@ class Duel {
     lateinit var kit: Kits
     val ID = Data.getFreeGameID()
     var state = GameState.STARTING
-    lateinit var countdownTask: KSpigotRunnable
+    var countdownTask: KSpigotRunnable? = null
+    var knockbackType: PlayerSettings.Companion.Knockback? = null
 
     var ifTournament = false
     var tournament: Tournament? = null
@@ -114,6 +117,7 @@ class Duel {
         async {
             alivePlayers.addAll(teamOne)
             alivePlayers.addAll(teamTwo)
+            knockbackType = getKnockbackForDuel()
             alivePlayers.forEach {
                 hits[it] = 0; currentCombo[it] = 0; longestCombo[it] = 0
                 presoups[it] = 0; missedPots[it] = 0; wastedHealth[it] = 0
@@ -131,10 +135,33 @@ class Duel {
                 Kits.queue[kit]!!.remove(it)
                 Kits.queue[Kits.RANDOM]?.remove(it)
                 PlayerStats.get(it).addTotalGame()
+
+                if (knockbackType == PlayerSettings.Companion.Knockback.OLD)
+                    it.mark("oldKnockback")
+                else
+                    it.unmark("oldKnockback")
             }
             alivePlayers.filter { it.isInSoupsimulator() }.forEach { Soupsimulator.forceStop(it) }
             Data.duelFromID[ID] = this
         }
+    }
+
+    fun getKnockbackForDuel(): PlayerSettings.Companion.Knockback {
+        var oldKB = 0
+        var newKB = 0
+            async {
+            alivePlayers.forEach {
+                if (PlayerSettings.get(it).knockback() == PlayerSettings.Companion.Knockback.OLD)
+                    oldKB++
+                else
+                    newKB++
+            }
+        }
+
+        return if (newKB > oldKB*2)
+            PlayerSettings.Companion.Knockback.OLD
+        else
+            PlayerSettings.Companion.Knockback.NEW
     }
 
     fun start() {
@@ -395,7 +422,7 @@ class Duel {
 
     fun stop() {
         state = GameState.ENDED
-        countdownTask.cancel()
+        countdownTask?.cancel()
         alivePlayers.forEach { savePlayerdata(it); Kits.inGame[kit]?.remove(it); Kits.removeCooldown(it) }
         sendResults()
 
@@ -424,11 +451,11 @@ class Duel {
 
         sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                        ")
         if (winner == teamOne) {
-            sendMessage("${KColors.SPRINGGREEN}Winner: ${KColors.DEEPSKYBLUE}Team One §8($teamOnePlayers§8)")
-            sendMessage("${KColors.TOMATO}Loser: ${KColors.DEEPPINK}Team Two §8($teamTwoPlayers§8)")
+            sendMessage("${KColors.GREEN}Winner: ${KColors.DEEPSKYBLUE}Team One §8($teamOnePlayers§8)")
+            sendMessage("${KColors.RED}Loser: ${KColors.DEEPPINK}Team Two §8($teamTwoPlayers§8)")
         } else {
-            sendMessage("${KColors.SPRINGGREEN}Winner: ${KColors.DEEPPINK}Team Two §8($teamTwoPlayers§8)")
-            sendMessage("${KColors.TOMATO}Loser: ${KColors.DEEPSKYBLUE}Team One §8($teamOnePlayers§8)")
+            sendMessage("${KColors.GREEN}Winner: ${KColors.DEEPPINK}Team Two §8($teamTwoPlayers§8)")
+            sendMessage("${KColors.RED}Loser: ${KColors.DEEPSKYBLUE}Team One §8($teamOnePlayers§8)")
         }
         sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                        ")
     }

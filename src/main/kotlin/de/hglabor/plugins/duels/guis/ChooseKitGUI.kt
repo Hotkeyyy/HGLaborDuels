@@ -2,6 +2,7 @@ package de.hglabor.plugins.duels.guis
 
 import de.hglabor.plugins.duels.duel.Duel
 import de.hglabor.plugins.duels.kits.Kits
+import de.hglabor.plugins.duels.kits.kit.Random
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.party.Party
 import de.hglabor.plugins.duels.party.Partys.isInParty
@@ -37,6 +38,8 @@ object ChooseKitGUI {
         page(1) {
 
             placeholder(Slots.Border, itemStack(Material.WHITE_STAINED_GLASS_PANE) { meta { name = null } })
+
+            placeholder(Slots.RowOneSlotFive, Random().itemInGUIs())
 
             menuCompound = createSimpleRectCompound(Slots.RowTwoSlotTwo, Slots.RowFourSlotEight)
 

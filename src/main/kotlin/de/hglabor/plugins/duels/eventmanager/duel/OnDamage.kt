@@ -136,7 +136,7 @@ object OnDamage {
         if (itemName.contains("_SWORD") && !itemName.contains("DIAMOND"))
             finalDamage *= 0.5
         if (itemName.contains("_SWORD") && itemName.contains("DIAMOND"))
-            finalDamage *= 0.87
+            finalDamage *= 0.8
         for (nerfedItem in NERFED_ITEMS)
             if (itemName.endsWith(nerfedItem))
                 finalDamage *= 0.2

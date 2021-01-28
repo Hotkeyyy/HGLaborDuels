@@ -20,7 +20,7 @@ class PlayerSettings(val player: Player) {
             return settings
         }
 
-        enum class Knockback { OLD, NEW }
+        enum class Knockback(val version: String) { OLD("1.8"), NEW("1.16") }
         enum class Chat { ALL, FIGHT, NONE }
     }
 

@@ -1,8 +1,11 @@
 package de.hglabor.plugins.duels.protection
 
+import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
+import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
 import de.hglabor.plugins.staff.utils.StaffData.isInStaffMode
+import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.getHandItem
 import net.axay.kspigot.utils.hasMark
@@ -14,6 +17,7 @@ import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.*
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
+import org.bukkit.event.inventory.CraftItemEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent
 import org.bukkit.event.player.PlayerDropItemEvent
@@ -124,7 +128,7 @@ object Protection {
         }
 
         listen<PlayerArmorStandManipulateEvent> {
-            if(it.player.gameMode.isRestricted)
+            if (it.player.gameMode.isRestricted)
                 it.isCancelled = true
         }
 
@@ -134,6 +138,18 @@ object Protection {
 
         listen<BlockExplodeEvent> {
             it.blockList().clear()
+        }
+
+        listen<CraftItemEvent> {
+            if (it.whoClicked is Player) {
+                val player = it.whoClicked as Player
+
+                if (it.currentItem?.type!!.name.contains("BOAT")) {
+                    it.isCancelled = true
+                    player.sendLocalizedMessage("${Localization.PREFIX}${KColors.TOMATO}Du kannst dieses Item nicht craften.",
+                        "${Localization.PREFIX}${KColors.TOMATO}You cant craft this item.")
+                }
+            }
         }
     }
 }

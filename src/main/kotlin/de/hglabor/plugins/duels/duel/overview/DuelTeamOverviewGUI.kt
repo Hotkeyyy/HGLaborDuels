@@ -34,9 +34,9 @@ object DuelTeamOverviewGUI {
             val playerHeadMeta = playerHead.itemMeta as SkullMeta
             playerHeadMeta.owningPlayer = it
             if (duel.alivePlayers.contains(it))
-                playerHeadMeta.setDisplayName("${KColors.SPRINGGREEN}${it.name}")
+                playerHeadMeta.setDisplayName("${KColors.GREEN}${it.name}")
             else
-                playerHeadMeta.setDisplayName("${KColors.TOMATO}${it.name}")
+                playerHeadMeta.setDisplayName("${KColors.RED}${it.name}")
             playerHead.itemMeta = playerHeadMeta
 
             playerHead.meta {
@@ -58,13 +58,10 @@ object DuelTeamOverviewGUI {
             val player = it.whoClicked as Player
             if (it.view.title.contains("${KColors.DODGERBLUE}Duel §8| §r")) {
                 if (it.currentItem?.type == Material.PLAYER_HEAD) {
-                    val item = it.currentItem
-                    val name = item?.itemMeta?.name
-                    val playerName =
-                        name?.removePrefix(KColors.SPRINGGREEN.toString())?.removePrefix(KColors.TOMATO.toString())
-                    val playerData = Bukkit.getPlayer(playerName!!)!!
+                    val item = it.currentItem!!.itemMeta as SkullMeta
+                    val owner = item.owningPlayer as Player
                     val gameID = it.view.title.split(" §8| §7")[1]
-                    DuelPlayerDataOverviewGUI.open(player, gameID, playerData)
+                    DuelPlayerDataOverviewGUI.open(player, gameID, owner)
                 }
             }
         }
