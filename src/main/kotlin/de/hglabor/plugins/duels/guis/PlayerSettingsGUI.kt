@@ -1,5 +1,6 @@
 package de.hglabor.plugins.duels.guis
 
+import de.hglabor.plugins.duels.Manager
 import de.hglabor.plugins.duels.data.PlayerSettings
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
@@ -15,6 +16,7 @@ import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.metadata.FixedMetadataValue
 
 object PlayerSettingsGUI {
 
@@ -169,10 +171,13 @@ object PlayerSettingsGUI {
                     val settings = PlayerSettings.get(player)
 
                     if (it.currentItem!!.type == Material.PISTON) {
-                        if (settings.knockback() == PlayerSettings.Companion.Knockback.NEW)
+                        if (settings.knockback() == PlayerSettings.Companion.Knockback.NEW) {
                             settings.setKnockback(PlayerSettings.Companion.Knockback.OLD)
-                        else if (settings.knockback() == PlayerSettings.Companion.Knockback.OLD)
+                            player.setMetadata("oldKnockback", FixedMetadataValue(Manager.INSTANCE, ""))
+                        } else if (settings.knockback() == PlayerSettings.Companion.Knockback.OLD) {
                             settings.setKnockback(PlayerSettings.Companion.Knockback.NEW)
+                            player.removeMetadata("oldKnockback", Manager.INSTANCE)
+                        }
                         it.inventory.setItem(it.rawSlot, knockbackItem(player))
                         clickedSetting = true
                     }

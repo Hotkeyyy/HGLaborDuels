@@ -51,7 +51,7 @@ object FightSB {
                 "", ChatColor.GRAY)).score = 1
 
             obj.getScore(updateTeam(sb, "hglabor", "${KColors.GRAY}${KColors.ITALIC}HGLabor.de",
-                "", ChatColor.WHITE)).score = 0
+                "", ChatColor.DARK_RED)).score = 0
 
         }
 

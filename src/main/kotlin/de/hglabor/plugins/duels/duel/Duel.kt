@@ -25,17 +25,14 @@ import net.axay.kspigot.extensions.broadcast
 import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
 import net.axay.kspigot.items.name
-import net.axay.kspigot.runnables.KSpigotRunnable
-import net.axay.kspigot.runnables.async
-import net.axay.kspigot.runnables.task
-import net.axay.kspigot.runnables.taskRunLater
+import net.axay.kspigot.runnables.*
 import net.axay.kspigot.utils.mark
-import net.axay.kspigot.utils.unmark
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.*
 import org.bukkit.block.Block
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
+import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import java.io.File
@@ -138,9 +135,9 @@ class Duel {
                 PlayerStats.get(it).addTotalGame()
 
                 if (knockbackType == PlayerSettings.Companion.Knockback.OLD)
-                    it.mark("oldKnockback")
+                    it.setMetadata("oldKnockback", FixedMetadataValue(Manager.INSTANCE, ""))
                 else
-                    it.unmark("oldKnockback")
+                    it.removeMetadata("oldKnockback", Manager.INSTANCE)
             }
             alivePlayers.filter { it.isInSoupsimulator() }.forEach { Soupsimulator.forceStop(it) }
             Data.duelFromID[ID] = this
@@ -150,19 +147,17 @@ class Duel {
     fun getKnockbackForDuel(): PlayerSettings.Companion.Knockback {
         var oldKB = 0
         var newKB = 0
-            async {
-            alivePlayers.forEach {
-                if (PlayerSettings.get(it).knockback() == PlayerSettings.Companion.Knockback.OLD)
-                    oldKB++
-                else
-                    newKB++
-            }
+        alivePlayers.forEach {
+            if (PlayerSettings.get(it).knockback() == PlayerSettings.Companion.Knockback.OLD) oldKB++
+            else newKB++
         }
 
-        if (newKB > oldKB*2)
-            broadcast("old")
+        val oldPercentage = 100.0 / alivePlayers.size * oldKB
+
+        if (oldPercentage > 66)
+            broadcast("old ($oldPercentage%)")
         else
-            broadcast("new")
+            broadcast("new ($oldPercentage%)")
 
         return if (newKB > oldKB*2)
             PlayerSettings.Companion.Knockback.OLD
@@ -223,25 +218,29 @@ class Duel {
     }
 
     fun teleportPlayersToSpawns() {
-        alivePlayers.forEach { player ->
-            if (teamOne.contains(player))
-                player.teleport(arena.spawn1Loc)
-            else
-                player.teleport(arena.spawn2Loc)
+        sync {
+            alivePlayers.forEach { player ->
+                if (teamOne.contains(player))
+                    player.teleport(arena.spawn1Loc)
+                else
+                    player.teleport(arena.spawn2Loc)
 
-            player.addPotionEffect(PotionEffect(PotionEffectType.SLOW, Int.MAX_VALUE, 200))
-            player.addPotionEffect(PotionEffect(PotionEffectType.JUMP, Int.MAX_VALUE, 200))
-            player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 200, false, false))
+                player.addPotionEffect(PotionEffect(PotionEffectType.SLOW, Int.MAX_VALUE, 200))
+                player.addPotionEffect(PotionEffect(PotionEffectType.JUMP, Int.MAX_VALUE, 200))
+                player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 200, false, false))
+            }
+            setDirectionOfPlayers()
         }
-        setDirectionOfPlayers()
     }
 
     fun setDirectionOfPlayers() {
-        alivePlayers.forEach { player ->
-            if (teamOne.contains(player))
-                direction(player, arena.spawn2Loc)
-             else
-                direction(player, arena.spawn1Loc)
+        sync {
+            alivePlayers.forEach { player ->
+                if (teamOne.contains(player))
+                    direction(player, arena.spawn2Loc)
+                else
+                    direction(player, arena.spawn1Loc)
+            }
         }
     }
 

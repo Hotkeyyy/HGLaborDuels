@@ -95,6 +95,7 @@ object PlayerFunctions {
         else
             MainInventory.giveItems(player)
         player.gameMode = GameMode.ADVENTURE
+        player.removeMetadata("oldKnockback", Manager.INSTANCE)
         player.fireTicks = 0
         player.exp = 0f
         player.level = 0

@@ -8,13 +8,14 @@ import net.axay.kspigot.extensions.bukkit.getHandItem
 import net.axay.kspigot.extensions.events.isRightClick
 import net.axay.kspigot.runnables.async
 import org.bukkit.Material
+import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 
 object SoupHealing {
 
     fun enable() {
         listen<PlayerInteractEvent> {
-            if (it.action.isRightClick) {
+            if (it.action.isRightClick || it.action == Action.LEFT_CLICK_BLOCK) {
                 val p = it.player
                 var consumed = false
                 var presouped = false

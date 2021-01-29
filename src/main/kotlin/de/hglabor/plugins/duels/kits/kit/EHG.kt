@@ -18,7 +18,7 @@ class EHG : Kit(Kits.EHG) {
         player.inventory.clear()
         player.inventory.setItem(0, KitUtils.sword(Material.STONE_SWORD, false))
 
-        KitUtils.giveRecraft(player, 64)
+        KitUtils.giveRecraft(player, 32)
         KitUtils.giveSoups(player)
 
         player.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)?.baseValue = 0.0
