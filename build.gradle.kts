@@ -37,20 +37,16 @@ plugins {
 
 repositories {
     mavenLocal()
-
     jcenter()
-    maven("https://jitpack.io")
-
-    // Paper
-    maven { url = uri("https://papermc.io/repo/repository/maven-public/") }
-
+    maven("https://papermc.io/repo/repository/maven-public/")
     // FAWE
-    maven { url = uri("https://mvn.intellectualsites.com/content/repositories/releases/") }
+    maven("https://mvn.intellectualsites.com/content/repositories/releases/")
+    maven("https://repo.dmulloy2.net/nexus/repository/public/")
+    maven("https://jitpack.io")
 }
 
 dependencies {
-
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.21")
+    implementation(kotlin("reflect"))
 
     // SPIGOT
     compileOnly("org.spigotmc", "spigot", "1.16.4-R0.1-SNAPSHOT")
@@ -58,12 +54,12 @@ dependencies {
     // KSPIGOT
     implementation("net.axay", "KSpigot", "v1.16.4_R21")
 
-    // FAWE
-    implementation("com.intellectualsites.fawe:FAWE-Bukkit:1.16-462")
-
     // KMONGO and MONGODB
     implementation("org.litote.kmongo", "kmongo-core", "4.2.3")
     implementation("org.litote.kmongo", "kmongo-serialization-mapping", "4.2.3")
+
+    implementation("com.intellectualsites.fawe:FAWE-Bukkit:1.16-462")
+    compileOnly("com.comphenix.protocol:ProtocolLib:4.6.0-SNAPSHOT")
 }
 
 /*
