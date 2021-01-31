@@ -40,10 +40,24 @@ object DuelTeamOverviewGUI {
             playerHead.itemMeta = playerHeadMeta
 
             playerHead.meta {
-                addLore { +"total hits ${duel.hits[it]}" }
-                addLore { +"longest combo ${duel.longestCombo[it]}" }
+                addLore { +"${KColors.GRAY}total hits ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}${duel.hits[it]}" }
+                addLore { +"${KColors.GRAY}Longest Combo ${KColors.DARKGRAY}» ${KColors.MEDIUMPURPLE}${duel.longestCombo[it]}" }
             }
             inventory.addItem(playerHead)
+
+            val teamOverview = itemStack(Material.ARROW) {
+                meta {
+                    name = "${KColors.DODGERBLUE}Other Team"
+                }
+            }
+            inventory.setItem(26, teamOverview)
+
+            val duelOverview = itemStack(Material.ARROW) {
+                meta {
+                    name = "${KColors.DODGERBLUE}Duel overview"
+                }
+            }
+            inventory.setItem(18, teamOverview)
         }
 
         for (i in 10..16)
@@ -62,6 +76,19 @@ object DuelTeamOverviewGUI {
                     val owner = item.owningPlayer as Player
                     val gameID = it.view.title.split(" §8| §7")[1]
                     DuelPlayerDataOverviewGUI.open(player, gameID, owner)
+                }
+
+                if (it.currentItem?.type == Material.ARROW) {
+                    val gameID = it.view.title.split(" §8| §7")[1]
+                    if (it.currentItem!!.itemMeta!!.name!!.contains("Other Team")) {
+                        if (it.view.title.contains("1")) {
+                            open(player, gameID, Data.duelFromID[gameID]!!.teamTwo)
+                        } else {
+                            open(player, gameID, Data.duelFromID[gameID]!!.teamOne)
+                        }
+                    } else {
+                        DuelOverviewGUI.open(player, gameID)
+                    }
                 }
             }
         }

@@ -38,6 +38,10 @@ object PlayerFunctions {
         return Data.inFight.contains(player)
     }
 
+    fun Player.isSpectator(): Boolean {
+        return Data.duelFromSpec.contains(player)
+    }
+
     fun Player.duel(target: Player, kit: Kits) {
         val player: Player = player!!
 

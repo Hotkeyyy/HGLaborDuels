@@ -109,12 +109,12 @@ object DuelPlayerDataOverviewGUI {
             inventory.setItem(52, pot)
         }
 
-        val otherInventory = itemStack(Material.ARROW) {
+        val teamOverview = itemStack(Material.ARROW) {
             meta {
                 name = "${KColors.DODGERBLUE}Team Overview"
             }
         }
-        inventory.setItem(53, otherInventory)
+        inventory.setItem(53, teamOverview)
 
         whoOpens.openInventory(inventory)
     }
@@ -129,9 +129,9 @@ object DuelPlayerDataOverviewGUI {
                         val currentPlayer = (it.view.title.split(" ")[1]).split("'")[0]
                         val duel = Data.duelFromID[gameID]
                         if (duel!!.teamOne.contains(Bukkit.getPlayer(currentPlayer)))
-                            DuelTeamOverviewGUI.open(it.whoClicked as Player, gameID, duel.teamTwo)
-                        else
                             DuelTeamOverviewGUI.open(it.whoClicked as Player, gameID, duel.teamOne)
+                        else
+                            DuelTeamOverviewGUI.open(it.whoClicked as Player, gameID, duel.teamTwo)
                     }
                 }
             }

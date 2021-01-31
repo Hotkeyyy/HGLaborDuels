@@ -244,12 +244,14 @@ class Duel {
     }
 
     fun setDirectionOfPlayers() {
-        sync {
-            alivePlayers.forEach { player ->
-                if (teamOne.contains(player))
-                    direction(player, arena.spawn2Loc)
-                else
-                    direction(player, arena.spawn1Loc)
+        task(true, 5) {
+            sync {
+                alivePlayers.forEach { player ->
+                    if (teamOne.contains(player))
+                        direction(player, arena.spawn2Loc)
+                    else
+                        direction(player, arena.spawn1Loc)
+                }
             }
         }
     }
@@ -392,6 +394,7 @@ class Duel {
     }
 
     fun addSpectator(player: Player, notifyPlayers: Boolean) {
+        Data.duelFromSpec[player] = this
         val newPlayersAndSpecs = playersAndSpecs
         newPlayersAndSpecs.add(player)
         playersAndSpecs = newPlayersAndSpecs

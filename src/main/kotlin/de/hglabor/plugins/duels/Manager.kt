@@ -140,6 +140,7 @@ class Manager : KSpigot() {
         CreateArenaListener.enable()
         OnChunkUnload.enable()
         OnBlockForm.enable()
+        OnArrowPickUp.enable()
         registerBlockHit()
 
         DuelPlayerDataOverviewGUI.enable()
