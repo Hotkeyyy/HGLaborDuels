@@ -1,4 +1,4 @@
-package de.hglabor.plugins.duels.duel.overview
+package de.hglabor.plugins.duels.guis.overview
 
 import de.hglabor.plugins.duels.kits.KitType
 import de.hglabor.plugins.duels.kits.Kits.Companion.info

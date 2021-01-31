@@ -13,6 +13,7 @@ import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
+import net.axay.kspigot.extensions.broadcast
 import net.axay.kspigot.runnables.async
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -39,14 +40,17 @@ object OnDamage {
                 if (player.isInFight()) {
                     val duel = Data.duelFromPlayer(player)
                     if (duel.state == GameState.RUNNING) {
-                        if (duel.kit.info.specials.contains(Specials.INVINICIBLE))
+                        if (duel.kit.info.specials.contains(Specials.INVINICIBLE)) {
                             it.isCancelled = true
+                            return@listen
+                        }
                         if (duel.kit.info.specials.contains(Specials.NODAMAGE))
                             it.damage = 0.0
                         if (!HANDLED_CAUSES.contains(cause)) {
                             if (player.health - it.damage <= 0.0) {
                                 it.isCancelled = true
                                 playerDied(duel, player, cause)
+                                broadcast("cause: ${cause.name}")
                             }
                         }
                     } else {
@@ -133,10 +137,11 @@ object OnDamage {
 
         if (kit.specials.contains(Specials.NODAMAGE))
             finalDamage = 0.0
-        if (itemName.contains("_SWORD") && !itemName.contains("DIAMOND"))
-            finalDamage *= 0.5
-        if (itemName.contains("_SWORD") && itemName.contains("DIAMOND"))
-            finalDamage *= 0.8
+        if (itemName.contains("_SWORD"))
+            if (itemName.contains("DIA"))
+                finalDamage *= 0.8
+            else
+                finalDamage *= 0.5
         for (nerfedItem in NERFED_ITEMS)
             if (itemName.endsWith(nerfedItem))
                 finalDamage *= 0.2

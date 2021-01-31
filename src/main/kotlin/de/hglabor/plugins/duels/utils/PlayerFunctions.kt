@@ -27,6 +27,7 @@ import org.bukkit.GameMode
 import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
+import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
@@ -95,7 +96,6 @@ object PlayerFunctions {
         else
             MainInventory.giveItems(player)
         player.gameMode = GameMode.ADVENTURE
-        player.removeMetadata("oldKnockback", Manager.INSTANCE)
         player.fireTicks = 0
         player.exp = 0f
         player.level = 0

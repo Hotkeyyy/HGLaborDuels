@@ -1,4 +1,4 @@
-package de.hglabor.plugins.duels.duel.overview
+package de.hglabor.plugins.duels.guis.overview
 
 import de.hglabor.plugins.duels.utils.Data
 import net.axay.kspigot.chat.KColors

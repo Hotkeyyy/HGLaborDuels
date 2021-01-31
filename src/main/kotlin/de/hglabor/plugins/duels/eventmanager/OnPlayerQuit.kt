@@ -4,6 +4,7 @@ import de.hglabor.plugins.duels.data.DataHolder
 import de.hglabor.plugins.duels.data.PlayerSettings
 import de.hglabor.plugins.duels.data.PlayerStats
 import de.hglabor.plugins.duels.kits.Kits
+import de.hglabor.plugins.duels.tournament.Tournaments
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import de.hglabor.plugins.staff.utils.StaffData
@@ -52,6 +53,11 @@ object OnPlayerQuit {
                 Kits.playerQueue.remove(player)
                 Kits.queue[kit!!] = playerList
             }
+
+            if (Tournaments.publicTournament != null)
+                if (Tournaments.publicTournament!!.players.contains(player)) {
+                    Tournaments.publicTournament!!.players.remove(player)
+                }
         }
     }
 }

@@ -1,12 +1,15 @@
 package de.hglabor.plugins.duels.kits.kit
 
 import de.hglabor.plugins.duels.arenas.ArenaTags
+import de.hglabor.plugins.duels.data.PlayerSettings
 import de.hglabor.plugins.duels.duel.GameState
 import de.hglabor.plugins.duels.guis.ChooseKitGUI
+import de.hglabor.plugins.duels.guis.PlayerSettingsGUI
 import de.hglabor.plugins.duels.kits.*
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import net.axay.kspigot.event.listen
+import net.axay.kspigot.extensions.broadcast
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
@@ -25,7 +28,7 @@ class Ninja : Kit(Kits.NINJA) {
         player.inventory.clear()
         player.inventory.setItem(0, KitUtils.sword(Material.STONE_SWORD, false))
 
-        KitUtils.giveRecraft(player, 64)
+        KitUtils.giveRecraft(player, 32)
         KitUtils.giveSoups(player)
 
         player.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)?.baseValue = 0.0

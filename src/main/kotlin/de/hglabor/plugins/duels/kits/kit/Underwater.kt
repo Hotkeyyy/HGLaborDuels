@@ -33,7 +33,7 @@ class Underwater : Kit(Kits.UNDERWATER) {
             }
         }
         player.inventory.setItem(1, trident)
-        KitUtils.giveRecraft(player, 64)
+        KitUtils.giveRecraft(player, 32)
         KitUtils.giveSoups(player)
 
         player.addPotionEffect(PotionEffect(PotionEffectType.DOLPHINS_GRACE, Int.MAX_VALUE, 1))

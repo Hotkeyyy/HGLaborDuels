@@ -64,7 +64,7 @@ class PlayerSettings(val player: Player) {
         values["chatInFight"] = chat.toString()
     }
 
-    private fun toDocument(): Document {
+    fun toDocument(): Document {
         val document = Document("uuid", player.uniqueId.toString())
         values.forEach(document::append)
         return document

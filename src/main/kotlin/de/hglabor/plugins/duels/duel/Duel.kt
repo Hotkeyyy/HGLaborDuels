@@ -20,7 +20,7 @@ import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
 import de.hglabor.plugins.staff.utils.StaffData
-import net.axay.kspigot.chat.KColors
+import net.axay.kspigot.chat.*
 import net.axay.kspigot.extensions.broadcast
 import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
@@ -28,10 +28,15 @@ import net.axay.kspigot.items.name
 import net.axay.kspigot.runnables.*
 import net.axay.kspigot.utils.mark
 import net.md_5.bungee.api.ChatColor
+import net.md_5.bungee.api.chat.ClickEvent
+import net.md_5.bungee.api.chat.HoverEvent
+import net.md_5.bungee.api.chat.TextComponent
+import net.md_5.bungee.api.chat.hover.content.Text
 import org.bukkit.*
 import org.bukkit.block.Block
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
@@ -43,19 +48,24 @@ class Duel {
     companion object {
         fun create(teamOneLeader: Player, teamTwoLeader: Player, kit: Kits) {
             val duel = Duel()
-            duel.kit = kit
+            if (kit == Kits.RANDOM)
+                duel.kit = Kits.random()
+            else
+                duel.kit = kit
             if (teamOneLeader.isInParty()) duel.teamOne = Party.get(teamOneLeader)!!.players
             else duel.teamOne = arrayListOf(teamOneLeader)
 
             if (teamTwoLeader.isInParty()) duel.teamTwo = Party.get(teamTwoLeader)!!.players
             else duel.teamTwo = arrayListOf(teamTwoLeader)
-            duel.kit = kit
             duel.start()
         }
 
         fun create(teamOne: ArrayList<Player>, teamTwo: ArrayList<Player>, kit: Kits) {
             val duel = Duel()
-            duel.kit = kit
+            if (kit == Kits.RANDOM)
+                duel.kit = Kits.random()
+            else
+                duel.kit = kit
             duel.teamOne.addAll(teamOne)
             duel.teamTwo.addAll(teamTwo)
             duel.start()
@@ -68,12 +78,17 @@ class Duel {
             tournament: Tournament
         ) {
             val duel = Duel()
-            duel.kit = kit
+            if (kit == Kits.RANDOM)
+                duel.kit = Kits.random()
+            else
+                duel.kit = kit
             duel.teamOne = teamOne
             duel.teamTwo = teamTwo
             duel.ifTournament = true
             duel.tournament = tournament
             duel.start()
+
+
         }
     }
 
@@ -112,39 +127,37 @@ class Duel {
 
     private fun init() {
         arena = Arena(loc, Arenas.getRandomArena(kit.info.arenaTag))
+        alivePlayers.addAll(teamOne)
+        alivePlayers.addAll(teamTwo)
         knockbackType = getKnockbackForDuel()
-        async {
-            alivePlayers.addAll(teamOne)
-            alivePlayers.addAll(teamTwo)
-            alivePlayers.forEach {
-                hits[it] = 0; currentCombo[it] = 0; longestCombo[it] = 0
-                presoups[it] = 0; missedPots[it] = 0; wastedHealth[it] = 0
-                playersAndSpecs.add(it)
-                totalPlayers.add(it)
-                Data.challengeKit.remove(it)
-                Data.challenged.remove(it)
-                Data.duelIDFromPlayer[it] = ID
-                Data.inFight.add(it)
-                Soupsimulator.get(it)?.stop()
-                it.isGlowing = false
-                it.inventory.clear()
-                Kits.inGame[kit]?.add(it)
-                Kits.playerQueue.remove(it)
-                Kits.queue[kit]!!.remove(it)
-                Kits.queue[Kits.RANDOM]?.remove(it)
-                PlayerStats.get(it).addTotalGame()
+        alivePlayers.forEach {
+            hits[it] = 0; currentCombo[it] = 0; longestCombo[it] = 0
+            presoups[it] = 0; missedPots[it] = 0; wastedHealth[it] = 0
+            playersAndSpecs.add(it)
+            totalPlayers.add(it)
+            Data.challengeKit.remove(it)
+            Data.challenged.remove(it)
+            Data.duelIDFromPlayer[it] = ID
+            Data.inFight.add(it)
+            Soupsimulator.get(it)?.stop()
+            it.isGlowing = false
+            it.inventory.clear()
+            Kits.inGame[kit]?.add(it)
+            Kits.playerQueue.remove(it)
+            Kits.queue[kit]!!.remove(it)
+            Kits.queue[Kits.RANDOM]?.remove(it)
+            PlayerStats.get(it).addTotalGame()
 
-                if (knockbackType == PlayerSettings.Companion.Knockback.OLD)
-                    it.setMetadata("oldKnockback", FixedMetadataValue(Manager.INSTANCE, ""))
-                else
-                    it.removeMetadata("oldKnockback", Manager.INSTANCE)
-            }
-            alivePlayers.filter { it.isInSoupsimulator() }.forEach { Soupsimulator.forceStop(it) }
-            Data.duelFromID[ID] = this
+            if (knockbackType == PlayerSettings.Companion.Knockback.OLD)
+                it.setMetadata("oldKnockback", FixedMetadataValue(Manager.INSTANCE, ""))
+            else
+                it.removeMetadata("oldKnockback", Manager.INSTANCE)
         }
+        alivePlayers.filter { it.isInSoupsimulator() }.forEach { Soupsimulator.forceStop(it) }
+        Data.duelFromID[ID] = this
     }
 
-    fun getKnockbackForDuel(): PlayerSettings.Companion.Knockback {
+    private fun getKnockbackForDuel(): PlayerSettings.Companion.Knockback {
         var oldKB = 0
         var newKB = 0
         alivePlayers.forEach {
@@ -154,12 +167,7 @@ class Duel {
 
         val oldPercentage = 100.0 / alivePlayers.size * oldKB
 
-        if (oldPercentage > 66)
-            broadcast("old ($oldPercentage%)")
-        else
-            broadcast("new ($oldPercentage%)")
-
-        return if (newKB > oldKB*2)
+        return if (oldPercentage > 66)
             PlayerSettings.Companion.Knockback.OLD
         else
             PlayerSettings.Companion.Knockback.NEW
@@ -184,6 +192,8 @@ class Duel {
                 it.giveKit(kit)
                 teleportPlayersToSpawns()
                 sendCountdown()
+                if (ifTournament)
+                    tournament?.duels?.add(this)
             }
         }
     }
@@ -266,6 +276,13 @@ class Duel {
             loser = getTeam(player)
             winner = getOtherTeam(player)
             stop()
+        } else {
+            val items = arrayListOf<ItemStack>()
+            items.addAll(player.inventory.contents)
+            items.addAll(player.inventory.armorContents)
+            items.forEach { item ->
+                if (item.type != Material.AIR) player.world.dropItem(player.location, item)
+            }
         }
         addSpectator(player, false)
         val stats = PlayerStats.get(player)
@@ -288,6 +305,13 @@ class Duel {
             loser = getTeam(player)
             winner = getOtherTeam(player)
             stop()
+        } else {
+            val items = arrayListOf<ItemStack>()
+            items.addAll(player.inventory.contents)
+            items.addAll(player.inventory.armorContents)
+            items.forEach { item ->
+                if (item.type != Material.AIR) player.world.dropItem(player.location, item)
+            }
         }
         player.reset()
     }
@@ -433,10 +457,13 @@ class Duel {
 
         taskRunLater(45, true) {
             resetAll()
-        }
-
-        if (ifTournament) {
-            tournament?.duelEnded(this)
+            if (ifTournament) {
+                tournament?.duelEnded(this)
+                if (tournament!!.duels.size > 0) {
+                    specs.forEach { tournament!!.duels.random().addSpectator(it, true) }
+                    alivePlayers.forEach { tournament!!.duels.random().addSpectator(it, true) }
+                }
+            }
         }
     }
 
@@ -462,15 +489,23 @@ class Duel {
             sendMessage("${KColors.GREEN}Winner: ${KColors.DEEPPINK}Team Two §8($teamTwoPlayers§8)")
             sendMessage("${KColors.RED}Loser: ${KColors.DEEPSKYBLUE}Team One §8($teamOnePlayers§8)")
         }
+
+        val message = TextComponent("Click to open the duel overview")
+        message.color = KColors.GRAY
+        message.isItalic = true
+        message.setClickEvent(ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dueloverview $ID"))
+
+        playersAndSpecs.forEach {
+            it.spigot().sendMessage(message)
+        }
+
         sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                        ")
     }
 
     private fun resetAll() {
-       // specs.iterator().forEachRemaining { removeSpectator(it, false) }
+        // specs.iterator().forEachRemaining { removeSpectator(it, false) }
 
         playersAndSpecs.iterator().forEachRemaining {
-            if (!specs.contains(it))
-                savePlayerdata(it)
             if (StaffData.followingStaffFromPlayer.contains(it)) {
                 if (StaffData.followingStaffFromPlayer[it]!!.isNotEmpty()) {
                     StaffData.followingStaffFromPlayer[it]!!.iterator().forEachRemaining { staff ->
@@ -483,21 +518,6 @@ class Duel {
             Data.duelFromSpec.remove(it)
         }
         arena.removeSchematic()
-    }
-
-    fun sendMessage(germanMessage: String, englishMessage: String) {
-        playersAndSpecs.forEach {
-            if (it.localization("de"))
-                it.sendMessage(germanMessage)
-            else
-                it.sendMessage(englishMessage)
-        }
-    }
-
-    fun sendMessage(universalMessage: String) {
-        playersAndSpecs.forEach {
-            it.sendMessage(universalMessage)
-        }
     }
 
     fun getTeam(player: Player): ArrayList<Player> {
@@ -519,5 +539,20 @@ class Duel {
             teamTwo
         else
             teamOne
+    }
+
+    fun sendMessage(germanMessage: String, englishMessage: String) {
+        playersAndSpecs.forEach {
+            if (it.localization("de"))
+                it.sendMessage(germanMessage)
+            else
+                it.sendMessage(englishMessage)
+        }
+    }
+
+    fun sendMessage(universalMessage: String) {
+        playersAndSpecs.forEach {
+            it.sendMessage(universalMessage)
+        }
     }
 }

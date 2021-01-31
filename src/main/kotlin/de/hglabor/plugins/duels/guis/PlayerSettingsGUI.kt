@@ -173,10 +173,10 @@ object PlayerSettingsGUI {
                     if (it.currentItem!!.type == Material.PISTON) {
                         if (settings.knockback() == PlayerSettings.Companion.Knockback.NEW) {
                             settings.setKnockback(PlayerSettings.Companion.Knockback.OLD)
-                            player.setMetadata("oldKnockback", FixedMetadataValue(Manager.INSTANCE, ""))
+                            //player.setMetadata("oldKnockback", FixedMetadataValue(Manager.INSTANCE, ""))
                         } else if (settings.knockback() == PlayerSettings.Companion.Knockback.OLD) {
                             settings.setKnockback(PlayerSettings.Companion.Knockback.NEW)
-                            player.removeMetadata("oldKnockback", Manager.INSTANCE)
+                            //player.removeMetadata("oldKnockback", Manager.INSTANCE)
                         }
                         it.inventory.setItem(it.rawSlot, knockbackItem(player))
                         clickedSetting = true

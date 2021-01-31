@@ -14,6 +14,7 @@ import org.bukkit.GameMode
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockExplodeEvent
+import org.bukkit.event.block.BlockFadeEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.*
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
@@ -107,10 +108,6 @@ object Protection {
             if (it.entity is Player) {
                 if ((it.entity as Player).isInSoupsimulator()) {
                     it.isCancelled = true
-                } else {
-                    if (it.regainReason == EntityRegainHealthEvent.RegainReason.EATING || it.regainReason == EntityRegainHealthEvent.RegainReason.SATIATED) {
-                        it.isCancelled = true
-                    }
                 }
             }
         }
@@ -149,6 +146,13 @@ object Protection {
                     player.sendLocalizedMessage("${Localization.PREFIX}${KColors.TOMATO}Du kannst dieses Item nicht craften.",
                         "${Localization.PREFIX}${KColors.TOMATO}You cant craft this item.")
                 }
+            }
+        }
+
+        listen<BlockFadeEvent> {
+            val blockName = it.block.type.toString().toLowerCase()
+            if (blockName.contains("ice") || blockName.contains("snow")) {
+                it.isCancelled = true
             }
         }
     }

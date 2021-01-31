@@ -44,6 +44,7 @@ class Tournament {
     val players = arrayListOf<Player>()
     val teams = arrayListOf<ArrayList<Player>>()
     val fightingTeams = arrayListOf<ArrayList<Player>>()
+    val duels = arrayListOf<Duel>()
 
     val teamSize = 1
 
@@ -209,7 +210,7 @@ class Tournament {
         teams.remove(duel.loser)
         fightingTeams.remove(duel.loser)
         fightingTeams.remove(duel.winner)
-
+        duels.remove(duel)
         taskRunLater(
             sync = true,
             delay = 60

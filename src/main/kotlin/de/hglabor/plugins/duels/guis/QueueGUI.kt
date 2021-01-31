@@ -121,13 +121,9 @@ object QueueGUI {
     }
 
     private fun startNewDuelIfEnoughPlayersInQueue(kit: Kits) {
-        var finalKit = kit
-        if (finalKit == Kits.RANDOM)
-            finalKit = random()
-
         if (Kits.queue[kit]!!.size >= 2)
             Kits.queue[kit]?.first()?.let { Kits.queue[kit]?.last()?.let { it1 ->
-                Duel.create(it, it1, finalKit) }
+                Duel.create(it, it1, kit) }
             }
     }
 }

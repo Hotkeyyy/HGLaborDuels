@@ -23,7 +23,7 @@ class Speed : Kit(Kits.SPEED) {
         )
         player.inventory.setItem(0, KitUtils.sword(Material.DIAMOND_SWORD, true))
 
-        KitUtils.giveRecraft(player, 64)
+        KitUtils.giveRecraft(player, 32)
         KitUtils.giveSoups(player)
 
         player.addPotionEffect(PotionEffect(PotionEffectType.SPEED, Int.MAX_VALUE, 1))

@@ -22,8 +22,8 @@ object TournamentCommand : CommandExecutor {
                 if (args[0].equals("create", true)) {
                     if (player.isStaff) {
                         if (Tournaments.publicTournament == null) {
-                            player.openGUI(ChooseKitGUI.gui)
                             Data.openedKitInventory[player] = Data.KitInventories.TOURNAMENT
+                            player.openGUI(ChooseKitGUI.gui)
                         } else {
                             player.sendLocalizedMessage(Localization.TOURNAMENTCOMMAND_PUBLIC_TOURNAMENT_EXISTS_DE, Localization.TOURNAMENTCOMMAND_PUBLIC_TOURNAMENT_EXISTS_EN)
                         }
@@ -32,7 +32,8 @@ object TournamentCommand : CommandExecutor {
                     return true
                 } else if (args[0].equals("join", true)) {
                     if (Tournaments.publicTournament?.players?.contains(player) == false)
-                        Tournaments.publicTournament?.join(player)
+                        if (Tournaments.publicTournament?.state != GameState.RUNNING)
+                            Tournaments.publicTournament?.join(player)
                     else
                         player.sendLocalizedMessage(Localization.TOURNAMENTCOMMAND_ALREADY_IN_DE, Localization.TOURNAMENTCOMMAND_ALREADY_IN_EN)
                     return true

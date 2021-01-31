@@ -30,17 +30,7 @@ object StatsCommand : CommandExecutor {
             if (args.size == 1) {
                 if (args[0].equals("reset", true)) {
                     MongoManager.playerStatsCollection.drop()
-                    return true
-                }
-
-                if (args[0].equals("yes", true)) {
-                    player.sendMessage(PlayerStats.get(player).toDocument().toString())
-                    return true
-                }
-
-                if (args[0].equals("add", true)) {
-                    PlayerStats.get(player).addTotalGame()
-                    player.sendMessage("d")
+                    MongoManager.playerSettingsCollection.drop()
                     return true
                 }
 

@@ -1,6 +1,6 @@
 package de.hglabor.plugins.duels.commands
 
-import de.hglabor.plugins.duels.duel.overview.DuelOverviewGUI
+import de.hglabor.plugins.duels.guis.overview.DuelOverviewGUI
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
 import de.hglabor.plugins.duels.utils.Data

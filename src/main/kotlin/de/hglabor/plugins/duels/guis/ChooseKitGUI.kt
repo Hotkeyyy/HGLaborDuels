@@ -67,30 +67,35 @@ object ChooseKitGUI {
                     if (it.currentItem?.type != Material.WHITE_STAINED_GLASS_PANE) {
                         val itemName = it.currentItem?.itemMeta?.displayName
                         val kitName = itemName?.removeRange(0, 14)?.toUpperCase()?.replace(" ", "")
-                        var kit: Kits
-                        kit = Kits.valueOf(kitName!!)
-                        if (kit == Kits.RANDOM)
-                            kit = Kits.random()
+                        val kit: Kits = Kits.valueOf(kitName!!)
 
-                        if (Data.openedKitInventory[player] == Data.KitInventories.DUEL) {
-                            if (kit == Kits.JUMPANDRUN) {
-                                if (player.isInParty() || Data.openedDuelGUI[player]!!.isInParty()) {
-                                    player.sendLocalizedMessage(Localization.CANT_USE_KIT_IN_PARTY_DE, Localization.CANT_USE_KIT_IN_PARTY_EN)
+                        if (Data.openedKitInventory.containsKey(player)) {
+                            if (Data.openedKitInventory[player] == Data.KitInventories.DUEL) {
+                                if (kit == Kits.JUMPANDRUN) {
+                                    if (player.isInParty() || Data.openedDuelGUI[player]!!.isInParty()) {
+                                        player.sendLocalizedMessage(
+                                            Localization.CANT_USE_KIT_IN_PARTY_DE,
+                                            Localization.CANT_USE_KIT_IN_PARTY_EN
+                                        )
+                                        return@listen
+                                    }
+                                }
+                                Data.openedDuelGUI[player]?.let { it1 -> player.duel(it1, kit) }
+
+                            } else if (Data.openedKitInventory[player] == Data.KitInventories.SPLITPARTY) {
+                                val team = Party.get(player)!!
+                                if (kit == Kits.JUMPANDRUN) {
+                                    player.sendLocalizedMessage(
+                                        Localization.CANT_USE_KIT_IN_PARTY_DE,
+                                        Localization.CANT_USE_KIT_IN_PARTY_EN
+                                    )
                                     return@listen
                                 }
-                            }
-                            Data.openedDuelGUI[player]?.let { it1 -> player.duel(it1, kit) }
-
-                        } else if (Data.openedKitInventory[player] == Data.KitInventories.SPLITPARTY) {
-                            val team = Party.get(player)!!
-                            if (kit == Kits.JUMPANDRUN) {
-                                player.sendLocalizedMessage(Localization.CANT_USE_KIT_IN_PARTY_DE, Localization.CANT_USE_KIT_IN_PARTY_EN)
-                                return@listen
-                            }
-                            Duel.create(team.getSplitTeams().first, team.getSplitTeams().second, kit)
-                        } else if (Data.openedKitInventory[player] == Data.KitInventories.TOURNAMENT)
-                            Tournament.createPublic(player, kit)
-                        player.closeInventory()
+                                Duel.create(team.getSplitTeams().first, team.getSplitTeams().second, kit)
+                            } else if (Data.openedKitInventory[player] == Data.KitInventories.TOURNAMENT)
+                                Tournament.createPublic(player, kit)
+                            player.closeInventory()
+                        }
                     }
                 }
             }
