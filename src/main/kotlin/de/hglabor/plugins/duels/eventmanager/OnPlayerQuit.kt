@@ -23,7 +23,6 @@ object OnPlayerQuit {
         listen<PlayerQuitEvent>(EventPriority.HIGHEST) {
             val player = it.player
             it.quitMessage = null
-            broadcast("${KColors.PALEVIOLETRED}← ${KColors.GRAY}${player.displayName}")
 
             async {
                 val playerStats = PlayerStats.get(player)

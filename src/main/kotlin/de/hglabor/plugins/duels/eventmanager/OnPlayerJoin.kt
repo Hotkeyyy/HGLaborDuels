@@ -28,8 +28,6 @@ object OnPlayerJoin {
             async {
                 PlayerStats.get(player)
                 PlayerSettings.get(player)
-                val joinMessage = "${KColors.CHARTREUSE}→ ${KColors.POWDERBLUE}${player.name}"
-                onlineSenders.forEach { all -> all.sendMessage(joinMessage) }
             }
         }
     }

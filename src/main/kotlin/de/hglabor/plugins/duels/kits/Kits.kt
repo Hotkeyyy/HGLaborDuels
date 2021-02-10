@@ -8,6 +8,8 @@ import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.extensions.bukkit.feedSaturate
 import net.axay.kspigot.extensions.bukkit.heal
 import net.axay.kspigot.items.*
+import net.axay.kspigot.utils.hasMark
+import net.axay.kspigot.utils.mark
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
@@ -45,8 +47,8 @@ enum class Kits {
         val playerQueue = hashMapOf<Player, Kits>()
         val inGame = hashMapOf<Kits, ArrayList<Player>>()
 
-        fun guiItem(material: Material, name: String, description: String?): ItemStack {
-            return itemStack(material) {
+        fun guiItem(kit: Kits, material: Material, name: String, description: String?): () -> ItemStack = {
+            itemStack(material) {
                 meta {
                     this.name = "${KColors.DEEPSKYBLUE}$name"
                     if (description != null)
@@ -54,7 +56,16 @@ enum class Kits {
                     flag(ItemFlag.HIDE_ATTRIBUTES)
                     flag(ItemFlag.HIDE_POTION_EFFECTS)
                 }
+                mark(kit.toString().toLowerCase())
             }
+        }
+
+        fun ItemStack.getKit(): Kits? {
+            for (kit in Kits.values()) {
+                if (hasMark(kit.toString().toLowerCase()))
+                    return kit.toString().toLowerCase()
+            }
+            return null
         }
 
         fun random(): Kits {

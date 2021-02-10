@@ -9,7 +9,7 @@ import org.bukkit.entity.Player
 
 class Anchor : Kit(Kits.ANCHOR) {
     override val name = "Anchor"
-    override fun itemInGUIs() = Kits.guiItem(Material.ANVIL, name, "Soup")
+    override fun itemInGUIs() = Kits.guiItem(Kits.ANCHOR, Material.ANVIL, name, "Soup")
     override val arenaTag = ArenaTags.NONE
     override val type = KitType.SOUP
     override val specials = listOf(null)

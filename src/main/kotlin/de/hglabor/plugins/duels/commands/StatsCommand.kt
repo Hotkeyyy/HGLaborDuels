@@ -24,16 +24,7 @@ object StatsCommand : CommandExecutor {
             var target: OfflinePlayer
             var targetIsOtherPlayer = false
 
-            /* player.sendMessage("${KColors.TOMATO}Stats are disbaled until the final release")
-            return false*/
-
             if (args.size == 1) {
-                if (args[0].equals("reset", true)) {
-                    MongoManager.playerStatsCollection.drop()
-                    MongoManager.playerSettingsCollection.drop()
-                    return true
-                }
-
                 targetName = args[0]
                 target = Bukkit.getOfflinePlayer(targetName)
                 if (PlayerStats.exist(target.uniqueId)) {

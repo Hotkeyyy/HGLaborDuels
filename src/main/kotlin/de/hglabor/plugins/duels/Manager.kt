@@ -1,10 +1,5 @@
 package de.hglabor.plugins.duels
 
-import com.comphenix.protocol.PacketType
-import com.comphenix.protocol.ProtocolLibrary
-import com.comphenix.protocol.events.ListenerPriority
-import com.comphenix.protocol.events.PacketAdapter
-import com.comphenix.protocol.events.PacketEvent
 import de.hglabor.plugins.duels.arenas.ArenaTags
 import de.hglabor.plugins.duels.arenas.Arenas
 import de.hglabor.plugins.duels.commands.*
@@ -12,8 +7,6 @@ import de.hglabor.plugins.duels.data.DataHolder
 import de.hglabor.plugins.duels.data.PlayerSettings
 import de.hglabor.plugins.duels.data.PlayerStats
 import de.hglabor.plugins.duels.database.MongoManager
-import de.hglabor.plugins.duels.guis.overview.DuelPlayerDataOverviewGUI
-import de.hglabor.plugins.duels.guis.overview.DuelTeamOverviewGUI
 import de.hglabor.plugins.duels.eventmanager.*
 import de.hglabor.plugins.duels.eventmanager.arena.CreateArenaListener
 import de.hglabor.plugins.duels.eventmanager.arena.OnChunkUnload
@@ -22,7 +15,9 @@ import de.hglabor.plugins.duels.eventmanager.soupsimulator.SoupsimulatorEvents
 import de.hglabor.plugins.duels.functionality.SoupHealing
 import de.hglabor.plugins.duels.guis.ChooseKitGUI
 import de.hglabor.plugins.duels.guis.PlayerSettingsGUI
-import de.hglabor.plugins.duels.guis.QueueGUI
+import de.hglabor.plugins.duels.guis.QueueGUI2
+import de.hglabor.plugins.duels.guis.overview.DuelPlayerDataOverviewGUI
+import de.hglabor.plugins.duels.guis.overview.DuelTeamOverviewGUI
 import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.protection.Protection
@@ -31,13 +26,11 @@ import de.hglabor.plugins.duels.spawn.SetSpawnCommand
 import de.hglabor.plugins.duels.utils.CreateFiles
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
 import de.hglabor.plugins.duels.utils.WorldManager
-import de.hglabor.plugins.ffa.util.PacketByteBuf
 import de.hglabor.plugins.staff.commands.FollowCommand
 import de.hglabor.plugins.staff.commands.StaffmodeCommand
 import de.hglabor.plugins.staff.eventmanager.StaffOnInteract
 import de.hglabor.plugins.staff.eventmanager.StaffOnInventoryClick
 import de.hglabor.plugins.staff.eventmanager.StaffOnItemDrop
-import io.netty.buffer.Unpooled
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.extensions.broadcast
 import net.axay.kspigot.extensions.bukkit.info
@@ -46,16 +39,9 @@ import net.axay.kspigot.extensions.console
 import net.axay.kspigot.extensions.onlinePlayers
 import net.axay.kspigot.main.KSpigot
 import net.axay.kspigot.sound.sound
-import net.minecraft.server.v1_16_R3.MinecraftKey
-import net.minecraft.server.v1_16_R3.PacketDataSerializer
-import net.minecraft.server.v1_16_R3.PacketPlayInCustomPayload
-import net.minecraft.server.v1_16_R3.PacketPlayOutCustomPayload
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Sound
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer
-import org.bukkit.entity.Player
-import org.bukkit.plugin.messaging.StandardMessenger
 import java.io.File
 
 
@@ -141,13 +127,12 @@ class Manager : KSpigot() {
         OnChunkUnload.enable()
         OnBlockForm.enable()
         OnArrowPickUp.enable()
-        registerBlockHit()
 
         DuelPlayerDataOverviewGUI.enable()
         DuelTeamOverviewGUI.enable()
         PlayerSettingsGUI.enable()
         ChooseKitGUI.enable()
-        QueueGUI.enable()
+        QueueGUI2.enable()
 
         getCommand("challenge")!!.setExecutor(ChallengeCommand)
         getCommand("setspawn")!!.setExecutor(SetSpawnCommand)
@@ -168,37 +153,6 @@ class Manager : KSpigot() {
 
         Arenas.enable()
         getCommand("tournament")!!.setExecutor(TournamentCommand)
-    }
-
-    private fun registerBlockHit() {
-        val protocolManager = ProtocolLibrary.getProtocolManager()
-        protocolManager.addPacketListener(object : PacketAdapter(this, ListenerPriority.NORMAL, PacketType.Play.Client.CUSTOM_PAYLOAD) {
-            override fun onPacketReceiving(event: PacketEvent) {
-                val packetContainer = event.packet
-                val packet = packetContainer.handle as PacketPlayInCustomPayload
-                val player: Player = event.player
-                if (packet.tag.toString().equals("noriskclient:blockhit", ignoreCase = true)) {
-                    val newPacket = PacketPlayOutCustomPayload(
-                        MinecraftKey(StandardMessenger.validateAndCorrectChannel("noriskclient:blockhit")),
-                        PacketDataSerializer(PacketByteBuf(Unpooled.buffer()).writeString(player.uniqueId.toString())))
-                    Bukkit.getScheduler().runTask(INSTANCE, Runnable {
-                        for (nearbyPlayer in player.world.getNearbyEntities(player.location, 15.0, 15.0, 15.0)) {
-                            if (nearbyPlayer !is Player) return@Runnable
-                            (nearbyPlayer as CraftPlayer).handle.playerConnection.sendPacket(newPacket)
-                        }
-                    })
-                } else if (packet.tag.toString().equals("noriskclient:release", ignoreCase = true)) {
-                    val newPacket = PacketPlayOutCustomPayload(MinecraftKey(StandardMessenger.validateAndCorrectChannel("noriskclient:release")),
-                        PacketDataSerializer(PacketByteBuf(Unpooled.buffer()).writeString(player.uniqueId.toString())))
-                    Bukkit.getScheduler().runTask(INSTANCE, Runnable {
-                        for (nearbyPlayer in player.world.getNearbyEntities(player.location, 15.0, 15.0, 15.0)) {
-                            if (nearbyPlayer !is Player) return@Runnable
-                            (nearbyPlayer as CraftPlayer).handle.playerConnection.sendPacket(newPacket)
-                        }
-                    })
-                }
-            }
-        })
     }
 
     private fun connectMongo() {

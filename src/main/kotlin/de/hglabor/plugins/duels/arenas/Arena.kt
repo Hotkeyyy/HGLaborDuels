@@ -45,15 +45,8 @@ class Arena(var loc: Pair<Int, Int>, val arenaName: String) {
             yamlConfiguration["${arenaName}.spawns.spawnTwo.x"] as Double,
             yamlConfiguration["${arenaName}.spawns.spawnTwo.y"] as Double + 2,
             yamlConfiguration["${arenaName}.spawns.spawnTwo.z"] as Double)
-        spawn1Loc = Location(world,
-                loc.first * Data.locationMultiplier,
-                100.0,
-                loc.second * Data.locationMultiplier).subtract(spawn1Loc).add(0.0, 2.0, 0.0)
-        spawn2Loc =
-            Location(world,
-                loc.first * Data.locationMultiplier,
-                100.0,
-                loc.second * Data.locationMultiplier).subtract(spawn2Loc).add(0.0, 2.0, 0.0)
+        spawn1Loc = Location(world, loc.first * Data.locationMultiplier, 100.0, loc.second * Data.locationMultiplier).subtract(spawn1Loc).add(0.0, 2.0, 0.0)
+        spawn2Loc = Location(world, loc.first * Data.locationMultiplier, 100.0, loc.second * Data.locationMultiplier).subtract(spawn2Loc).add(0.0, 2.0, 0.0)
         Data.usedLocationMultipliersXZ.add(loc)
     }
 

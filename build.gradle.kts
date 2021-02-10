@@ -49,17 +49,20 @@ dependencies {
     implementation(kotlin("reflect"))
 
     // SPIGOT
-    compileOnly("org.spigotmc", "spigot", "1.16.4-R0.1-SNAPSHOT")
+    //compileOnly("org.spigotmc", "spigot", "1.16.5-R0.1-SNAPSHOT")
+
+    // PAPER
+    compileOnly("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT")
+
 
     // KSPIGOT
-    implementation("net.axay", "KSpigot", "v1.16.4_R21")
+    implementation("net.axay", "KSpigot", "v1.16.5_R23")
 
     // KMONGO and MONGODB
     implementation("org.litote.kmongo", "kmongo-core", "4.2.3")
     implementation("org.litote.kmongo", "kmongo-serialization-mapping", "4.2.3")
 
-    implementation("com.intellectualsites.fawe:FAWE-Bukkit:1.16-462")
-    compileOnly("com.comphenix.protocol:ProtocolLib:4.6.0-SNAPSHOT")
+    implementation("com.intellectualsites.fawe:FAWE-Bukkit:1.16-583")
 }
 
 /*

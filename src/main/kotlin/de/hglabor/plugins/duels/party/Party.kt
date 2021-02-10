@@ -101,9 +101,10 @@ class Party(val leader: Player) {
         message.addExtra(one)
         message.addExtra(text)
         message.addExtra(two)
-        invited.spigot().sendMessage(message)
+        //TODO
+        invited.sendMessage(message)
 
-        taskRunLater(300, false) { invitedPlayers.remove(invited) }
+        taskRunLater(20*60, false) { invitedPlayers.remove(invited) }
     }
 
     fun addPlayer(player: Player) {
@@ -143,8 +144,7 @@ class Party(val leader: Player) {
             Localization.PARTY_PLAYER_WAS_KICKED_DE,
             Localization.PARTY_PLAYER_WAS_KICKED_EN,
             "%playerName",
-            player.name
-        )
+            player.name)
         player.sendLocalizedMessage(Localization.PARTY_YOU_WERE_KICKED_DE, Localization.PARTY_YOU_WERE_KICKED_EN)
         if (player.world.name != "world")
             player.reset()

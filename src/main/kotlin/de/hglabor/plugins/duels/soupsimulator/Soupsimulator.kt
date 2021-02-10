@@ -96,10 +96,8 @@ class Soupsimulator(val player: Player) {
                 val s = timer / 10
                 val ms = timer % 10
 
-                player.spigot().sendMessage(
-                    ChatMessageType.ACTION_BAR,
-                    *TextComponent.fromLegacyText("${KColors.DODGERBLUE}$s.$ms ${KColors.GRAY}Sec ${KColors.DARKGRAY}| ${KColors.DEEPSKYBLUE}${score}")
-                )
+                //TODO
+                player.sendActionBar("${KColors.DODGERBLUE}$s.$ms ${KColors.GRAY}Sec ${KColors.DARKGRAY}| ${KColors.DEEPSKYBLUE}${score}")
 
                 if (level.endsAfterTime) {
                     if (s == 30) {

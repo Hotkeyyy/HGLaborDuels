@@ -20,23 +20,17 @@ import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
 import de.hglabor.plugins.staff.utils.StaffData
-import net.axay.kspigot.chat.*
-import net.axay.kspigot.extensions.broadcast
+import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
 import net.axay.kspigot.items.name
 import net.axay.kspigot.runnables.*
 import net.axay.kspigot.utils.mark
 import net.md_5.bungee.api.ChatColor
-import net.md_5.bungee.api.chat.ClickEvent
-import net.md_5.bungee.api.chat.HoverEvent
-import net.md_5.bungee.api.chat.TextComponent
-import net.md_5.bungee.api.chat.hover.content.Text
 import org.bukkit.*
 import org.bukkit.block.Block
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
@@ -230,31 +224,21 @@ class Duel {
     fun teleportPlayersToSpawns() {
         sync {
             alivePlayers.forEach { player ->
-                if (teamOne.contains(player))
+                if (teamOne.contains(player)) {
                     player.teleport(arena.spawn1Loc)
-                else
+                    direction(player, arena.spawn2Loc)
+                } else {
                     player.teleport(arena.spawn2Loc)
+                    direction(player, arena.spawn1Loc)
+                }
 
-                player.addPotionEffect(PotionEffect(PotionEffectType.SLOW, Int.MAX_VALUE, 200))
-                player.addPotionEffect(PotionEffect(PotionEffectType.JUMP, Int.MAX_VALUE, 200))
+                player.addPotionEffect(PotionEffect(PotionEffectType.SLOW, Int.MAX_VALUE, 200, false, false))
+                player.addPotionEffect(PotionEffect(PotionEffectType.JUMP, Int.MAX_VALUE, 200, false, false))
                 player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 200, false, false))
             }
-            setDirectionOfPlayers()
         }
     }
 
-    fun setDirectionOfPlayers() {
-        task(true, 5) {
-            sync {
-                alivePlayers.forEach { player ->
-                    if (teamOne.contains(player))
-                        direction(player, arena.spawn2Loc)
-                    else
-                        direction(player, arena.spawn1Loc)
-                }
-            }
-        }
-    }
 
     fun direction(player: Player, loc: Location) {
         val dir = loc.clone().subtract(player.eyeLocation).toVector()
@@ -278,14 +262,14 @@ class Duel {
             loser = getTeam(player)
             winner = getOtherTeam(player)
             stop()
-        } else {
+        } /*else {
             val items = arrayListOf<ItemStack>()
             items.addAll(player.inventory.contents)
             items.addAll(player.inventory.armorContents)
             items.forEach { item ->
                 if (item.type != Material.AIR) player.world.dropItem(player.location, item)
             }
-        }
+        }*/
         addSpectator(player, false)
         val stats = PlayerStats.get(player)
         stats.addDeath()
@@ -307,14 +291,14 @@ class Duel {
             loser = getTeam(player)
             winner = getOtherTeam(player)
             stop()
-        } else {
+        } /*else {
             val items = arrayListOf<ItemStack>()
             items.addAll(player.inventory.contents)
             items.addAll(player.inventory.armorContents)
             items.forEach { item ->
                 if (item.type != Material.AIR) player.world.dropItem(player.location, item)
             }
-        }
+        }*/
         player.reset()
     }
 
@@ -493,14 +477,13 @@ class Duel {
             sendMessage("${KColors.RED}Loser: ${KColors.DEEPSKYBLUE}Team One §8($teamOnePlayers§8)")
         }
 
-        val message = TextComponent("Click to open the duel overview")
+       /* val message = TextComponent("Click to open the duel overview")
         message.color = KColors.GRAY
         message.isItalic = true
-        message.setClickEvent(ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dueloverview $ID"))
+        message.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dueloverview $ID")
 
-        playersAndSpecs.forEach {
-            it.spigot().sendMessage(message)
-        }
+        // TODO
+        playersAndSpecs.forEach { it.sendMessage(message) }*/
 
         sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                        ")
     }

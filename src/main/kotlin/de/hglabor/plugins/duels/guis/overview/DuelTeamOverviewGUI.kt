@@ -57,7 +57,7 @@ object DuelTeamOverviewGUI {
                     name = "${KColors.DODGERBLUE}Duel overview"
                 }
             }
-            inventory.setItem(18, teamOverview)
+            inventory.setItem(18, duelOverview)
         }
 
         for (i in 10..16)

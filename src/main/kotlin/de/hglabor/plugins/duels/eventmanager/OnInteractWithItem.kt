@@ -3,7 +3,7 @@ package de.hglabor.plugins.duels.eventmanager
 import de.hglabor.plugins.duels.functionality.PartyInventory
 import de.hglabor.plugins.duels.guis.PartyGameGUI
 import de.hglabor.plugins.duels.guis.PlayerSettingsGUI
-import de.hglabor.plugins.duels.guis.QueueGUI
+import de.hglabor.plugins.duels.guis.QueueGUI2
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.party.Party
 import de.hglabor.plugins.duels.protection.Protection.isRestricted
@@ -43,7 +43,7 @@ object OnInteractWithItem {
 
                 if (item.hasMark("queue")) {
                     it.isCancelled = true
-                    QueueGUI.open(it.player)
+                    QueueGUI2.open(it.player)
                 }
 
                 if (item.hasMark("createparty")) {

@@ -21,6 +21,10 @@ import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter
+import com.sk89q.worldedit.WorldEdit
+
+import com.sk89q.worldedit.EditSession
 
 
 val arenaFromPlayer = HashMap<Player, CreateArena>()
@@ -63,7 +67,6 @@ class CreateArena(val creator: Player) {
             return
         }
 
-
         val schemfile = File("arenas//$name.schematic")
 
         if (creator.localization("de"))
@@ -78,7 +81,6 @@ class CreateArena(val creator: Player) {
                 creator.sendMessage(Localization.ARENA_CREATION_FAILED_ALREADY_EXISTING_EN)
             return
         }
-
 
         // Position1 as NorthWest
         val newPosLocs = Locations.relocate(corner1!!, corner2!!)
@@ -114,34 +116,25 @@ class CreateArena(val creator: Player) {
         }
 
         // SAVE SCHEMATIC
+        val weWorld = BukkitWorld(world)
+        val pos1: BlockVector3 = Vector3.at(corner2!!.x, corner2!!.y, corner2!!.z).toBlockPoint()
+        val pos2: BlockVector3 = Vector3.at(corner1!!.x, corner1!!.y, corner1!!.z).toBlockPoint()
+        val region = CuboidRegion(weWorld, pos1, pos2)
+        val clipboard = BlockArrayClipboard(region)
 
-        val wep = Bukkit.getPluginManager().getPlugin("WorldEdit") as WorldEditPlugin
-        val session = wep.getSession(creator)
-        val player: com.sk89q.worldedit.entity.Player = wep.wrapPlayer(creator)
-        val editSession = session.createEditSession(player)
-        val closer = Closer.create()
         try {
-            val weWorld = BukkitWorld(world)
-            val pos1: BlockVector3 = Vector3.at(corner2!!.x, corner2!!.y, corner2!!.z).toBlockPoint()
-            val pos2: BlockVector3 = Vector3.at(corner1!!.x, corner1!!.y, corner1!!.z).toBlockPoint()
-            val region = CuboidRegion(weWorld, pos1, pos2)
-            val cb = BlockArrayClipboard(region)
-            val copy = ForwardExtentCopy(editSession, region, cb, region.minimumPoint)
-            Operations.completeLegacy(copy)
-            val config = wep.worldEdit.configuration
-            val dir = wep.worldEdit.getWorkingDirectoryFile(config.saveDir)
-            if (!dir.exists()) {
-                if (!dir.mkdirs()) {
-                    throw IOException("Could not create directory " + config.saveDir)
-                }
+            WorldEdit.getInstance().editSessionFactory.getEditSession(weWorld, -1).use { editSession ->
+                val forwardExtentCopy = ForwardExtentCopy(editSession, region, clipboard, region.minimumPoint)
+                forwardExtentCopy.isCopyingBiomes = true
+                forwardExtentCopy.isRemovingEntities = true
+                Operations.complete(forwardExtentCopy)
             }
-            val schematicFile = File("arenas//$name.schematic")
-            schematicFile.createNewFile()
 
-            val fos = closer.register(FileOutputStream(schematicFile))
-            val bos = closer.register(BufferedOutputStream(fos))
-            val writer = closer.register(BuiltInClipboardFormat.SPONGE_SCHEMATIC.getWriter(bos))
-            writer.write(cb)
+            val schematicFile = File("arenas//$name.schematic")
+            BuiltInClipboardFormat.SPONGE_SCHEMATIC.getWriter(FileOutputStream(schematicFile)).use { writer ->
+                writer.write(clipboard)
+            }
+
         } catch (e: IOException) {
             e.printStackTrace()
             if (creator.localization("de"))
@@ -157,7 +150,6 @@ class CreateArena(val creator: Player) {
                     creator.sendMessage(Localization.ARENA_CREATION_SUCCESS_EN)
                 arenaFromPlayer.remove(creator)
                 Arenas.allArenas[name] = Pair(tag, Arenas.getClipboard(name))
-                closer.close()
             } catch (ignore: IOException) {
             }
         }

@@ -9,6 +9,7 @@ import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
+import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
 import net.axay.kspigot.chat.KColors
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -52,6 +53,15 @@ object ArenaCommand : CommandExecutor {
                             }
 
                             player.sendMessage("${Localization.PREFIX}Arenas ${KColors.DARKGRAY}» ${KColors.GRAY}$message")
+                            return true
+                        }
+                    } else if (args.size == 2) {
+                        if (args[0].equals("setname", true)) {
+                            arenaFromPlayer[player]?.name = args[1]
+                            player.sendLocalizedMessage(
+                                Localization.ARENA_CREATION_LISTENER_SET_NAME_DE,
+                                Localization.ARENA_CREATION_LISTENER_SET_NAME_EN,
+                                "%arenaName%", args[1])
                             return true
                         }
                     }

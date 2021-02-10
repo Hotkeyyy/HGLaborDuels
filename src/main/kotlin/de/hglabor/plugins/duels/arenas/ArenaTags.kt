@@ -26,7 +26,6 @@ enum class ArenaTags(val material: Material) {
                             CreateArenaGUI.openCreateArenaGUI(it.player)
                         }
                     ))
-                broadcast(tag.material.toString())
             }
         }
     }
