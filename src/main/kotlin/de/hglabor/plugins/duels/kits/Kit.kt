@@ -9,7 +9,7 @@ val kitMap = hashMapOf<Kits, Kit>()
 abstract class Kit(val kits: Kits) {
 
     abstract val name: String
-    abstract fun itemInGUIs(): ItemStack
+    abstract val itemInGUIs: ItemStack
     abstract val arenaTag: ArenaTags
     abstract val type: KitType
     abstract val specials: List<Specials?>

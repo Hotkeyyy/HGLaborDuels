@@ -69,7 +69,7 @@ object PlayerFunctions {
                 "%playerName%", "${player.name}")
         }
 
-        /*TODO
+
         val message = TextComponent("")
         val one = TextComponent("  [")
         one.color = KColors.DARKGRAY
@@ -86,7 +86,7 @@ object PlayerFunctions {
         message.addExtra(text)
         message.addExtra(two)
         target.sendMessage(message)
-        target.playSound(target.location, Sound.BLOCK_NOTE_BLOCK_PLING, 3f, 1f)*/
+        target.playSound(target.location, Sound.BLOCK_NOTE_BLOCK_PLING, 3f, 1f)
 
         Data.challengeKit[player] = kit
         Data.challenged[player] = target

@@ -27,6 +27,8 @@ import net.axay.kspigot.items.name
 import net.axay.kspigot.runnables.*
 import net.axay.kspigot.utils.mark
 import net.md_5.bungee.api.ChatColor
+import net.md_5.bungee.api.chat.ClickEvent
+import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.*
 import org.bukkit.block.Block
 import org.bukkit.configuration.file.YamlConfiguration
@@ -477,13 +479,13 @@ class Duel {
             sendMessage("${KColors.RED}Loser: ${KColors.DEEPSKYBLUE}Team One §8($teamOnePlayers§8)")
         }
 
-       /* val message = TextComponent("Click to open the duel overview")
+        val message = TextComponent("Click to open the duel overview")
         message.color = KColors.GRAY
         message.isItalic = true
         message.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dueloverview $ID")
 
-        // TODO
-        playersAndSpecs.forEach { it.sendMessage(message) }*/
+
+        playersAndSpecs.forEach { it.sendMessage(message) }
 
         sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                        ")
     }

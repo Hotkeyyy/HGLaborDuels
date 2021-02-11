@@ -2,6 +2,7 @@ package de.hglabor.plugins.duels.kits.kit
 
 import de.hglabor.plugins.duels.arenas.ArenaTags
 import de.hglabor.plugins.duels.guis.ChooseKitGUI
+import de.hglabor.plugins.duels.guis.QueueGUI
 import de.hglabor.plugins.duels.kits.Kit
 import de.hglabor.plugins.duels.kits.KitType
 import de.hglabor.plugins.duels.kits.Kits
@@ -17,7 +18,7 @@ import org.bukkit.inventory.ItemFlag
 
 class OnlySword : Kit(Kits.ONLYSWORD) {
     override val name = "Only Sword"
-    override fun itemInGUIs() = Kits.guiItem(Material.GOLDEN_SWORD, name, null)
+    override val itemInGUIs = Kits.guiItem(Material.GOLDEN_SWORD, name, null)
     override val arenaTag = ArenaTags.NONE
     override val type = KitType.NONE
     override val specials = listOf(null)
@@ -39,7 +40,7 @@ class OnlySword : Kit(Kits.ONLYSWORD) {
     }
 
     override fun enable() {
-        ChooseKitGUI.addContent(ChooseKitGUI.KitsGUICompoundElement(itemInGUIs()))
         kitMap[kits] = this
+        ChooseKitGUI.addContent(ChooseKitGUI.KitsGUICompoundElement(itemInGUIs))
     }
 }

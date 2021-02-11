@@ -2,6 +2,7 @@ package de.hglabor.plugins.duels.kits.kit
 
 import de.hglabor.plugins.duels.arenas.ArenaTags
 import de.hglabor.plugins.duels.guis.ChooseKitGUI
+import de.hglabor.plugins.duels.guis.QueueGUI
 import de.hglabor.plugins.duels.kits.*
 import net.axay.kspigot.items.flag
 import net.axay.kspigot.items.itemStack
@@ -17,7 +18,7 @@ import org.bukkit.potion.PotionEffectType
 
 class Underwater : Kit(Kits.UNDERWATER) {
     override val name = "Underwater"
-    override fun itemInGUIs() = Kits.guiItem(Material.TROPICAL_FISH_BUCKET, name, "Soup")
+    override val itemInGUIs = Kits.guiItem(Material.TROPICAL_FISH_BUCKET, name, "Soup")
     override val arenaTag = ArenaTags.UNDERWATER
     override val type = KitType.SOUP
     override val specials = listOf(null)
@@ -45,7 +46,7 @@ class Underwater : Kit(Kits.UNDERWATER) {
     }
 
     override fun enable() {
-        ChooseKitGUI.addContent(ChooseKitGUI.KitsGUICompoundElement(itemInGUIs()))
         kitMap[kits] = this
+        ChooseKitGUI.addContent(ChooseKitGUI.KitsGUICompoundElement(itemInGUIs))
     }
 }

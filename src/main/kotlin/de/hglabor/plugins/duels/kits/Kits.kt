@@ -1,12 +1,17 @@
 package de.hglabor.plugins.duels.kits
 
 import de.hglabor.plugins.duels.Manager
+import de.hglabor.plugins.duels.guis.ChooseKitGUI
+import de.hglabor.plugins.duels.guis.QueueGUI
 import de.hglabor.plugins.duels.kits.kit.*
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import net.axay.kspigot.chat.KColors
+import net.axay.kspigot.extensions.broadcast
 import net.axay.kspigot.extensions.bukkit.feedSaturate
 import net.axay.kspigot.extensions.bukkit.heal
+import net.axay.kspigot.gui.ForInventoryFiveByNine
+import net.axay.kspigot.gui.elements.GUICompoundElement
 import net.axay.kspigot.items.*
 import net.axay.kspigot.utils.hasMark
 import net.axay.kspigot.utils.mark
@@ -21,25 +26,12 @@ enum class KitType { SOUP, POT, NONE }
 enum class Specials { NINJA, NODAMAGE, DEADINWATER, PEARLCOOLDOWN, HITCOOLDOWN, JUMPANDRUN, INVINICIBLE }
 
 enum class Kits {
-    ANCHOR,
-    ARCHER,
-    CLASSIC,
-    EHG,
-    FEAST,
-    GLADIATOR,
-    ICEFISHING,
-    JUMPANDRUN,
-    NINJA,
-    NODEBUFF,
-    ONEBAR,
-    ONLYSWORD,
-    RANDOM,
-    SPEED,
-    SUMO,
-    UHC,
-    UNDERWATER;
+    ANCHOR, ARCHER, CLASSIC, EHG, FEAST, GLADIATOR, ICEFISHING,
+    JUMPANDRUN, NINJA, NODEBUFF, ONEBAR, ONLYSWORD, RANDOM, SPEED,
+    SUMO, UHC, UNDERWATER;
 
     companion object {
+        val queueItems = arrayListOf<GUICompoundElement<ForInventoryFiveByNine>>()
         val cooldownStart = hashMapOf<Player, Long>()
         val cooldownTime = hashMapOf<Player, Long>()
         val cooldownTask = hashMapOf<Player, BukkitTask>()
@@ -47,8 +39,8 @@ enum class Kits {
         val playerQueue = hashMapOf<Player, Kits>()
         val inGame = hashMapOf<Kits, ArrayList<Player>>()
 
-        fun guiItem(kit: Kits, material: Material, name: String, description: String?): () -> ItemStack = {
-            itemStack(material) {
+        fun guiItem(material: Material, name: String, description: String?): ItemStack {
+            return itemStack(material) {
                 meta {
                     this.name = "${KColors.DEEPSKYBLUE}$name"
                     if (description != null)
@@ -56,14 +48,15 @@ enum class Kits {
                     flag(ItemFlag.HIDE_ATTRIBUTES)
                     flag(ItemFlag.HIDE_POTION_EFFECTS)
                 }
-                mark(kit.toString().toLowerCase())
             }
         }
 
         fun ItemStack.getKit(): Kits? {
-            for (kit in Kits.values()) {
-                if (hasMark(kit.toString().toLowerCase()))
-                    return kit.toString().toLowerCase()
+            val itemMeta = this.itemMeta
+            for (kit in values()) {
+                if (itemMeta.name!!.contains(kit.info.name)) {
+                    return kit
+                }
             }
             return null
         }
@@ -75,6 +68,8 @@ enum class Kits {
         }
 
         fun enable() {
+            values().forEach { inGame[it] = arrayListOf(); queue[it] = arrayListOf() }
+
             Anchor().enable()
             Archer().enable()
             Classic().enable()
@@ -93,7 +88,7 @@ enum class Kits {
             UHC().enable()
             Underwater().enable()
 
-            values().forEach { inGame[it] = arrayListOf(); queue[it] = arrayListOf() }
+            QueueGUI.updateContents()
         }
 
         fun setCooldown(player: Player, seconds: Long) {

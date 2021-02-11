@@ -2,6 +2,7 @@ package de.hglabor.plugins.duels.kits.kit
 
 import de.hglabor.plugins.duels.arenas.ArenaTags
 import de.hglabor.plugins.duels.guis.ChooseKitGUI
+import de.hglabor.plugins.duels.guis.QueueGUI
 import de.hglabor.plugins.duels.kits.*
 import net.axay.kspigot.items.flag
 import net.axay.kspigot.items.itemStack
@@ -13,7 +14,7 @@ import org.bukkit.inventory.ItemFlag
 
 class IceFishing : Kit(Kits.ICEFISHING) {
     override val name = "Ice Fishing"
-    override fun itemInGUIs() = Kits.guiItem(Material.FISHING_ROD, name, "Pull your enemy into the water")
+    override val itemInGUIs = Kits.guiItem(Material.FISHING_ROD, name, "Pull your enemy into the water")
     override val arenaTag = ArenaTags.ICEFISHING
     override val type = KitType.NONE
     override val specials = listOf(Specials.NODAMAGE, Specials.DEADINWATER)
@@ -28,7 +29,7 @@ class IceFishing : Kit(Kits.ICEFISHING) {
     }
 
     override fun enable() {
-        ChooseKitGUI.addContent(ChooseKitGUI.KitsGUICompoundElement(itemInGUIs()))
         kitMap[kits] = this
+        ChooseKitGUI.addContent(ChooseKitGUI.KitsGUICompoundElement(itemInGUIs))
     }
 }

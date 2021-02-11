@@ -101,7 +101,6 @@ class Party(val leader: Player) {
         message.addExtra(one)
         message.addExtra(text)
         message.addExtra(two)
-        //TODO
         invited.sendMessage(message)
 
         taskRunLater(20*60, false) { invitedPlayers.remove(invited) }

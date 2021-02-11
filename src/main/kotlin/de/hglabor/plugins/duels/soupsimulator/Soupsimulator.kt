@@ -96,7 +96,6 @@ class Soupsimulator(val player: Player) {
                 val s = timer / 10
                 val ms = timer % 10
 
-                //TODO
                 player.sendActionBar("${KColors.DODGERBLUE}$s.$ms ${KColors.GRAY}Sec ${KColors.DARKGRAY}| ${KColors.DEEPSKYBLUE}${score}")
 
                 if (level.endsAfterTime) {

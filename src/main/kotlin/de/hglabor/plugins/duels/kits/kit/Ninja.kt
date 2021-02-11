@@ -5,6 +5,7 @@ import de.hglabor.plugins.duels.data.PlayerSettings
 import de.hglabor.plugins.duels.duel.GameState
 import de.hglabor.plugins.duels.guis.ChooseKitGUI
 import de.hglabor.plugins.duels.guis.PlayerSettingsGUI
+import de.hglabor.plugins.duels.guis.QueueGUI
 import de.hglabor.plugins.duels.kits.*
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
@@ -19,7 +20,7 @@ import kotlin.math.sin
 
 class Ninja : Kit(Kits.NINJA) {
     override val name = "Ninja"
-    override fun itemInGUIs() = Kits.guiItem(Material.INK_SAC, name, "Soup")
+    override val itemInGUIs = Kits.guiItem(Material.INK_SAC, name, "Soup")
     override val arenaTag = ArenaTags.NONE
     override val type = KitType.SOUP
     override val specials = listOf(Specials.NINJA)
@@ -36,8 +37,8 @@ class Ninja : Kit(Kits.NINJA) {
     }
 
     override fun enable() {
-        ChooseKitGUI.addContent(ChooseKitGUI.KitsGUICompoundElement(itemInGUIs()))
         kitMap[kits] = this
+        ChooseKitGUI.addContent(ChooseKitGUI.KitsGUICompoundElement(itemInGUIs))
 
         listen<PlayerToggleSneakEvent> {
             val player = it.player
@@ -61,6 +62,5 @@ class Ninja : Kit(Kits.NINJA) {
                 }
             }
         }
-        kitMap[kits] = this
     }
 }

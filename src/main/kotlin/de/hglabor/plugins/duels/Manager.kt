@@ -15,7 +15,7 @@ import de.hglabor.plugins.duels.eventmanager.soupsimulator.SoupsimulatorEvents
 import de.hglabor.plugins.duels.functionality.SoupHealing
 import de.hglabor.plugins.duels.guis.ChooseKitGUI
 import de.hglabor.plugins.duels.guis.PlayerSettingsGUI
-import de.hglabor.plugins.duels.guis.QueueGUI2
+import de.hglabor.plugins.duels.guis.QueueGUI
 import de.hglabor.plugins.duels.guis.overview.DuelPlayerDataOverviewGUI
 import de.hglabor.plugins.duels.guis.overview.DuelTeamOverviewGUI
 import de.hglabor.plugins.duels.kits.Kits
@@ -117,6 +117,7 @@ class Manager : KSpigot() {
         OnBuild.enable()
         OnPlayerCommandPreprocess.enable()
         OnInteractAtEntity.enable()
+        OnInteractWithPressureplate.enable()
         OnDropItem.enable()
         OnWorldLoad.enable()
         OnPotionSplash.enable()
@@ -132,7 +133,7 @@ class Manager : KSpigot() {
         DuelTeamOverviewGUI.enable()
         PlayerSettingsGUI.enable()
         ChooseKitGUI.enable()
-        QueueGUI2.enable()
+        QueueGUI.enable()
 
         getCommand("challenge")!!.setExecutor(ChallengeCommand)
         getCommand("setspawn")!!.setExecutor(SetSpawnCommand)

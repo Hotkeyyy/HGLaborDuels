@@ -3,7 +3,7 @@ package de.hglabor.plugins.duels.eventmanager
 import de.hglabor.plugins.duels.functionality.PartyInventory
 import de.hglabor.plugins.duels.guis.PartyGameGUI
 import de.hglabor.plugins.duels.guis.PlayerSettingsGUI
-import de.hglabor.plugins.duels.guis.QueueGUI2
+import de.hglabor.plugins.duels.guis.QueueGUI
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.party.Party
 import de.hglabor.plugins.duels.protection.Protection.isRestricted
@@ -13,6 +13,7 @@ import de.hglabor.plugins.staff.utils.StaffData.isInStaffMode
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.events.isRightClick
+import net.axay.kspigot.gui.openGUI
 import net.axay.kspigot.runnables.async
 import net.axay.kspigot.utils.hasMark
 import org.bukkit.event.player.PlayerInteractEvent
@@ -43,7 +44,7 @@ object OnInteractWithItem {
 
                 if (item.hasMark("queue")) {
                     it.isCancelled = true
-                    QueueGUI2.open(it.player)
+                    it.player.openGUI(QueueGUI.gui)
                 }
 
                 if (item.hasMark("createparty")) {

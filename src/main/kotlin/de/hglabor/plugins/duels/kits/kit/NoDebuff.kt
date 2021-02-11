@@ -2,6 +2,7 @@ package de.hglabor.plugins.duels.kits.kit
 
 import de.hglabor.plugins.duels.arenas.ArenaTags
 import de.hglabor.plugins.duels.guis.ChooseKitGUI
+import de.hglabor.plugins.duels.guis.QueueGUI
 import de.hglabor.plugins.duels.kits.*
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
@@ -35,7 +36,7 @@ class NoDebuff : Kit(Kits.NODEBUFF) {
     }
 
     override val name = "NoDebuff"
-    override fun itemInGUIs() = Kits.guiItem(Material.SPLASH_POTION, name, "PotPvP")
+    override val itemInGUIs = Kits.guiItem(Material.SPLASH_POTION, name, "PotPvP")
     override val arenaTag = ArenaTags.NONE
     override val type = KitType.NONE
     override val specials = listOf(Specials.PEARLCOOLDOWN)
@@ -67,8 +68,8 @@ class NoDebuff : Kit(Kits.NODEBUFF) {
     }
 
     override fun enable() {
-        ChooseKitGUI.addContent(ChooseKitGUI.KitsGUICompoundElement(itemInGUIs()))
         kitMap[kits] = this
+        ChooseKitGUI.addContent(ChooseKitGUI.KitsGUICompoundElement(itemInGUIs))
 
         listen<PlayerInteractEvent> {
             val player = it.player
