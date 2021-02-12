@@ -15,6 +15,7 @@ import org.bukkit.inventory.EquipmentSlot
 object OnChallenge {
     fun enable() {
         listen<PlayerInteractAtEntityEvent> {
+            if(it.hand == EquipmentSlot.OFF_HAND) return@listen
             if (it.rightClicked is Player) {
                 val player = it.player
                 val target = it.rightClicked as Player

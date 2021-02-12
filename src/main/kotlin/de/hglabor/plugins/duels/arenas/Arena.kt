@@ -1,5 +1,7 @@
 package de.hglabor.plugins.duels.arenas
 
+import com.boydti.fawe.FaweAPI
+import com.boydti.fawe.`object`.RelightMode
 import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.bukkit.BukkitWorld
 import com.sk89q.worldedit.extent.clipboard.Clipboard
@@ -21,6 +23,12 @@ import java.io.FileInputStream
 
 
 class Arena(var loc: Pair<Int, Int>, val arenaName: String) {
+
+    companion object {
+        fun getInfo(arenaName: String): Pair<ArenaTags, Clipboard> {
+            return Arenas.allArenas[arenaName]!!
+        }
+    }
     val file = File("arenas//arenas.yml")
     val yamlConfiguration = YamlConfiguration.loadConfiguration(file)
 
@@ -60,15 +68,23 @@ class Arena(var loc: Pair<Int, Int>, val arenaName: String) {
                 .build()
             Operations.complete(operation)
         }
+
+        val v1: BlockVector3 =
+            Vector3.at(loc.first * Data.locationMultiplier, 100.0, loc.second * Data.locationMultiplier).toBlockPoint()
+        val v2: BlockVector3 =
+            Vector3.at(loc.first * Data.locationMultiplier + getInfo(arenaName).second.dimensions?.x!!,
+                100.0 + getInfo(arenaName).second.dimensions?.y!!, loc.second * Data.locationMultiplier + getInfo(arenaName).second.dimensions?.z!!).toBlockPoint()
+        val region = CuboidRegion(v1, v2)
+        FaweAPI.fixLighting(bukkitWorld, region, null, RelightMode.OPTIMAL)
     }
 
 
     fun removeSchematic() {
         val v1: BlockVector3 =
-            Vector3.at(loc.first * Data.locationMultiplier, 95.0, loc.second * Data.locationMultiplier).toBlockPoint()
+            Vector3.at(loc.first * Data.locationMultiplier, 100.0, loc.second * Data.locationMultiplier).toBlockPoint()
         val v2: BlockVector3 =
-            Vector3.at(loc.first * Data.locationMultiplier + 150, 95.0 + 75, loc.second * Data.locationMultiplier + 150)
-                .toBlockPoint()
+            Vector3.at(loc.first * Data.locationMultiplier + getInfo(arenaName).second.dimensions?.x!!,
+                100.0 + getInfo(arenaName).second.dimensions?.y!!, loc.second * Data.locationMultiplier + getInfo(arenaName).second.dimensions?.z!!).toBlockPoint()
         val region = CuboidRegion(bukkitWorld, v1, v2)
 
         for (bv: BlockVector3 in region) {

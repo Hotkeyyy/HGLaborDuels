@@ -236,17 +236,19 @@ class Duel {
 
                 player.addPotionEffect(PotionEffect(PotionEffectType.SLOW, Int.MAX_VALUE, 200, false, false))
                 player.addPotionEffect(PotionEffect(PotionEffectType.JUMP, Int.MAX_VALUE, 200, false, false))
-                player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 200, false, false))
+                //player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 200, false, false))
             }
         }
     }
 
 
     fun direction(player: Player, loc: Location) {
-        val dir = loc.clone().subtract(player.eyeLocation).toVector()
-        val finalLoc = player.location.setDirection(dir)
-        finalLoc.pitch = 0f
-        player.teleport(finalLoc)
+        task(true, 5) {
+            val dir = loc.clone().subtract(player.eyeLocation).toVector()
+            val finalLoc = player.location.setDirection(dir)
+            finalLoc.pitch = 0f
+            player.teleport(finalLoc)
+        }
     }
 
     fun playerDied(player: Player, germanMessage: String, englishMessage: String) {
