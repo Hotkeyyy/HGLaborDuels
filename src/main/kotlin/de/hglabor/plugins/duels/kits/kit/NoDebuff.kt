@@ -80,6 +80,8 @@ class NoDebuff : Kit(Kits.NODEBUFF) {
                         if (player.inventory.itemInMainHand.type == Material.ENDER_PEARL) {
                             if (!Kits.hasCooldown(player))
                                 Kits.setCooldown(player, 15)
+                            else
+                                it.isCancelled = true
                         }
                     }
                 }

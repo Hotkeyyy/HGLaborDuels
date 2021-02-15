@@ -31,11 +31,14 @@ object PartyCommand : CommandExecutor {
 
             if (args.size == 1) {
                 if (args[0].equals("create", true)) {
-                    if (!player.isInParty()) {
-                        Party(player).create(true)
-                        PartyInventory.giveItems(player)
+                    if (!player.isInFight()) {
+                        if (!player.isInParty()) {
+                            Party(player).create(true)
+                        } else
+                            player.sendLocalizedMessage(
+                                Localization.PARTY_COMMAND_ALREADY_IN_PARTY_DE, Localization.PARTY_COMMAND_ALREADY_IN_PARTY_EN)
                     } else
-                        player.sendLocalizedMessage(Localization.PARTY_COMMAND_ALREADY_IN_PARTY_DE, Localization.PARTY_COMMAND_ALREADY_IN_PARTY_EN)
+                        player.sendLocalizedMessage(Localization.CANT_DO_THAT_RIGHT_NOW_DE, Localization.CANT_DO_THAT_RIGHT_NOW_DE)
 
                 } else if (args[0].equals("leave", true)) {
                     if (player.isInParty()) {
@@ -66,7 +69,6 @@ object PartyCommand : CommandExecutor {
                             val party = Party.getOrCreate(player, true)
                             if (party.leader == player)
                                 if (!party.invitedPlayers.contains(target)) {
-                                    async { PartyInventory.giveItems(player) }
                                     party.invitePlayer(target)
                                 } else
                                     player.sendLocalizedMessage(Localization.PARTY_COMMAND_PLAYER_ALREADY_INVITED_DE, Localization.PARTY_COMMAND_PLAYER_ALREADY_INVITED_EN, "%playerName%", target.name)

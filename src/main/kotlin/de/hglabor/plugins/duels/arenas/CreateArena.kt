@@ -28,7 +28,6 @@ import com.sk89q.worldedit.EditSession
 
 
 val arenaFromPlayer = HashMap<Player, CreateArena>()
-val setName = ArrayList<Player>()
 
 class CreateArena(val creator: Player) {
     var name = ""

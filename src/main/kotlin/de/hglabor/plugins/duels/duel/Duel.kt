@@ -5,6 +5,7 @@ import de.hglabor.plugins.duels.arenas.Arena
 import de.hglabor.plugins.duels.arenas.Arenas
 import de.hglabor.plugins.duels.data.PlayerSettings
 import de.hglabor.plugins.duels.data.PlayerStats
+import de.hglabor.plugins.duels.guis.QueueGUI
 import de.hglabor.plugins.duels.kits.KitType
 import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.kits.Kits.Companion.giveKit
@@ -127,6 +128,7 @@ class Duel {
         alivePlayers.addAll(teamTwo)
         knockbackType = getKnockbackForDuel()
         alivePlayers.forEach {
+            it.closeInventory()
             hits[it] = 0; currentCombo[it] = 0; longestCombo[it] = 0
             presoups[it] = 0; missedPots[it] = 0; wastedHealth[it] = 0
             playersAndSpecs.add(it)
@@ -151,6 +153,7 @@ class Duel {
         }
         alivePlayers.filter { it.isInSoupsimulator() }.forEach { Soupsimulator.forceStop(it) }
         Data.duelFromID[ID] = this
+        QueueGUI.updateContents()
     }
 
     private fun getKnockbackForDuel(): PlayerSettings.Companion.Knockback {
@@ -384,6 +387,7 @@ class Duel {
     fun addSpectator(player: Player, notifyPlayers: Boolean) {
         Data.duelFromSpec[player] = this
         val newPlayersAndSpecs = playersAndSpecs
+        newPlayersAndSpecs.remove(player)
         newPlayersAndSpecs.add(player)
         playersAndSpecs = newPlayersAndSpecs
 
@@ -445,6 +449,7 @@ class Duel {
         countdownTask?.cancel()
         alivePlayers.forEach { savePlayerdata(it); Kits.inGame[kit]?.remove(it); Kits.removeCooldown(it) }
         sendResults()
+        QueueGUI.updateContents()
 
         taskRunLater(45, true) {
             resetAll()

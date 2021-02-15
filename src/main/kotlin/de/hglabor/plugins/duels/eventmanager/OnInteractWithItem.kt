@@ -50,7 +50,6 @@ object OnInteractWithItem {
                 if (item.hasMark("createparty")) {
                     it.isCancelled = true
                     Party(it.player).create(true)
-                    async { PartyInventory.giveItems(it.player) }
                 }
 
                 // Party Inventory things

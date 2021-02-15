@@ -1,6 +1,5 @@
 package de.hglabor.plugins.duels.eventmanager
 
-import de.hglabor.plugins.duels.arenas.setName
 import de.hglabor.plugins.duels.data.PlayerSettings
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
@@ -17,28 +16,26 @@ import org.bukkit.event.player.AsyncPlayerChatEvent
 object OnPlayerChat {
     fun enable() {
         listen<AsyncPlayerChatEvent> {
-            if (!setName.contains(it.player)) {
-                if (it.isCancelled) return@listen
-                it.isCancelled = true
+            if (it.isCancelled) return@listen
+            it.isCancelled = true
 
-                val player = it.player
-                var finalMessage = it.message
+            val player = it.player
+            var finalMessage = it.message
 
-                if (player.isStaff)
-                    finalMessage = finalMessage.replace("&", "§")
+            if (player.isStaff)
+                finalMessage = finalMessage.replace("&", "§")
 
-                val recievers = arrayListOf<CommandSender>(Bukkit.getConsoleSender())
+            val recievers = arrayListOf<CommandSender>(Bukkit.getConsoleSender())
 
-                async {
-                    onlinePlayers.forEach { players ->
-                        if (recievesMessage(player, players)) {
-                            recievers.add(players)
-                        }
+            async {
+                onlinePlayers.forEach { players ->
+                    if (recievesMessage(player, players)) {
+                        recievers.add(players)
                     }
+                }
 
-                    recievers.forEach { reciever ->
-                        reciever.sendMessage("${KColors.GRAY}${player.displayName} ${KColors.DARKGRAY}» ${KColors.WHITE}$finalMessage")
-                    }
+                recievers.forEach { reciever ->
+                    reciever.sendMessage("${KColors.GRAY}${player.displayName} ${KColors.DARKGRAY}» ${KColors.WHITE}$finalMessage")
                 }
             }
         }
@@ -53,12 +50,11 @@ object OnPlayerChat {
         if (reciever.isInFight()) {
             if (settings.chatInFight() == PlayerSettings.Companion.Chat.NONE)
                 return false
-
             else if (settings.chatInFight() == PlayerSettings.Companion.Chat.FIGHT)
                 if (sender.isInFight()) {
                     if (Data.duelFromPlayer(sender) != Data.duelFromPlayer(reciever))
                         return false
-                }  else
+                } else
                     return false
         }
         return true

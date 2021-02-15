@@ -50,6 +50,7 @@ object OnDamage {
                             if (player.health - it.damage <= 0.0) {
                                 it.isCancelled = true
                                 playerDied(duel, player, cause)
+                                return@listen
                             }
                         }
                     } else {

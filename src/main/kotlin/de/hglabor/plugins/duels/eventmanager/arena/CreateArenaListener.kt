@@ -1,7 +1,6 @@
 package de.hglabor.plugins.duels.eventmanager.arena
 
 import de.hglabor.plugins.duels.arenas.*
-import de.hglabor.plugins.duels.guis.CreateArenaGUI
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import net.axay.kspigot.event.listen
@@ -10,42 +9,13 @@ import net.axay.kspigot.extensions.events.isRightClick
 import net.axay.kspigot.utils.hasMark
 import org.bukkit.Material
 import org.bukkit.event.Listener
-import org.bukkit.event.player.PlayerChatEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 
 object CreateArenaListener : Listener {
 
     fun enable() {
-        listen<PlayerChatEvent> {
-            val player = it.player
-            if (arenaFromPlayer.containsKey(player)) {
-                if (setName.contains(player)) {
-                    it.isCancelled = true
-                    val arena = arenaFromPlayer[it.player]
-                    val name = it.message.trim()
-                    arena!!.name(name)
-                    if (name.equals("abbrechen", true) || name.equals("abort", true)) {
-                        if (player.localization("de"))
-                            player.sendMessage(Localization.ARENA_CREATION_LISTENER_ABORTED_SET_NAME_DE)
-                        else
-                            player.sendMessage(Localization.ARENA_CREATION_LISTENER_ABORTED_SET_NAME_EN)
-                    } else {
-                        if (player.localization("de"))
-                            player.sendMessage(
-                                Localization.ARENA_CREATION_LISTENER_SET_NAME_DE.replace(
-                                    "%arenaName%", name))
-                        else
-                            player.sendMessage(
-                                Localization.ARENA_CREATION_LISTENER_SET_NAME_EN.replace("%arenaName%",name))
-                    }
-                    setName.remove(player)
-                    CreateArenaGUI.openCreateArenaGUI(player)
-                }
-            }
-        }
-
-        listen<PlayerInteractEvent> {
+       listen<PlayerInteractEvent> {
             if (arenaFromPlayer.containsKey(it.player)) {
                 val player = it.player
                 val arena = arenaFromPlayer[player]
@@ -68,7 +38,6 @@ object CreateArenaListener : Listener {
                             it.isCancelled = true
                         }
                     }
-
 
                     if (it.action.isRightClick) {
                         if (player.inventory.itemInMainHand.hasMark("corner")) {

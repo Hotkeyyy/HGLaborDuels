@@ -3,6 +3,7 @@ package de.hglabor.plugins.duels.party
 import de.hglabor.plugins.duels.functionality.MainInventory
 import de.hglabor.plugins.duels.functionality.PartyInventory
 import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
@@ -64,6 +65,7 @@ class Party(val leader: Player) {
             leader.sendLocalizedMessage(Localization.PARTY_CREATED_DE, Localization.PARTY_CREATED_EN)
 
         Partys.playerParty[leader] = this
+        PartyInventory.giveItems(leader)
         return this
     }
 
@@ -72,9 +74,7 @@ class Party(val leader: Player) {
         leader.sendLocalizedMessage(
             Localization.PARTY_YOU_INVITED_DE,
             Localization.PARTY_YOU_INVITED_EN,
-            "%playerName%",
-            invited.name
-        )
+            "%playerName%", invited.name)
         async {
             players.filter { it != leader }.forEach {
                 if (it.localization("de"))
@@ -145,6 +145,10 @@ class Party(val leader: Player) {
             "%playerName",
             player.name)
         player.sendLocalizedMessage(Localization.PARTY_YOU_WERE_KICKED_DE, Localization.PARTY_YOU_WERE_KICKED_EN)
+
+        if (player.isInFight())
+            Data.duelFromPlayer(player).playerLeft(player)
+
         if (player.world.name != "world")
             player.reset()
         else

@@ -1,13 +1,12 @@
 package de.hglabor.plugins.duels.guis
 
-import de.hglabor.plugins.duels.arenas.ArenaTags
 import de.hglabor.plugins.duels.arenas.arenaFromPlayer
-import de.hglabor.plugins.duels.arenas.setName
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
 import net.axay.kspigot.chat.KColors
+import net.axay.kspigot.chat.input.awaitAnvilInput
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.gui.*
 import net.axay.kspigot.items.addLore
@@ -54,12 +53,13 @@ object CreateArenaGUI {
                         }
                     }
                 }) {
-                    it.player.closeInventory()
-                    setName.add(it.player)
-                    if (player.localization("de"))
-                        player.sendMessage(Localization.ARENA_CREATION_GUI_SETNAME_INCHAT_DE)
-                    else
-                        player.sendMessage(Localization.ARENA_CREATION_GUI_SETNAME_INCHAT_EN)
+                    player.awaitAnvilInput("Gib den Arenanamen ein!") { servername ->
+                        val name = servername.input ?: kotlin.run {
+                            player.sendMessage("${KColors.RED}ABBRUCH. ${KColors.INDIANRED}Du musst einen gültigen Namen angeben!")
+                            return@awaitAnvilInput
+                        }
+                        arena!!.name(name)
+                    }
                 }
 
                 button(Slots.RowTwoSlotThree, itemStack(Material.NETHERITE_PICKAXE) {
