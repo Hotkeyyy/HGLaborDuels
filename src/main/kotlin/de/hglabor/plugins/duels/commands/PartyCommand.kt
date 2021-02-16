@@ -1,6 +1,5 @@
 package de.hglabor.plugins.duels.commands
 
-import de.hglabor.plugins.duels.functionality.PartyInventory
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.party.Party
 import de.hglabor.plugins.duels.party.Partys.hasParty
@@ -8,14 +7,16 @@ import de.hglabor.plugins.duels.party.Partys.isInParty
 import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
-import net.axay.kspigot.runnables.async
+import net.axay.kspigot.extensions.onlinePlayers
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
+import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
+import java.util.ArrayList
 
-object PartyCommand : CommandExecutor {
+object PartyCommand : CommandExecutor, TabCompleter {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender is Player) {
             val player = sender
@@ -128,5 +129,65 @@ object PartyCommand : CommandExecutor {
                 Party.help(player)
         }
         return false
+    }
+
+    override fun onTabComplete(
+        sender: CommandSender,
+        command: Command,
+        alias: String,
+        args: Array<out String>
+    ): MutableList<String>? {
+        val l: MutableList<String> = ArrayList()
+        if (args.size == 1) {
+            l.add("create")
+            l.add("info")
+            l.add("leave")
+            l.add("invite")
+            l.add("join")
+            l.add("kick")
+            l.add("public")
+            l.sort()
+        } else if (args.size == 2) {
+            if (args[0].equals("create", true)) {
+                return null
+            } else if (args[0].equals("info", true)) {
+                onlinePlayers.forEach {
+                    if (it.isInParty()) {
+                        l.add(it.name)
+                    }
+                }
+                l.sort()
+                return l
+            } else if (args[0].equals("leave", true)) {
+                return null
+            } else if (args[0].equals("invite", true)) {
+                onlinePlayers.forEach {
+                    if (!it.isInParty()) {
+                        l.add(it.name)
+                    }
+                }
+                l.sort()
+                return l
+            } else if (args[0].equals("kick", true)) {
+                onlinePlayers.forEach {
+                    if (it.isInParty()) {
+                        l.add(it.name)
+                    }
+                }
+                l.sort()
+                return l
+            } else if (args[0].equals("invite", true)) {
+                onlinePlayers.forEach {
+                    if (!it.isInParty()) {
+                        l.add(it.name)
+                    }
+                }
+                l.sort()
+                return l
+            } else if (args[0].equals("public", true)) {
+                return null
+            }
+        }
+        return l
     }
 }

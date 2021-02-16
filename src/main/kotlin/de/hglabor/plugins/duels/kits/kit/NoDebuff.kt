@@ -2,8 +2,8 @@ package de.hglabor.plugins.duels.kits.kit
 
 import de.hglabor.plugins.duels.arenas.ArenaTags
 import de.hglabor.plugins.duels.guis.ChooseKitGUI
-import de.hglabor.plugins.duels.guis.QueueGUI
 import de.hglabor.plugins.duels.kits.*
+import de.hglabor.plugins.duels.kits.specials.Specials
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import net.axay.kspigot.event.listen
@@ -70,22 +70,5 @@ class NoDebuff : Kit(Kits.NODEBUFF) {
     override fun enable() {
         kitMap[kits] = this
         ChooseKitGUI.addContent(ChooseKitGUI.KitsGUICompoundElement(itemInGUIs))
-
-        listen<PlayerInteractEvent> {
-            val player = it.player
-            if (it.action.isRightClick) {
-                if (player.isInFight()) {
-                    val duel = Data.duelFromPlayer(player)
-                    if (kitMap[duel.kit]!!.specials.contains(Specials.PEARLCOOLDOWN)) {
-                        if (player.inventory.itemInMainHand.type == Material.ENDER_PEARL) {
-                            if (!Kits.hasCooldown(player))
-                                Kits.setCooldown(player, 15)
-                            else
-                                it.isCancelled = true
-                        }
-                    }
-                }
-            }
-        }
     }
 }

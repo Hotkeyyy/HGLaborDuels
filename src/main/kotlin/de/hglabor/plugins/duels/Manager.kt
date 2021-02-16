@@ -110,7 +110,6 @@ class Manager : KSpigot() {
         OnChallenge.enable()
         OnAccept.enable()
         OnDamage.enable()
-        OnMove.enable()
         OnFoodLevelChange.enable()
         OnInteractWithItem.enable()
         OnItemPickUp.enable()
@@ -139,12 +138,14 @@ class Manager : KSpigot() {
         getCommand("setspawn")!!.setExecutor(SetSpawnCommand)
         getCommand("spawn")!!.setExecutor(SpawnCommand)
         getCommand("arena")!!.setExecutor(ArenaCommand)
+        getCommand("arena")!!.tabCompleter = ArenaCommand
         getCommand("spec")!!.setExecutor(SpecCommand)
+        getCommand("arena")!!.tabCompleter = SpecCommand
         getCommand("stats")!!.setExecutor(StatsCommand)
         getCommand("dueloverview")!!.setExecutor(DuelOverviewCommand)
-        getCommand("hub")!!.setExecutor(HubCommand)
         getCommand("leave")!!.setExecutor(LeaveCommand)
         getCommand("party")!!.setExecutor(PartyCommand)
+        getCommand("party")!!.tabCompleter = PartyCommand
 
         StaffOnItemDrop.enable()
         StaffOnInteract.enable()

@@ -4,6 +4,7 @@ import de.hglabor.plugins.duels.Manager
 import de.hglabor.plugins.duels.guis.ChooseKitGUI
 import de.hglabor.plugins.duels.guis.QueueGUI
 import de.hglabor.plugins.duels.kits.kit.*
+import de.hglabor.plugins.duels.kits.specials.Specials
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import net.axay.kspigot.chat.KColors
@@ -23,7 +24,6 @@ import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 
 enum class KitType { SOUP, POT, NONE }
-enum class Specials { NINJA, NODAMAGE, DEADINWATER, PEARLCOOLDOWN, HITCOOLDOWN, JUMPANDRUN, INVINICIBLE }
 
 enum class Kits {
     ANCHOR, ARCHER, CLASSIC, EHG, FEAST, GLADIATOR, ICEFISHING,
@@ -87,6 +87,7 @@ enum class Kits {
             Sumo().enable()
             UHC().enable()
             Underwater().enable()
+            Specials.enable()
 
             QueueGUI.updateContents()
         }
@@ -108,17 +109,17 @@ enum class Kits {
 
         fun hasCooldown(player: Player): Boolean {
             val jetzt: Long = System.currentTimeMillis()
-            if (cooldownStart.containsKey(player)) {
+            if (cooldownStart.containsKey(player) && cooldownTime.containsKey(player)) {
                 val be = cooldownStart[player]
-                val rest: Long = (be!! + (1000 * 13)) - jetzt
+                val rest: Long = (be!! + (1000 * cooldownTime[player]!!)) - jetzt
 
                 if (rest > 0) {
                     val second: Int = (rest / 1000).toInt()
                     val ms = rest % 1000
                     if (player.localization("de"))
-                        player.sendMessage("${Localization.PREFIX}Du musst noch ${KColors.DODGERBLUE}$second${KColors.DARKGRAY}:${KColors.DODGERBLUE}$ms ${(if (second == 1) " Sekunde" else " Sekunden")} ${KColors.GRAY}warten.")
+                        player.sendMessage("${Localization.PREFIX}Du musst noch ${KColors.DODGERBLUE}$second${KColors.DARKGRAY}:${KColors.DODGERBLUE}$ms ${(if (second == 1) "Sekunde" else "Sekunden")} ${KColors.GRAY}warten.")
                     else
-                        player.sendMessage("${Localization.PREFIX}You still have to wait ${KColors.DODGERBLUE}$second${KColors.DARKGRAY}:${KColors.DODGERBLUE}$ms ${(if (second == 1) " second" else " seconds")}${KColors.GRAY}.")
+                        player.sendMessage("${Localization.PREFIX}You still have to wait ${KColors.DODGERBLUE}$second${KColors.DARKGRAY}:${KColors.DODGERBLUE}$ms ${(if (second == 1) "second" else "seconds")}${KColors.GRAY}.")
                     return true
                 }
             }

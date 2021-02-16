@@ -7,13 +7,16 @@ import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
+import net.axay.kspigot.extensions.onlinePlayers
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
+import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
+import java.util.ArrayList
 
-object SpecCommand : CommandExecutor {
+object SpecCommand : CommandExecutor, TabCompleter {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender is Player) {
             val player = sender
@@ -22,19 +25,30 @@ object SpecCommand : CommandExecutor {
                     val t = Bukkit.getPlayer(args[0])
                     if (t != null) {
                         if (t.isInFight()) {
-                            if (PlayerSettings.get(t).ifAllowSpectators())
+                            if (PlayerSettings.get(t).ifAllowSpectators()) {
+                                Data.duelFromSpec[player]?.removeSpectator(player, true)
                                 Data.duelFromPlayer(t).addSpectator(player, true)
-                            else
-                                player.sendLocalizedMessage(Localization.SPEC_COMMAND_DENIED_DE, Localization.SPEC_COMMAND_DENIED_EN, "%playerName%", t.displayName)
-
+                            } else {
+                                player.sendLocalizedMessage(
+                                    Localization.SPEC_COMMAND_DENIED_DE,
+                                    Localization.SPEC_COMMAND_DENIED_EN,
+                                    "%playerName%",
+                                    t.displayName
+                                )
+                            }
                         } else {
                             if (player.localization("de"))
-                                player.sendMessage(Localization.SPEC_COMMAND_PLAYER_NOT_FIGHTING_DE.replace(
-                                        "%playerName%", t.displayName))
+                                player.sendMessage(
+                                    Localization.SPEC_COMMAND_PLAYER_NOT_FIGHTING_DE.replace(
+                                        "%playerName%", t.displayName
+                                    )
+                                )
                             else
                                 player.sendMessage(
                                     Localization.SPEC_COMMAND_PLAYER_NOT_FIGHTING_EN.replace(
-                                        "%playerName%", t.displayName))
+                                        "%playerName%", t.displayName
+                                    )
+                                )
                         }
                     } else {
                         if (player.localization("de"))
@@ -58,4 +72,21 @@ object SpecCommand : CommandExecutor {
         return false
     }
 
+    override fun onTabComplete(
+        sender: CommandSender,
+        command: Command,
+        alias: String,
+        args: Array<out String>
+    ): MutableList<String>? {
+        val l: MutableList<String> = ArrayList()
+        if (args.size == 1) {
+            onlinePlayers.forEach {
+                if (it.isInFight()) {
+                    l.add(it.name)
+                }
+            }
+            return l
+        }
+        return null
+    }
 }

@@ -2,8 +2,8 @@ package de.hglabor.plugins.duels.kits.kit
 
 import de.hglabor.plugins.duels.arenas.ArenaTags
 import de.hglabor.plugins.duels.guis.ChooseKitGUI
-import de.hglabor.plugins.duels.guis.QueueGUI
 import de.hglabor.plugins.duels.kits.*
+import de.hglabor.plugins.duels.kits.specials.Specials
 import net.axay.kspigot.items.itemStack
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
@@ -11,12 +11,13 @@ import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
+
 class UHC : Kit(Kits.UHC) {
     override val name = "UHC"
     override val itemInGUIs = Kits.guiItem(Material.GOLDEN_APPLE, name, null)
     override val arenaTag = ArenaTags.NONE
     override val type = KitType.NONE
-    override val specials = listOf(null)
+    override val specials = listOf(Specials.ROD_KNOCKBACK)
 
     override fun giveKit(player: Player) {
         player.inventory.clear()

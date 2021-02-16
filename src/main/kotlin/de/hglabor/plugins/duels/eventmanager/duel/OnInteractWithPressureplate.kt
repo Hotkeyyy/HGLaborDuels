@@ -3,7 +3,7 @@ package de.hglabor.plugins.duels.eventmanager.duel
 import de.hglabor.plugins.duels.data.PlayerStats
 import de.hglabor.plugins.duels.duel.GameState
 import de.hglabor.plugins.duels.kits.Kits.Companion.info
-import de.hglabor.plugins.duels.kits.Specials
+import de.hglabor.plugins.duels.kits.specials.Specials
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import net.axay.kspigot.chat.KColors

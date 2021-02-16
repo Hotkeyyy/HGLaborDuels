@@ -6,8 +6,8 @@ import de.hglabor.plugins.duels.duel.Duel
 import de.hglabor.plugins.duels.duel.GameState
 import de.hglabor.plugins.duels.kits.Kit
 import de.hglabor.plugins.duels.kits.Kits.Companion.info
-import de.hglabor.plugins.duels.kits.Specials
 import de.hglabor.plugins.duels.kits.kitMap
+import de.hglabor.plugins.duels.kits.specials.Specials
 import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight

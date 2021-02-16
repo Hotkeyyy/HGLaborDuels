@@ -1,6 +1,7 @@
 package de.hglabor.plugins.duels.kits
 
 import de.hglabor.plugins.duels.arenas.ArenaTags
+import de.hglabor.plugins.duels.kits.specials.Specials
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
