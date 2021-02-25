@@ -76,6 +76,7 @@ class Arena(var loc: Pair<Int, Int>, val arenaName: String) {
                 100.0 + getInfo(arenaName).second.dimensions?.y!!, loc.second * Data.locationMultiplier + getInfo(arenaName).second.dimensions?.z!!).toBlockPoint()
         val region = CuboidRegion(v1, v2)
         FaweAPI.fixLighting(bukkitWorld, region, null, RelightMode.OPTIMAL)
+        FaweAPI.fixLighting(bukkitWorld, region, null, RelightMode.ALL)
     }
 
 

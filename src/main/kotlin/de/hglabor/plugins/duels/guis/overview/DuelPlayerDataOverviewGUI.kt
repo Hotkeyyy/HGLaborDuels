@@ -11,6 +11,7 @@ import net.axay.kspigot.items.meta
 import net.axay.kspigot.items.name
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.OfflinePlayer
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -22,7 +23,7 @@ import java.io.File
 
 
 object DuelPlayerDataOverviewGUI {
-    fun open(whoOpens: Player, gameID: String, dataOfPlayer: Player) {
+    fun open(whoOpens: Player, gameID: String, dataOfPlayer: OfflinePlayer) {
         val duel = Data.duelFromID[gameID]
         val file = File("${duel!!.path}//playerdata//${dataOfPlayer.uniqueId}.yml")
         val yamlConfiguration = YamlConfiguration.loadConfiguration(file)
@@ -65,7 +66,7 @@ object DuelPlayerDataOverviewGUI {
         val health = itemStack(Material.POPPY) {
             meta {
                 name =
-                    "${KColors.CORNSILK}Health ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}$playerHealth ❤";
+                    "${KColors.CORNSILK}Health ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}$playerHealth ❤"
             }
         }
         inventory.setItem(50, health)
@@ -73,7 +74,7 @@ object DuelPlayerDataOverviewGUI {
         val hits = itemStack(Material.NETHERITE_SWORD) {
             meta {
                 name =
-                    "${KColors.CORNSILK}Hits ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}${yamlConfiguration["data.hits"]}";
+                    "${KColors.CORNSILK}Hits ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}${yamlConfiguration["data.hits"]}"
                 addLore {
                     +"${KColors.GRAY}Longest Combo ${KColors.DARKGRAY}» ${KColors.MEDIUMPURPLE}${yamlConfiguration["data.longestCombo"]}"
                 }
@@ -86,7 +87,7 @@ object DuelPlayerDataOverviewGUI {
             val soups = itemStack(Material.MUSHROOM_STEW) {
                 meta {
                     name =
-                        "${KColors.CORNSILK}Soups ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}${yamlConfiguration["data.soupsLeft"]}";
+                        "${KColors.CORNSILK}Soups ${KColors.DARKGRAY}» ${KColors.DODGERBLUE}${yamlConfiguration["data.soupsLeft"]}"
                     addLore {
                         +"${KColors.GRAY}Presouped ${KColors.DARKGRAY}» ${KColors.MEDIUMPURPLE}${yamlConfiguration["data.presoups"]}"
                         +"${KColors.GRAY}Wasted ${KColors.DARKGRAY}» ${KColors.MEDIUMPURPLE}$wastedHealth ❤"
@@ -129,9 +130,9 @@ object DuelPlayerDataOverviewGUI {
                         val currentPlayer = (it.view.title.split(" ")[1]).split("'")[0]
                         val duel = Data.duelFromID[gameID]
                         if (duel!!.teamOne.contains(Bukkit.getPlayer(currentPlayer)))
-                            DuelTeamOverviewGUI.open(it.whoClicked as Player, gameID, duel.teamOne)
+                            DuelTeamOverviewGUI.open(it.whoClicked as Player, gameID, duel.teamOne as ArrayList<OfflinePlayer>)
                         else
-                            DuelTeamOverviewGUI.open(it.whoClicked as Player, gameID, duel.teamTwo)
+                            DuelTeamOverviewGUI.open(it.whoClicked as Player, gameID, duel.teamTwo as ArrayList<OfflinePlayer>)
                     }
                 }
             }

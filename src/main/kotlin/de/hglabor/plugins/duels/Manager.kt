@@ -18,6 +18,7 @@ import de.hglabor.plugins.duels.guis.PlayerSettingsGUI
 import de.hglabor.plugins.duels.guis.QueueGUI
 import de.hglabor.plugins.duels.guis.overview.DuelPlayerDataOverviewGUI
 import de.hglabor.plugins.duels.guis.overview.DuelTeamOverviewGUI
+import de.hglabor.plugins.duels.kits.Kit
 import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.protection.Protection
@@ -110,6 +111,7 @@ class Manager : KSpigot() {
         OnChallenge.enable()
         OnAccept.enable()
         OnDamage.enable()
+        OnDeath.enable()
         OnFoodLevelChange.enable()
         OnInteractWithItem.enable()
         OnItemPickUp.enable()
@@ -140,7 +142,7 @@ class Manager : KSpigot() {
         getCommand("arena")!!.setExecutor(ArenaCommand)
         getCommand("arena")!!.tabCompleter = ArenaCommand
         getCommand("spec")!!.setExecutor(SpecCommand)
-        getCommand("arena")!!.tabCompleter = SpecCommand
+        getCommand("spec")!!.tabCompleter = SpecCommand
         getCommand("stats")!!.setExecutor(StatsCommand)
         getCommand("dueloverview")!!.setExecutor(DuelOverviewCommand)
         getCommand("leave")!!.setExecutor(LeaveCommand)
@@ -160,9 +162,5 @@ class Manager : KSpigot() {
     private fun connectMongo() {
         mongoManager = MongoManager
         mongoManager.connect()
-    }
-
-    fun getMongoManager(): MongoManager {
-        return mongoManager
     }
 }

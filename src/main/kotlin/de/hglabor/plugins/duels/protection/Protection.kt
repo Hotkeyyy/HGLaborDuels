@@ -1,7 +1,11 @@
 package de.hglabor.plugins.duels.protection
 
+import de.hglabor.plugins.duels.kits.KitType
+import de.hglabor.plugins.duels.kits.Kits.Companion.info
+import de.hglabor.plugins.duels.kits.specials.Specials
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
+import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
 import de.hglabor.plugins.staff.utils.StaffData.isInStaffMode
@@ -11,6 +15,7 @@ import net.axay.kspigot.extensions.bukkit.getHandItem
 import net.axay.kspigot.utils.hasMark
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockExplodeEvent
@@ -106,7 +111,19 @@ object Protection {
 
         listen<EntityRegainHealthEvent> {
             if (it.entity is Player) {
-                if ((it.entity as Player).isInSoupsimulator()) {
+                if (it.isFastRegen)
+                    it.isCancelled = true
+                val player = it.entity as Player
+                if (player.isInFight()) {
+                    val duel = Data.duelFromPlayer(player)
+                    if (duel.kit.info.specials.contains(Specials.UHC)) {
+                        if (it.regainReason == EntityRegainHealthEvent.RegainReason.EATING ||
+                            it.regainReason == EntityRegainHealthEvent.RegainReason.REGEN ||
+                            it.regainReason == EntityRegainHealthEvent.RegainReason.SATIATED)
+                                it.isCancelled = true
+                    }
+                }
+                if (player.isInSoupsimulator()) {
                     it.isCancelled = true
                 }
             }
@@ -143,8 +160,23 @@ object Protection {
 
                 if (it.currentItem?.type!!.name.contains("BOAT")) {
                     it.isCancelled = true
-                    player.sendLocalizedMessage("${Localization.PREFIX}${KColors.TOMATO}Du kannst dieses Item nicht craften.",
-                        "${Localization.PREFIX}${KColors.TOMATO}You cant craft this item.")
+                    player.sendLocalizedMessage(
+                        "${Localization.PREFIX}${KColors.TOMATO}Du kannst dieses Item nicht craften.",
+                        "${Localization.PREFIX}${KColors.TOMATO}You cant craft this item."
+                    )
+                }
+
+                if (player.isInFight()) {
+                    val duel = Data.duelFromPlayer(player)
+                    if (duel.kit.info.type != KitType.SOUP) {
+                        if (it.currentItem?.type!! == Material.MUSHROOM_STEW) {
+                            it.isCancelled = true
+                            player.sendLocalizedMessage(
+                                "${Localization.PREFIX}${KColors.TOMATO}Du kannst dieses Item nicht craften.",
+                                "${Localization.PREFIX}${KColors.TOMATO}You cant craft this item."
+                            )
+                        }
+                    }
                 }
             }
         }

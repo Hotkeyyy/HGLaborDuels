@@ -9,13 +9,14 @@ import net.axay.kspigot.items.meta
 import net.axay.kspigot.items.name
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 
 object DuelTeamOverviewGUI {
-    fun open(player: Player, duelID: String, team: ArrayList<Player>) {
+    fun open(player: Player, duelID: String, team: ArrayList<OfflinePlayer>) {
         val duel = Data.duelFromID[duelID]!!
         val teamText = if (team == duel.teamOne) "${KColors.DEEPSKYBLUE}Team 1" else "${KColors.DEEPPINK}Team 2"
 
@@ -82,9 +83,9 @@ object DuelTeamOverviewGUI {
                     val gameID = it.view.title.split(" §8| §7")[1]
                     if (it.currentItem!!.itemMeta!!.name!!.contains("Other Team")) {
                         if (it.view.title.contains("1")) {
-                            open(player, gameID, Data.duelFromID[gameID]!!.teamTwo)
+                            open(player, gameID, Data.duelFromID[gameID]!!.teamTwo as ArrayList<OfflinePlayer>)
                         } else {
-                            open(player, gameID, Data.duelFromID[gameID]!!.teamOne)
+                            open(player, gameID, Data.duelFromID[gameID]!!.teamOne as ArrayList<OfflinePlayer>)
                         }
                     } else {
                         DuelOverviewGUI.open(player, gameID)

@@ -3,6 +3,7 @@ package de.hglabor.plugins.duels.eventmanager
 import de.hglabor.plugins.duels.data.DataHolder
 import de.hglabor.plugins.duels.data.PlayerSettings
 import de.hglabor.plugins.duels.data.PlayerStats
+import de.hglabor.plugins.duels.guis.QueueGUI
 import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.party.Party
 import de.hglabor.plugins.duels.party.Partys.isInParty
@@ -54,6 +55,7 @@ object OnPlayerQuit {
                 playerList.remove(player)
                 Kits.playerQueue.remove(player)
                 Kits.queue[kit!!] = playerList
+                QueueGUI.updateContents()
             }
 
             if (player.isInParty()) {

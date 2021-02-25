@@ -24,7 +24,7 @@ class Classic : Kit(Kits.CLASSIC) {
         player.inventory.setItemInOffHand(ItemStack(Material.SHIELD))
 
         player.inventory.setItem(0, KitUtils.sword(Material.DIAMOND_SWORD, false))
-        player.inventory.setItem(1, ItemStack(Material.IRON_AXE))
+        player.inventory.setItem(1, KitUtils.sword(Material.IRON_AXE, false)) // coles schwert xpppp
         player.inventory.setItem(2, ItemStack(Material.BOW))
         player.inventory.setItem(3, ItemStack(Material.CROSSBOW))
         player.inventory.setItem(7, ItemStack(Material.GOLDEN_APPLE, 12))

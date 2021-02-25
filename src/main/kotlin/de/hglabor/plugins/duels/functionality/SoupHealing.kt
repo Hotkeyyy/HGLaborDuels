@@ -10,6 +10,7 @@ import net.axay.kspigot.runnables.async
 import org.bukkit.Material
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.EquipmentSlot
 
 object SoupHealing {
 
@@ -22,7 +23,8 @@ object SoupHealing {
                 var wastedHealth = 0
                 if (p.isInFight()) {
                     val duel = Data.duelFromPlayer(p)
-                    if (p.getHandItem(it.hand)?.type == Material.MUSHROOM_STEW) {
+                    if (it.hasItem() && it.material == Material.MUSHROOM_STEW) {
+                        if (it.hand == EquipmentSlot.OFF_HAND) { return@listen }
                         if (p.health != 20.0) {
                             if (p.health > 13) {
                                 p.health = 20.0

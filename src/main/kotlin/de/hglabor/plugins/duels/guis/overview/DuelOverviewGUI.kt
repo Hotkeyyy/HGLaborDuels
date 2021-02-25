@@ -8,6 +8,7 @@ import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
 import net.axay.kspigot.items.name
 import org.bukkit.Material
+import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 
 object DuelOverviewGUI {
@@ -28,7 +29,7 @@ object DuelOverviewGUI {
                         addLore { + "§7Click to open information about Team 1" }
                     }
                 }) {
-                    DuelTeamOverviewGUI.open(player, duelID, Data.duelFromID[duelID]!!.teamOne)
+                    DuelTeamOverviewGUI.open(player, duelID, Data.duelFromID[duelID]!!.teamOne as ArrayList<OfflinePlayer>)
                 }
 
                 button(Slots.RowTwoSlotSix, itemStack(Material.MAGENTA_CONCRETE) {
@@ -37,7 +38,7 @@ object DuelOverviewGUI {
                         addLore { + "§7Click to open information about Team 2" }
                     }
                 }) {
-                    DuelTeamOverviewGUI.open(player, duelID, Data.duelFromID[duelID]!!.teamTwo)
+                    DuelTeamOverviewGUI.open(player, duelID, Data.duelFromID[duelID]!!.teamTwo as ArrayList<OfflinePlayer>)
                 }
             }
         }

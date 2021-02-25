@@ -36,7 +36,6 @@ object OnDamage {
         listen<EntityDamageEvent> {
             if (it.entity is Player) {
                 val player = it.entity as Player
-                val cause = it.cause
                 if (player.isInFight()) {
                     val duel = Data.duelFromPlayer(player)
                     if (duel.state == GameState.RUNNING) {
@@ -46,13 +45,6 @@ object OnDamage {
                         }
                         if (duel.kit.info.specials.contains(Specials.NODAMAGE))
                             it.damage = 0.0
-                        if (!HANDLED_CAUSES.contains(cause)) {
-                            if (player.health - it.damage <= 0.0) {
-                                it.isCancelled = true
-                                playerDied(duel, player, cause)
-                                return@listen
-                            }
-                        }
                     } else {
                         it.isCancelled = true
                     }
@@ -110,11 +102,6 @@ object OnDamage {
 
                             async { DataHolder.playerStats[damager]?.addTotalHit() }
                         }
-
-                        if (player.health - damage <= 0.0) {
-                            it.isCancelled = true
-                            playerDied(duel, player, it.cause)
-                        }
                     }
                 }
             } else {
@@ -150,7 +137,7 @@ object OnDamage {
     }
 
     fun getDeathMessageDE(duel: Duel, player: Player, damageCause: EntityDamageEvent.DamageCause): String {
-        var deathMessage: String
+        val deathMessage: String
 
         when (damageCause) {
             EntityDamageEvent.DamageCause.FALL ->
@@ -177,7 +164,7 @@ object OnDamage {
     }
 
     fun getDeathMessageEN(duel: Duel, player: Player, damageCause: EntityDamageEvent.DamageCause): String {
-        var deathMessage: String
+        val deathMessage: String
         when (damageCause) {
             EntityDamageEvent.DamageCause.FALL ->
                 deathMessage = "${duel.teamColor(player)}${player.name} ${KColors.GRAY}fell too far."

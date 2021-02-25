@@ -255,6 +255,7 @@ class Duel {
     }
 
     fun playerDied(player: Player, germanMessage: String, englishMessage: String) {
+        Data.duelFromSpec[player] = this
         Data.inFight.remove(player)
         alivePlayers.remove(player)
         val newAlivePlayers = alivePlayers
@@ -277,7 +278,7 @@ class Duel {
                 if (item.type != Material.AIR) player.world.dropItem(player.location, item)
             }
         }*/
-        addSpectator(player, false)
+
         val stats = PlayerStats.get(player)
         stats.addDeath()
     }

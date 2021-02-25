@@ -17,19 +17,46 @@ import org.bukkit.entity.FishHook
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.ProjectileHitEvent
-import org.bukkit.event.player.PlayerFishEvent
-import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.event.player.PlayerItemConsumeEvent
-import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.util.Vector
+import org.bukkit.Bukkit
+import org.bukkit.event.player.*
+import org.json.XMLTokener
+import org.json.XMLTokener.entity
+import kotlin.math.cos
+import kotlin.math.sin
+
 
 enum class Specials {
-    NINJA, NODAMAGE, DEADINWATER, PEARLCOOLDOWN, HITCOOLDOWN, JUMPANDRUN, INVINICIBLE, ROD_KNOCKBACK;
+    NINJA, NODAMAGE, DEADINWATER, PEARLCOOLDOWN, HITCOOLDOWN, JUMPANDRUN, UHC, INVINICIBLE, ROD_KNOCKBACK;
 
     companion object {
         fun enable() {
+
+            // Ninja
+            listen<PlayerToggleSneakEvent> {
+                val player: Player = it.player
+                if (player.isInFight()) {
+                    val duel = Data.duelFromPlayer(player)
+                    if (duel.kit.info.specials.contains(NINJA)) {
+                        if (duel.lastHitOfPlayer.containsKey(player)) {
+                            val target = duel.lastHitOfPlayer[player]
+                            if (duel.alivePlayers.contains(target)) {
+                                if (!Kits.hasCooldown(player)) {
+                                    Kits.setCooldown(player, 13)
+                                    var nang: Float = target!!.location.yaw + 90
+                                    if (nang < 0) nang += 360f
+                                    val nX = cos(Math.toRadians(nang.toDouble()))
+                                    val nZ = sin(Math.toRadians(nang.toDouble()))
+                                    val loc = target.location.clone().subtract(nX, 0.0, nZ)
+                                    player.teleport(loc)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             // Golden Head
             listen<PlayerItemConsumeEvent> {
@@ -50,7 +77,7 @@ enum class Specials {
                                 if (Data.duelFromPlayer(hookShooter).kit.info.specials.contains(ROD_KNOCKBACK)) {
                                     var kx = hook.location.direction.x / 1.8
                                     val kz = hook.location.direction.z / 1.8
-                                    kx -= kx * 2.0;
+                                    kx -= kx * 2.0
                                     hitEntity.damage(0.000001, hookShooter as Entity)
                                     //var upVel = 0.372
                                     var upVel = 0.452
@@ -112,7 +139,7 @@ enum class Specials {
                     val duel = Data.duelFromID[Data.duelIDFromPlayer[player]]
                     if (duel?.state == GameState.COUNTDOWN)
                         it.isCancelled = true
-                    if (duel?.kit?.info?.specials?.contains(Specials.DEADINWATER) == true) {
+                    if (duel?.kit?.info?.specials?.contains(DEADINWATER) == true) {
                         if (duel.state == GameState.RUNNING) {
                             if (player.isFeetInWater) {
                                 duel.playerDied(
@@ -122,7 +149,7 @@ enum class Specials {
                                 )
                             }
                         }
-                    } else if (duel?.kit?.info?.specials?.contains(Specials.JUMPANDRUN) == true) {
+                    } else if (duel?.kit?.info?.specials?.contains(JUMPANDRUN) == true) {
                         if (duel.state == GameState.RUNNING) {
                             if (player.isFeetInWater) {
                                 if (duel.teamOne.contains(player)) {

@@ -9,6 +9,7 @@ import de.hglabor.plugins.duels.kits.kit.Random
 import de.hglabor.plugins.duels.kits.kitMap
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.utils.Data
+import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
@@ -40,29 +41,33 @@ object QueueGUI {
     }
 
     fun queuePlayer(player: Player, kit: Kits) {
-        if (Kits.playerQueue.containsKey(player)) {
-            if (Kits.playerQueue[player] == kit) {
-                Kits.playerQueue.remove(player)
-                Kits.queue[kit]?.remove(player)
-                player.sendLocalizedMessage(
-                    Localization.QUEUE_LEFT_DE,
-                    Localization.QUEUE_LEFT_EN,
-                    "%kit%", kit.info.name)
-                updateContents()
-                return
+        if (!player.isInFight()) {
+            if (Kits.playerQueue.containsKey(player)) {
+                if (Kits.playerQueue[player] == kit) {
+                    Kits.playerQueue.remove(player)
+                    Kits.queue[kit]?.remove(player)
+                    player.sendLocalizedMessage(
+                        Localization.QUEUE_LEFT_DE,
+                        Localization.QUEUE_LEFT_EN,
+                        "%kit%", kit.info.name
+                    )
+                    updateContents()
+                    return
+                }
             }
+            if (Kits.playerQueue[player] != null) {
+                Kits.queue[Kits.playerQueue[player]]?.remove(player)
+            }
+            Kits.playerQueue[player] = kit
+            Kits.queue[kit]?.add(player)
+            player.sendLocalizedMessage(
+                Localization.QUEUE_JOINED_DE,
+                Localization.QUEUE_JOINED_EN,
+                "%kit%", kit.info.name
+            )
+            startNewDuelIfEnoughPlayersInQueue(kit)
+            updateContents()
         }
-        if (Kits.playerQueue[player] != null) {
-            Kits.queue[Kits.playerQueue[player]]?.remove(player)
-        }
-        Kits.playerQueue[player] = kit
-        Kits.queue[kit]?.add(player)
-        player.sendLocalizedMessage(
-            Localization.QUEUE_JOINED_DE,
-            Localization.QUEUE_JOINED_EN,
-            "%kit%", kit.info.name)
-        startNewDuelIfEnoughPlayersInQueue(kit)
-        updateContents()
     }
 
     fun queueItem(kits: Kits): ItemStack {
