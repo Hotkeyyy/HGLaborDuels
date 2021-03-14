@@ -23,10 +23,12 @@ object PartyCommand : CommandExecutor, TabCompleter {
 
             if (player.isInFight()) {
                 var cancel = true
-                if (args.size > 1)
+                if (args.size > 1) {
                     if (args[0].equals("info", true))
                         cancel = false
-                if (cancel)
+                }
+                if (args[0].equals("create", false))
+                    if (cancel)
                     player.sendLocalizedMessage(Localization.CANT_DO_THAT_RIGHT_NOW_DE, Localization.CANT_DO_THAT_RIGHT_NOW_EN)
             }
 
@@ -43,10 +45,12 @@ object PartyCommand : CommandExecutor, TabCompleter {
 
                 } else if (args[0].equals("leave", true)) {
                     if (player.isInParty()) {
-                        if (player.hasParty())
-                            Party.get(player)?.delete()
-                        else
-                            Party.get(player)?.leave(player)
+                        if (!player.isInFight()) {
+                            if (player.hasParty())
+                                Party.get(player)?.delete()
+                            else
+                                Party.get(player)?.leave(player)
+                        }
                     } else
                         player.sendLocalizedMessage(Localization.PARTY_COMMAND_NOT_IN_PARTY_DE, Localization.PARTY_COMMAND_NOT_IN_PARTY_EN)
 

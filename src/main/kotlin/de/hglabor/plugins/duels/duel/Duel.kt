@@ -49,11 +49,15 @@ class Duel {
                 duel.kit = Kits.random()
             else
                 duel.kit = kit
-            if (teamOneLeader.isInParty()) duel.teamOne = Party.get(teamOneLeader)!!.players
-            else duel.teamOne = arrayListOf(teamOneLeader)
+            if (teamOneLeader.isInParty())
+                duel.teamOne = ArrayList(Party.get(teamOneLeader)?.players)
+            else
+                duel.teamOne = arrayListOf(teamOneLeader)
 
-            if (teamTwoLeader.isInParty()) duel.teamTwo = Party.get(teamTwoLeader)!!.players
-            else duel.teamTwo = arrayListOf(teamTwoLeader)
+            if (teamTwoLeader.isInParty())
+                duel.teamTwo = ArrayList(Party.get(teamTwoLeader)?.players)
+            else
+                duel.teamTwo = arrayListOf(teamTwoLeader)
             duel.start()
         }
 
@@ -63,8 +67,8 @@ class Duel {
                 duel.kit = Kits.random()
             else
                 duel.kit = kit
-            duel.teamOne.addAll(teamOne)
-            duel.teamTwo.addAll(teamTwo)
+            duel.teamOne = ArrayList(teamOne)
+            duel.teamTwo = ArrayList(teamTwo)
             duel.start()
         }
 
@@ -141,9 +145,9 @@ class Duel {
             it.isGlowing = false
             it.inventory.clear()
             Kits.inGame[kit]?.add(it)
-            Kits.playerQueue.remove(it)
-            Kits.queue[kit]!!.remove(it)
+            Kits.queue[Kits.playerQueue[it]]?.remove(it)
             Kits.queue[Kits.RANDOM]?.remove(it)
+            Kits.playerQueue.remove(it)
             PlayerStats.get(it).addTotalGame()
 
             if (knockbackType == PlayerSettings.Companion.Knockback.OLD)
@@ -270,14 +274,7 @@ class Duel {
             loser = getTeam(player)
             winner = getOtherTeam(player)
             stop()
-        } /*else {
-            val items = arrayListOf<ItemStack>()
-            items.addAll(player.inventory.contents)
-            items.addAll(player.inventory.armorContents)
-            items.forEach { item ->
-                if (item.type != Material.AIR) player.world.dropItem(player.location, item)
-            }
-        }*/
+        }
 
         val stats = PlayerStats.get(player)
         stats.addDeath()
@@ -294,19 +291,11 @@ class Duel {
             "${teamColor(player)}${player.name} ${KColors.GRAY}left the fight."
         )
 
-
         if (ifTeamDied(getTeam(player))) {
             loser = getTeam(player)
             winner = getOtherTeam(player)
             stop()
-        } /*else {
-            val items = arrayListOf<ItemStack>()
-            items.addAll(player.inventory.contents)
-            items.addAll(player.inventory.armorContents)
-            items.forEach { item ->
-                if (item.type != Material.AIR) player.world.dropItem(player.location, item)
-            }
-        }*/
+        }
         player.reset()
     }
 
@@ -399,8 +388,7 @@ class Duel {
         if (notifyPlayers)
             sendMessage(
                 Localization.PLAYER_STARTED_SPECTATING_DE.replace("%playerName%", player.displayName),
-                Localization.PLAYER_STARTED_SPECTATING_EN.replace("%playerName%", player.displayName)
-            )
+                Localization.PLAYER_STARTED_SPECTATING_EN.replace("%playerName%", player.displayName))
         spectate(player)
 
     }

@@ -7,7 +7,6 @@ api-version: 1.16
 
 depend:
   - FastAsyncWorldEdit
-  - ProtocolLib
 commands:
   arena:
   challenge:

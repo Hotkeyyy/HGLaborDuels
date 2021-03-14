@@ -177,8 +177,11 @@ class Party(val leader: Player) {
     fun delete() {
         isPublic = false
         sendLocalizedMessage(Localization.PARTY_DELETED_DE, Localization.PARTY_DELETED_EN)
-        players.forEach { Partys.playerParty.remove(it); MainInventory.giveItems(it) }
-
+        players.forEach {
+            if (!it.isInFight())
+                MainInventory.giveItems(it)
+            Partys.playerParty.remove(it)
+        }
         players.clear()
     }
 

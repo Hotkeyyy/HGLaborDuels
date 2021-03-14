@@ -17,7 +17,6 @@ object Data {
     val gameIDs = arrayListOf<String>()
     val inFight = arrayListOf<Player>()
     val openedDuelGUI = hashMapOf<Player, Player>()
-    val openedQueue = hashMapOf<Player, Inventory>()
     val challenged = hashMapOf<Player, Player>() // Challenger Player
     val challengeKit: HashMap<Player, Kits> = HashMap()
     val duel = hashMapOf<Player, Player>()

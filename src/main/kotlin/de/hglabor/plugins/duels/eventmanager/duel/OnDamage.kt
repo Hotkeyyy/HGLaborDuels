@@ -121,7 +121,8 @@ object OnDamage {
         val itemName = material.name
         var finalDamage = damage
 
-
+        if (kit.specials.contains(Specials.HITCOOLDOWN))
+            return finalDamage
         if (kit.specials.contains(Specials.NODAMAGE))
             finalDamage = 0.0
         if (itemName.contains("_SWORD"))

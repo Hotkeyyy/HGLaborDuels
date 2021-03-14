@@ -11,19 +11,18 @@ import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.isFeetInWater
 import net.axay.kspigot.extensions.events.isRightClick
 import net.axay.kspigot.utils.hasMark
+import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Entity
 import org.bukkit.entity.FishHook
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.ProjectileHitEvent
+import org.bukkit.event.player.*
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.util.Vector
-import org.bukkit.Bukkit
-import org.bukkit.event.player.*
-import org.json.XMLTokener
-import org.json.XMLTokener.entity
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -71,20 +70,22 @@ enum class Specials {
                 val hookShooter = hook.shooter
                 if (it.entity is FishHook) {
                     if (it.hitEntity != null) {
-                        val hitEntity = it.hitEntity as LivingEntity
-                        if (hookShooter is Player && hitEntity is Player) {
-                            if (hookShooter.isInFight() && hitEntity.isInFight()) {
-                                if (Data.duelFromPlayer(hookShooter).kit.info.specials.contains(ROD_KNOCKBACK)) {
-                                    var kx = hook.location.direction.x / 1.8
-                                    val kz = hook.location.direction.z / 1.8
-                                    kx -= kx * 2.0
-                                    hitEntity.damage(0.000001, hookShooter as Entity)
-                                    //var upVel = 0.372
-                                    var upVel = 0.452
-                                    if (!hitEntity.isOnGround) {
-                                        upVel = 0.0
+                        if (it.hitEntity is LivingEntity) {
+                            val hitEntity = it.hitEntity as LivingEntity
+                            if (hookShooter is Player && hitEntity is Player) {
+                                if (hookShooter.isInFight() && hitEntity.isInFight()) {
+                                    if (Data.duelFromPlayer(hookShooter).kit.info.specials.contains(ROD_KNOCKBACK)) {
+                                        var kx = hook.location.direction.x / 1.8
+                                        val kz = hook.location.direction.z / 1.8
+                                        kx -= kx * 2.0
+                                        hitEntity.damage(0.000001, hookShooter as Entity)
+                                        //var upVel = 0.372
+                                        var upVel = 0.452
+                                        if (!hitEntity.isOnGround) {
+                                            upVel = 0.0
+                                        }
+                                        hitEntity.velocity = Vector(kx, upVel, kz)
                                     }
-                                    hitEntity.velocity = Vector(kx, upVel, kz)
                                 }
                             }
                         }
@@ -145,8 +146,20 @@ enum class Specials {
                                 duel.playerDied(
                                     player,
                                     "${duel.teamColor(player)}${player.name} ${KColors.GRAY}ist gestorben.",
-                                    "${duel.teamColor(player)}${player.name} ${KColors.GRAY}died."
-                                )
+                                    "${duel.teamColor(player)}${player.name} ${KColors.GRAY}died.")
+
+                                if (Data.duelFromSpec.containsKey(player)) {
+                                    val duel = Data.duelFromSpec[player]!!
+                                    val arena = duel.arena
+                                    duel.addSpectator(player, false)
+                                    val spawnOne = arena.spawn1Loc
+                                    val spawnTwo = arena.spawn2Loc
+                                    val x = (spawnOne.x + spawnTwo.x) / 2
+                                    val y = spawnOne.y + 3
+                                    val z = (spawnOne.z + spawnTwo.z) / 2
+                                    val centerLoc = Location(Bukkit.getWorld("FightWorld"), x, y, z)
+                                    player.teleport(centerLoc)
+                                }
                             }
                         }
                     } else if (duel?.kit?.info?.specials?.contains(JUMPANDRUN) == true) {

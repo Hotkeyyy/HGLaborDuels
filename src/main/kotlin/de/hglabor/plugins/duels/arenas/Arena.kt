@@ -12,6 +12,8 @@ import com.sk89q.worldedit.math.Vector3
 import com.sk89q.worldedit.regions.CuboidRegion
 import com.sk89q.worldedit.session.ClipboardHolder
 import de.hglabor.plugins.duels.utils.Data
+import net.axay.kspigot.extensions.bukkit.info
+import net.axay.kspigot.extensions.console
 import net.axay.kspigot.runnables.taskRunLater
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -81,6 +83,7 @@ class Arena(var loc: Pair<Int, Int>, val arenaName: String) {
 
 
     fun removeSchematic() {
+        console.info(arenaName)
         val v1: BlockVector3 =
             Vector3.at(loc.first * Data.locationMultiplier, 100.0, loc.second * Data.locationMultiplier).toBlockPoint()
         val v2: BlockVector3 =
