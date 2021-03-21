@@ -3,6 +3,7 @@ package de.hglabor.plugins.duels.commands
 import de.hglabor.plugins.duels.data.PlayerStats
 import de.hglabor.plugins.duels.database.MongoManager
 import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.localization.sendMsg
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
 import net.axay.kspigot.chat.KColors
@@ -30,10 +31,7 @@ object StatsCommand : CommandExecutor {
                 if (PlayerStats.exist(target.uniqueId)) {
                     targetIsOtherPlayer = true
                 } else {
-                    player.sendLocalizedMessage(
-                        Localization.STATS_COMMAND_PLAYER_NOT_FOUND_DE.replace("%playerName%", target.name!!),
-                        Localization.STATS_COMMAND_PLAYER_NOT_FOUND_EN.replace("%playerName%", target.name!!)
-                    )
+                    player.sendMsg("stats.fail.playerNotFound", mutableMapOf("playerName" to targetName))
                     return false
                 }
             } else {
@@ -41,48 +39,22 @@ object StatsCommand : CommandExecutor {
                 target = player
             }
 
-            player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
-            if (player.localization("de")) {
-                if (targetIsOtherPlayer)
-                    player.sendMessage(" §8| §7Stats von Spieler §(» ${KColors.MEDIUMPURPLE}${target.name}")
-                sendStatsDE(player, targetName)
-            } else {
-                if (targetIsOtherPlayer)
-                    player.sendMessage(" §8| §7Stats of player §(» ${KColors.MEDIUMPURPLE}${target.name}")
-                sendStatsEN(player, targetName)
+            async {
+                val stats = PlayerStats.get(targetName)
+                player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
+                player.sendMsg("stats.ofPlayer", mutableMapOf(
+                    "playerName" to targetName,
+                    "totalFights" to stats.totalGames().toString(),
+                    "kills" to stats.kills().toString(),
+                    "deaths" to stats.deaths().toString(),
+                    "kd" to stats.kd().toString(),
+                    "soupsimulatorHighscore" to stats.soupsimulatorHighscore().toString(),
+                    "soupsEaten" to stats.soupsEaten().toString(),
+                    "totalHits" to stats.totalHits().toString(),
+                    ))
+                player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
             }
         }
         return false
     }
-
-    private fun sendStatsDE(player: Player, targetName: String) {
-        async {
-            val stats = PlayerStats.get(targetName)
-            player.sendMessage(" §8| §7Gesamte Spiele §8» ${KColors.DEEPSKYBLUE}${stats.totalGames()}")
-            player.sendMessage(" §8| §7Kills §8» ${KColors.DEEPSKYBLUE}${stats.kills()}")
-            player.sendMessage(" §8| §7Tode §8» ${KColors.DEEPSKYBLUE}${stats.deaths()}")
-            player.sendMessage(" §8| §7K/D §8» ${KColors.DEEPSKYBLUE}${stats.kd()}")
-            player.sendMessage(" §8| §7Soupsimulator Rekord §8» ${KColors.SPRINGGREEN}${stats.soupsimulatorHighscore()}")
-            player.sendMessage(" §8| §7Gegessene Suppen §8» ${KColors.DODGERBLUE}${stats.soupsEaten()}")
-            player.sendMessage(" §8| §7Gesamte Schläge §8» ${KColors.DODGERBLUE}${stats.totalHits()}")
-            player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
-        }
-
-    }
-
-    private fun sendStatsEN(player: Player, targetName: String) {
-        async {
-            val stats = PlayerStats.get(targetName)
-            player.sendMessage(" §8| §7Total Games §8» ${KColors.DEEPSKYBLUE}${stats.totalGames()}")
-            player.sendMessage(" §8| §7Kills §8» ${KColors.DEEPSKYBLUE}${stats.kills()}")
-            player.sendMessage(" §8| §7Deaths §8» ${KColors.DEEPSKYBLUE}${stats.deaths()}")
-            player.sendMessage(" §8| §7K/D §8» ${KColors.DEEPSKYBLUE}${stats.kd()}")
-            player.sendMessage(" §8| §7Soupsimulator Highscore §8» ${KColors.SPRINGGREEN}${stats.soupsimulatorHighscore()}")
-            player.sendMessage(" §8| §7Soups eaten §8» ${KColors.DODGERBLUE}${stats.soupsEaten()}")
-            player.sendMessage(" §8| §7Total hits §8» ${KColors.DODGERBLUE}${stats.totalHits()}")
-            player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
-        }
-
-    }
-
 }

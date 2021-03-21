@@ -27,11 +27,11 @@ object KitUtils {
         }
     }
 
-    fun armor(player: Player, helmet: Material, chestplate: Material, leggings: Material, boots: Material) {
-        player.inventory.helmet = ItemStack(helmet)
-        player.inventory.chestplate = ItemStack(chestplate)
-        player.inventory.leggings = ItemStack(leggings)
-        player.inventory.boots = ItemStack(boots)
+    fun armor(player: Player, helmet: Material?, chestplate: Material?, leggings: Material?, boots: Material?) {
+        player.inventory.helmet = helmet?.let { ItemStack(it) }
+        player.inventory.chestplate = chestplate?.let { ItemStack(it) }
+        player.inventory.leggings = leggings?.let { ItemStack(it) }
+        player.inventory.boots = boots?.let { ItemStack(it) }
     }
     
     fun giveRecraft(player: Player, amount: Int) {
@@ -40,7 +40,7 @@ object KitUtils {
         player.inventory.setItem(15, ItemStack(Material.BOWL, amount))
     }
 
-    fun giveSoups(player: Player) {
+    fun fillEmptySlotsWithSoup(player: Player) {
         for (i in 0..35) {
             if (player.inventory.getItem(i) == null) {
                 player.inventory.setItem(i, ItemStack(Material.MUSHROOM_STEW))

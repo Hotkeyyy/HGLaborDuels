@@ -7,18 +7,17 @@ import de.hglabor.plugins.duels.data.DataHolder
 import de.hglabor.plugins.duels.data.PlayerSettings
 import de.hglabor.plugins.duels.data.PlayerStats
 import de.hglabor.plugins.duels.database.MongoManager
-import de.hglabor.plugins.duels.eventmanager.*
-import de.hglabor.plugins.duels.eventmanager.arena.CreateArenaListener
-import de.hglabor.plugins.duels.eventmanager.arena.OnChunkUnload
-import de.hglabor.plugins.duels.eventmanager.duel.*
-import de.hglabor.plugins.duels.eventmanager.soupsimulator.SoupsimulatorEvents
+import de.hglabor.plugins.duels.events.listeners.*
+import de.hglabor.plugins.duels.events.listeners.arena.CreateArenaListener
+import de.hglabor.plugins.duels.events.listeners.arena.OnChunkUnload
+import de.hglabor.plugins.duels.events.listeners.duel.*
+import de.hglabor.plugins.duels.events.listeners.soupsimulator.SoupsimulatorEvents
+import de.hglabor.plugins.duels.functionality.EnderPearlFix
 import de.hglabor.plugins.duels.functionality.SoupHealing
-import de.hglabor.plugins.duels.guis.ChooseKitGUI
+import de.hglabor.plugins.duels.guis.KitsGUI
 import de.hglabor.plugins.duels.guis.PlayerSettingsGUI
-import de.hglabor.plugins.duels.guis.QueueGUI
 import de.hglabor.plugins.duels.guis.overview.DuelPlayerDataOverviewGUI
 import de.hglabor.plugins.duels.guis.overview.DuelTeamOverviewGUI
-import de.hglabor.plugins.duels.kits.Kit
 import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.protection.Protection
@@ -71,13 +70,16 @@ class Manager : KSpigot() {
         }
         File("plugins//HGLaborDuels//temp//duels//").mkdir()
 
+        broadcast("enable kits in main")
+        Kits.enable()
+
         broadcast("${Localization.PREFIX}${KColors.DODGERBLUE}ENABLED PLUGIN")
 
     }
 
     override fun startup() {
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord")
-        registerEventsAndCommands()
+        register()
         LobbyScoreboard.startRunnable()
         CreateFiles
         connectMongo()
@@ -102,7 +104,8 @@ class Manager : KSpigot() {
         MongoManager.disconnect()
     }
 
-    private fun registerEventsAndCommands() {
+    private fun register() {
+        Localization.INSTANCE
         SoupHealing.enable()
         ArenaTags.enable()
         OnPlayerChat.enable()
@@ -123,18 +126,17 @@ class Manager : KSpigot() {
         OnWorldLoad.enable()
         OnPotionSplash.enable()
         Protection.enable()
-        Kits.enable()
         SoupsimulatorEvents.enable()
         CreateArenaListener.enable()
         OnChunkUnload.enable()
         OnBlockForm.enable()
         OnArrowPickUp.enable()
+        OnDeathInDuel
 
         DuelPlayerDataOverviewGUI.enable()
         DuelTeamOverviewGUI.enable()
-        PlayerSettingsGUI.enable()
-        ChooseKitGUI.enable()
-        QueueGUI.enable()
+        KitsGUI.enable()
+        //QueueGUI.enable()
 
         getCommand("challenge")!!.setExecutor(ChallengeCommand)
         getCommand("setspawn")!!.setExecutor(SetSpawnCommand)
@@ -157,6 +159,7 @@ class Manager : KSpigot() {
 
         Arenas.enable()
         getCommand("tournament")!!.setExecutor(TournamentCommand)
+        EnderPearlFix
     }
 
     private fun connectMongo() {

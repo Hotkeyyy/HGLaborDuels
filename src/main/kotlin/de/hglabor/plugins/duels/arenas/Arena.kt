@@ -32,20 +32,15 @@ class Arena(var loc: Pair<Int, Int>, val arenaName: String) {
         }
     }
     val file = File("arenas//arenas.yml")
-    val yamlConfiguration = YamlConfiguration.loadConfiguration(file)
+    private val yamlConfiguration = YamlConfiguration.loadConfiguration(file)
 
     var bukkitWorld: BukkitWorld
-    val world: World
+    val world: World = Bukkit.getWorld("FightWorld")!!
 
     var spawn1Loc: Location
     var spawn2Loc: Location
 
     init {
-        /*if (Arenas.getArenaInfos(arenaName).first == ArenaTags.NETHER) {
-            world = Bukkit.getWorld("NetherFightWorld")!!
-            bukkitWorld = BukkitWorld(Bukkit.getWorld("NetherFightWorld"))
-        } else {*/
-        world = Bukkit.getWorld("FightWorld")!!
         bukkitWorld = BukkitWorld(world)
 
         spawn1Loc = Location(world, yamlConfiguration["${arenaName}.spawns.spawnOne.x"] as Double,
@@ -116,7 +111,7 @@ object Arenas {
         }
     }
 
-    fun getArenaInfos(arenaName: String): Pair<ArenaTags, Clipboard> {
+    private fun getArenaInfos(arenaName: String): Pair<ArenaTags, Clipboard> {
         val file = File("arenas//arenas.yml")
         val yamlConfiguration = YamlConfiguration.loadConfiguration(file)
         return Pair(enumValueOf(yamlConfiguration["$arenaName.tag"] as String), getClipboard(arenaName))

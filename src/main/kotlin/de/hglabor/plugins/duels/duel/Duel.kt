@@ -5,12 +5,14 @@ import de.hglabor.plugins.duels.arenas.Arena
 import de.hglabor.plugins.duels.arenas.Arenas
 import de.hglabor.plugins.duels.data.PlayerSettings
 import de.hglabor.plugins.duels.data.PlayerStats
-import de.hglabor.plugins.duels.guis.QueueGUI
+import de.hglabor.plugins.duels.events.events.duel.DuelStartEvent
+import de.hglabor.plugins.duels.kits.AbstractKit
 import de.hglabor.plugins.duels.kits.KitType
 import de.hglabor.plugins.duels.kits.Kits
-import de.hglabor.plugins.duels.kits.Kits.Companion.giveKit
-import de.hglabor.plugins.duels.kits.Kits.Companion.info
+import de.hglabor.plugins.duels.kits.Kits.giveKit
+import de.hglabor.plugins.duels.kits.kit.Random
 import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.localization.sendMsg
 import de.hglabor.plugins.duels.party.Party
 import de.hglabor.plugins.duels.party.Partys.isInParty
 import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
@@ -22,6 +24,7 @@ import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
 import de.hglabor.plugins.staff.utils.StaffData
 import net.axay.kspigot.chat.KColors
+import net.axay.kspigot.chat.sendMessage
 import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
 import net.axay.kspigot.items.name
@@ -30,6 +33,7 @@ import net.axay.kspigot.utils.mark
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.TextComponent
+import org.apache.commons.lang.mutable.Mutable
 import org.bukkit.*
 import org.bukkit.block.Block
 import org.bukkit.configuration.file.YamlConfiguration
@@ -39,13 +43,19 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import java.io.File
 import java.io.IOException
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class Duel {
     companion object {
-        fun create(teamOneLeader: Player, teamTwoLeader: Player, kit: Kits) {
+        fun get(duelID: String): Duel? {
+            return Data.duelFromID[duelID]
+        }
+
+        fun create(teamOneLeader: Player, teamTwoLeader: Player, kit: AbstractKit) {
             val duel = Duel()
-            if (kit == Kits.RANDOM)
+            if (kit == Random.INSTANCE)
                 duel.kit = Kits.random()
             else
                 duel.kit = kit
@@ -61,9 +71,9 @@ class Duel {
             duel.start()
         }
 
-        fun create(teamOne: ArrayList<Player>, teamTwo: ArrayList<Player>, kit: Kits) {
+        fun create(teamOne: ArrayList<Player>, teamTwo: ArrayList<Player>, kit: AbstractKit) {
             val duel = Duel()
-            if (kit == Kits.RANDOM)
+            if (kit == Random.INSTANCE)
                 duel.kit = Kits.random()
             else
                 duel.kit = kit
@@ -75,11 +85,11 @@ class Duel {
         fun createTournament(
             teamOne: ArrayList<Player>,
             teamTwo: ArrayList<Player>,
-            kit: Kits,
+            kit: AbstractKit,
             tournament: Tournament
         ) {
             val duel = Duel()
-            if (kit == Kits.RANDOM)
+            if (kit == Random.INSTANCE)
                 duel.kit = Kits.random()
             else
                 duel.kit = kit
@@ -88,12 +98,10 @@ class Duel {
             duel.ifTournament = true
             duel.tournament = tournament
             duel.start()
-
-
         }
     }
 
-    lateinit var kit: Kits
+    lateinit var kit: AbstractKit
     val ID = Data.getFreeGameID()
     var state = GameState.STARTING
     var countdownTask: KSpigotRunnable? = null
@@ -127,7 +135,9 @@ class Duel {
     val lastAttackerOfPlayer = hashMapOf<Player, Player>() // Person who was hit , Person who hit
 
     private fun init() {
-        arena = Arena(loc, Arenas.getRandomArena(kit.info.arenaTag))
+        async { Bukkit.getPluginManager().callEvent(DuelStartEvent(this)) }
+
+        arena = Arena(loc, Arenas.getRandomArena(kit.arenaTag))
         alivePlayers.addAll(teamOne)
         alivePlayers.addAll(teamTwo)
         knockbackType = getKnockbackForDuel()
@@ -144,10 +154,6 @@ class Duel {
             Soupsimulator.get(it)?.stop()
             it.isGlowing = false
             it.inventory.clear()
-            Kits.inGame[kit]?.add(it)
-            Kits.queue[Kits.playerQueue[it]]?.remove(it)
-            Kits.queue[Kits.RANDOM]?.remove(it)
-            Kits.playerQueue.remove(it)
             PlayerStats.get(it).addTotalGame()
 
             if (knockbackType == PlayerSettings.Companion.Knockback.OLD)
@@ -157,7 +163,6 @@ class Duel {
         }
         alivePlayers.filter { it.isInSoupsimulator() }.forEach { Soupsimulator.forceStop(it) }
         Data.duelFromID[ID] = this
-        QueueGUI.updateContents()
     }
 
     private fun getKnockbackForDuel(): PlayerSettings.Companion.Knockback {
@@ -181,9 +186,10 @@ class Duel {
         Data.gameIDs.add(ID)
         alivePlayers.forEach { player ->
             player.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 40, 200))
-
             async {
-                StaffData.followedPlayerFromStaff
+                StaffData.followingStaffFromPlayer[player]?.forEach {
+                    this.addSpectator(it, false)
+                }
             }
         }
 
@@ -201,7 +207,7 @@ class Duel {
         }
     }
 
-    fun sendCountdown() {
+    private fun sendCountdown() {
         state = GameState.COUNTDOWN
         var count = 3
         var colorcode = 'a'
@@ -215,10 +221,7 @@ class Duel {
                 }
             } else {
                 playersAndSpecs.forEach { player ->
-                    if (player.localization("de"))
-                        player.sendTitle(Localization.DUEL_STARTING_TITLE_DE, "§b", 3, 13, 3)
-                    else
-                        player.sendTitle(Localization.DUEL_STARTING_TITLE_EN, "§b", 3, 13, 3)
+                    player.sendTitle(Localization.INSTANCE.getMessage("duel.starting.title", player), "§b", 3, 13, 3)
                     player.playSound(player.location, Sound.EVENT_RAID_HORN, 10f, 1f)
                     player.closeInventory()
                     player.removePotionEffect(PotionEffectType.SLOW)
@@ -230,7 +233,7 @@ class Duel {
         }!!
     }
 
-    fun teleportPlayersToSpawns() {
+    private fun teleportPlayersToSpawns() {
         sync {
             alivePlayers.forEach { player ->
                 if (teamOne.contains(player)) {
@@ -257,15 +260,15 @@ class Duel {
             player.teleport(finalLoc)
         }
     }
-
-    fun playerDied(player: Player, germanMessage: String, englishMessage: String) {
+    // TODO Move to playerdiedinduel listener
+    /*
+       fun playerDied(player: Player, germanMessage: String, englishMessage: String) {
         Data.duelFromSpec[player] = this
         Data.inFight.remove(player)
         alivePlayers.remove(player)
         val newAlivePlayers = alivePlayers
         alivePlayers = newAlivePlayers
         savePlayerdata(player)
-        Kits.inGame[kit]?.remove(player)
         Kits.removeCooldown(player)
 
         sendMessage(germanMessage, englishMessage)
@@ -278,18 +281,16 @@ class Duel {
 
         val stats = PlayerStats.get(player)
         stats.addDeath()
-    }
+    }*/
 
+    // TODO Move to playerleftinduel listener
     fun playerLeft(player: Player) {
         Data.inFight.remove(player)
         alivePlayers.remove(player)
         Kits.inGame[kit]?.remove(player)
         Kits.removeCooldown(player)
         savePlayerdata(player)
-        sendMessage(
-            "${teamColor(player)}${player.name} ${KColors.GRAY}hat den Kampf verlassen.",
-            "${teamColor(player)}${player.name} ${KColors.GRAY}left the fight."
-        )
+        sendMsg("duel.playerLeft", mutableMapOf("teamColor" to teamColor(player).toString(), "playerName" to player.name))
 
         if (ifTeamDied(getTeam(player))) {
             loser = getTeam(player)
@@ -305,7 +306,7 @@ class Duel {
         return livingPlayers == 0
     }
 
-    private fun savePlayerdata(player: Player) {
+    fun savePlayerdata(player: Player) {
         val file = File("$path//playerdata//${player.uniqueId}.yml")
         if (!file.parentFile.exists())
             file.parentFile.mkdirs()
@@ -323,7 +324,7 @@ class Duel {
         yamlConfiguration["data.hits"] = hits[player]
         yamlConfiguration["data.longestCombo"] = longestCombo[player]
 
-        if (kit.info.type == KitType.SOUP) {
+        if (kit.type == KitType.SOUP) {
             var soupsLeft = 0
             for (slot in 0..35) {
                 if (player.inventory.getItem(slot) != null) {
@@ -336,7 +337,7 @@ class Duel {
             yamlConfiguration["data.soupsLeft"] = soupsLeft
         }
 
-        if (kit.info.type == KitType.POT) {
+        if (kit.type == KitType.POT) {
             var potsLeft = 0
             for (slot in 0..35) {
                 if (player.inventory.getItem(slot) != null) {
@@ -366,7 +367,6 @@ class Duel {
         if (player.inventory.boots != null)
             yamlConfiguration["inventory.slot.boots.itemStack"] = player.inventory.boots
 
-
         try {
             yamlConfiguration.save(file)
         } catch (e: IOException) {
@@ -386,11 +386,8 @@ class Duel {
         specs = newSpecList
 
         if (notifyPlayers)
-            sendMessage(
-                Localization.PLAYER_STARTED_SPECTATING_DE.replace("%playerName%", player.displayName),
-                Localization.PLAYER_STARTED_SPECTATING_EN.replace("%playerName%", player.displayName))
+            sendMsg("duel.playerSpectating", mutableMapOf("playerName" to player.name))
         spectate(player)
-
     }
 
     fun spectate(player: Player) {
@@ -412,10 +409,7 @@ class Duel {
         player.isFlying = true
         player.inventory.setItem(8, itemStack(Material.MAGENTA_GLAZED_TERRACOTTA) {
             meta {
-                name = if (player.localization("de"))
-                    Localization.STOP_SPECTATING_ITEM_NAME_DE
-                else
-                    Localization.STOP_SPECTATING_ITEM_NAME_EN
+                name = Localization.INSTANCE.getMessage("duel.item.stopSpectating", player)
             }; mark("stopspec")
         })
         Data.duelFromSpec[player] = this
@@ -426,11 +420,7 @@ class Duel {
         specs.remove(player)
         playersAndSpecs.remove(player)
         if (notifyPlayers)
-            if (player.localization("de"))
-                sendMessage(
-                    Localization.PLAYER_STOPPED_SPECTATING_DE.replace("%playerName%", player.displayName),
-                    Localization.PLAYER_STOPPED_SPECTATING_EN.replace("%playerName%", player.displayName)
-                )
+            sendMsg("duel.playerStoppedSpectating", mutableMapOf("playerName" to player.name))
     }
 
     fun stop() {
@@ -438,7 +428,7 @@ class Duel {
         countdownTask?.cancel()
         alivePlayers.forEach { savePlayerdata(it); Kits.inGame[kit]?.remove(it); Kits.removeCooldown(it) }
         sendResults()
-        QueueGUI.updateContents()
+        //QueueGUI.updateContents()
 
         taskRunLater(45, true) {
             resetAll()
@@ -468,11 +458,11 @@ class Duel {
 
         sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                        ")
         if (winner == teamOne) {
-            sendMessage("${KColors.GREEN}Winner: ${KColors.DEEPSKYBLUE}Team One §8($teamOnePlayers§8)")
-            sendMessage("${KColors.RED}Loser: ${KColors.DEEPPINK}Team Two §8($teamTwoPlayers§8)")
+            sendMsg("duel.result.winner.teamOne", mutableMapOf("teamColor" to teamColor(teamOne.first()).toString(), "teamPlayers" to teamOnePlayers))
+            sendMsg("duel.result.loser.teamTwo", mutableMapOf("teamColor" to teamColor(teamTwo.first()).toString(), "teamPlayers" to teamTwoPlayers))
         } else {
-            sendMessage("${KColors.GREEN}Winner: ${KColors.DEEPPINK}Team Two §8($teamTwoPlayers§8)")
-            sendMessage("${KColors.RED}Loser: ${KColors.DEEPSKYBLUE}Team One §8($teamOnePlayers§8)")
+            sendMsg("duel.result.winner.teamTwo", mutableMapOf("teamColor" to teamColor(teamTwo.first()).toString(), "teamPlayers" to teamTwoPlayers))
+            sendMsg("duel.result.loser.teamOne", mutableMapOf("teamColor" to teamColor(teamOne.first()).toString(), "teamPlayers" to teamOnePlayers))
         }
 
         val message = TextComponent("Click to open the duel overview")
@@ -480,9 +470,7 @@ class Duel {
         message.isItalic = true
         message.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dueloverview $ID")
 
-
         playersAndSpecs.forEach { it.sendMessage(message) }
-
         sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                        ")
     }
 
@@ -525,18 +513,15 @@ class Duel {
             teamOne
     }
 
-    fun sendMessage(germanMessage: String, englishMessage: String) {
+    fun sendMessage(string: String) {
         playersAndSpecs.forEach {
-            if (it.localization("de"))
-                it.sendMessage(germanMessage)
-            else
-                it.sendMessage(englishMessage)
+            it.sendMessage(string)
         }
     }
 
-    fun sendMessage(universalMessage: String) {
+    fun sendMsg(key: String, values: MutableMap<String, String>? = null) {
         playersAndSpecs.forEach {
-            it.sendMessage(universalMessage)
+            it.sendMsg(key, values)
         }
     }
 }

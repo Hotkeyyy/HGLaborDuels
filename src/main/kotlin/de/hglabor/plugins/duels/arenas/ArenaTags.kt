@@ -3,12 +3,23 @@ package de.hglabor.plugins.duels.arenas
 import de.hglabor.plugins.duels.guis.ArenaTagsGUI
 import de.hglabor.plugins.duels.guis.CreateArenaGUI
 import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.localization.sendMsg
 import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
 import net.axay.kspigot.extensions.broadcast
+import net.axay.kspigot.gui.openGUI
 import org.bukkit.Material
 
 enum class ArenaTags(val material: Material) {
-    NONE(Material.BARRIER), SUMO(Material.LEAD), GLADIATOR(Material.IRON_BARS), UNDERWATER(Material.WATER_BUCKET), ICEFISHING(Material.ICE), NETHER(Material.NETHERRACK), JUMPANDRUN(Material.DIAMOND_BOOTS);
+    NONE(Material.BARRIER),
+    SUMO(Material.LEAD),
+    GLADIATOR(Material.IRON_BARS),
+    UNDERWATER(Material.WATER_BUCKET),
+    ICEFISHING(Material.ICE),
+    NETHER(Material.NETHERRACK),
+    JUMPANDRUN(Material.DIAMOND_BOOTS),
+    HARDJUMPANDRUN(Material.NETHERITE_BOOTS),
+    SPLEEF(Material.DIAMOND_SHOVEL),
+    DEFAULT(Material.GRASS_BLOCK);
 
     companion object {
         fun enable() {
@@ -21,9 +32,8 @@ enum class ArenaTags(val material: Material) {
                             it.player.closeInventory()
                             val arena = arenaFromPlayer[it.player]
                             arena!!.tag = tag
-                            it.player.sendLocalizedMessage(Localization.CHOOSE_TAG_DE.replace("%tag%", tag.toString()),
-                                Localization.CHOOSE_TAG_EN.replace("%tag%", tag.toString()))
-                            CreateArenaGUI.openCreateArenaGUI(it.player)
+                            it.player.sendMsg("arena.creation.choseTag", mutableMapOf("tag" to tag.toString()))
+                            it.player.openGUI(CreateArenaGUI.guiBuilder(it.player))
                         }
                     ))
             }

@@ -1,8 +1,9 @@
 package de.hglabor.plugins.duels.commands
 
 import de.hglabor.plugins.duels.duel.Duel
-import de.hglabor.plugins.duels.guis.ChooseKitGUI
+import de.hglabor.plugins.duels.guis.KitsGUI
 import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.localization.sendMsg
 import de.hglabor.plugins.duels.party.Party
 import de.hglabor.plugins.duels.party.Partys.isInParty
 import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
@@ -25,10 +26,7 @@ object ChallengeCommand : CommandExecutor {
             val player = sender
             if (player.isInParty()) {
                 if (Party.get(player)?.leader != player) {
-                    player.sendLocalizedMessage(
-                        Localization.CANT_DO_THAT_RIGHT_NOW_DE,
-                        Localization.CANT_DO_THAT_RIGHT_NOW_EN
-                    )
+                    player.sendMsg("command.cantExecuteNow")
                     return false
                 }
             }
@@ -39,18 +37,15 @@ object ChallengeCommand : CommandExecutor {
                     val target = Bukkit.getPlayer(args[0])
                     if (target != null) {
                         if (player == target) {
-                            player.sendLocalizedMessage(Localization.CHALLENGE_COMMAND_CANT_DUEL_SELF_DE, Localization.CHALLENGE_COMMAND_CANT_DUEL_SELF_EN)
+                            player.sendMsg("challenge.deny.cantDuelSelf")
                             return false
                         }
 
                         Data.openedDuelGUI[player] = target
                         Data.openedKitInventory[player] = Data.KitInventories.DUEL
-                        player.openGUI(ChooseKitGUI.gui)
+                        player.openGUI(KitsGUI.guiBuilder(player))
                     } else {
-                        player.sendLocalizedMessage(
-                            Localization.PLAYER_NOT_ONLINE_DE.replace("%playerName%", args[0]),
-                            Localization.PLAYER_NOT_ONLINE_EN.replace("%playerName%", args[0])
-                        )
+                        player.sendMsg("playerNotOnline", mutableMapOf("%playerName%" to args[0]))
                     }
 
                     // ACCEPT
@@ -58,33 +53,21 @@ object ChallengeCommand : CommandExecutor {
                     val target = Bukkit.getPlayer(args[1])
                     if (target != null) {
                         if (target.isInFight()) {
-                            player.sendLocalizedMessage(
-                                Localization.CHALLENGE_COMMAND_ACCEPT_PLAYER_IN_FIGHT_DE.replace("%playerName%", target.name),
-                                Localization.CHALLENGE_COMMAND_ACCEPT_PLAYER_IN_FIGHT_EN.replace("%playerName%", target.name)
-                            )
+                            player.sendMsg("challenge.playerAlreadyInFight", mutableMapOf("%playerName%" to target.name))
                             return false
                         }
                         if (Data.challenged[target] == sender) {
                             Duel.create(sender, target, Data.challengeKit[target]!!)
                         }
                     } else {
-                        player.sendLocalizedMessage(
-                            Localization.PLAYER_NOT_ONLINE_DE.replace("%playerName%", args[1]),
-                            Localization.PLAYER_NOT_ONLINE_EN.replace("%playerName%", args[1])
-                        )
+                        player.sendMsg("playerNotOnline", mutableMapOf("playerName" to args[0]))
                     }
                 } else {
-                    player.sendLocalizedMessage(
-                        Localization.COMMAND_WRONG_ARGUMENTS_DE,
-                        Localization.COMMAND_WRONG_ARGUMENTS_EN
-                    )
-                    player.sendMessage(Localization.CHALLENGE_COMMAND_HELP)
+                    player.sendMsg("command.wrongArguments")
+                    player.sendMsg("challenge.help")
                 }
             } else {
-                player.sendLocalizedMessage(
-                    Localization.CANT_DO_THAT_RIGHT_NOW_DE,
-                    Localization.CANT_DO_THAT_RIGHT_NOW_EN
-                )
+                player.sendMsg("command.cantExecuteNow")
             }
         } else {
             sender.info("Du musst ein Spieler sein.")

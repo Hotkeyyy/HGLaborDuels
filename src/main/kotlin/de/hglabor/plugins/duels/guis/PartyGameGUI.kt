@@ -1,5 +1,6 @@
 package de.hglabor.plugins.duels.guis
 
+import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.utils.Data
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.gui.GUIType
@@ -13,26 +14,23 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 
 object PartyGameGUI {
-    fun open(player: Player) {
-        val gui = kSpigotGUI(GUIType.THREE_BY_NINE) {
+    fun guiBuilder(player: Player) = kSpigotGUI(GUIType.THREE_BY_NINE) {
 
-            title = "${KColors.DODGERBLUE}Duels"
+        title = Localization.INSTANCE.getMessage("party.games.gui.title", player)
 
-            page(1) {
+        page(1) {
 
-                placeholder(Slots.Border, itemStack(Material.WHITE_STAINED_GLASS_PANE) { meta { name = null } })
+            placeholder(Slots.Border, itemStack(Material.WHITE_STAINED_GLASS_PANE) { meta { name = null } })
 
-                button(Slots.RowTwoSlotTwo, itemStack(Material.NETHERITE_SWORD) {
-                    meta {
-                        name = "split teamfight"
-                    }
-                }) {
-                    Data.openedKitInventory[player] = Data.KitInventories.SPLITPARTY
-                    player.openGUI(ChooseKitGUI.gui)
+            button(Slots.RowTwoSlotTwo, itemStack(Material.NETHERITE_SWORD) {
+                meta {
+                    name = Localization.INSTANCE.getMessage("party.games.splitTeamfight.name", player)
                 }
+            }) {
+                Data.openedKitInventory[player] = Data.KitInventories.SPLITPARTY
+                player.openGUI(KitsGUI.guiBuilder(player))
             }
         }
-        player.openGUI(gui)
     }
 }
 

@@ -1,21 +1,23 @@
 package de.hglabor.plugins.duels.party
 
+import de.hglabor.plugins.duels.events.events.duel.DuelDeathReason
+import de.hglabor.plugins.duels.events.events.duel.PlayerDeathInDuelEvent
 import de.hglabor.plugins.duels.functionality.MainInventory
 import de.hglabor.plugins.duels.functionality.PartyInventory
 import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.localization.sendMsg
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
-import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
-import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
 import net.axay.kspigot.chat.KColors
+import net.axay.kspigot.chat.sendMessage
 import net.axay.kspigot.runnables.async
 import net.axay.kspigot.runnables.taskRunLater
 import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.TextComponent
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.*
-
 
 class Party(val leader: Player) {
     companion object {
@@ -35,21 +37,7 @@ class Party(val leader: Player) {
 
         fun help(player: Player) {
             player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
-            if (player.localization("de")) {
-                player.sendMessage(" §8| ${KColors.MEDIUMPURPLE}/party create §8» §7Erstelle eine Party")
-                player.sendMessage(" §8| ${KColors.MEDIUMPURPLE}/party info §8<${KColors.MEDIUMPURPLE}Spieler§8> §8» §7Zeige Infos über eine Party")
-                player.sendMessage(" §8| ${KColors.MEDIUMPURPLE}/party invite §8<${KColors.MEDIUMPURPLE}Spieler§8> §8» §7Lade einen Spieler ein")
-                player.sendMessage(" §8| ${KColors.MEDIUMPURPLE}/party join §8<${KColors.MEDIUMPURPLE}Spieler§8> §8» §7Trete einer Party bei")
-                player.sendMessage(" §8| ${KColors.MEDIUMPURPLE}/party leave §8» §7Verlasse/lösche deine Party")
-                player.sendMessage(" §8| ${KColors.MEDIUMPURPLE}/party public §8» §7Party auf öffentlich/privat stellen")
-            } else {
-                player.sendMessage(" §8| ${KColors.MEDIUMPURPLE}/party create §8» §7Create a party")
-                player.sendMessage(" §8| ${KColors.MEDIUMPURPLE}/party info §8<${KColors.MEDIUMPURPLE}Player§8> §8» §7Show infos about a party")
-                player.sendMessage(" §8| ${KColors.MEDIUMPURPLE}/party invite §8<${KColors.MEDIUMPURPLE}Player§8> §8» §7Invite a player")
-                player.sendMessage(" §8| ${KColors.MEDIUMPURPLE}/party join §8<${KColors.MEDIUMPURPLE}Player§8> §8» §7Join a party")
-                player.sendMessage(" §8| ${KColors.MEDIUMPURPLE}/party leave §8» §7Leave/delete a party")
-                player.sendMessage(" §8| ${KColors.MEDIUMPURPLE}/party public §8» §7Set party to public/privat")
-            }
+            player.sendMsg("party.help")
             player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
         }
     }
@@ -62,7 +50,7 @@ class Party(val leader: Player) {
 
     fun create(notify: Boolean): Party {
         if (notify)
-            leader.sendLocalizedMessage(Localization.PARTY_CREATED_DE, Localization.PARTY_CREATED_EN)
+            leader.sendMsg("party.created")
 
         Partys.playerParty[leader] = this
         PartyInventory.giveItems(leader)
@@ -71,31 +59,21 @@ class Party(val leader: Player) {
 
     fun invitePlayer(invited: Player) {
         invitedPlayers.add(invited)
-        leader.sendLocalizedMessage(
-            Localization.PARTY_YOU_INVITED_DE,
-            Localization.PARTY_YOU_INVITED_EN,
-            "%playerName%", invited.name)
+        leader.sendMsg("party.invited", mutableMapOf("%playerName%" to invited.name))
         async {
             players.filter { it != leader }.forEach {
-                if (it.localization("de"))
-                    it.sendMessage("${Localization.PARTY_PREFIX}${KColors.MAGENTA}${leader.name} §7hat ${KColors.MEDIUMPURPLE}${invited.name} §7eingeladen.")
-                else
-                    it.sendMessage("${Localization.PARTY_PREFIX}${KColors.MAGENTA}${leader.name} §7invited ${KColors.MEDIUMPURPLE}${invited.name}§7.")
+                it.sendMsg("party.leaderInvited", mutableMapOf("%playerName%" to invited.name))
             }
         }
-        invited.sendLocalizedMessage(
-            Localization.PARTY_YOU_WERE_INVITED_DE,
-            Localization.PARTY_YOU_WERE_INVITED_EN,
-            "%playerName%",
-            leader.name
-        )
+        invited.sendMsg("party.youWereInvited", mutableMapOf("%leaderName%" to leader.name))
 
         val message = TextComponent("")
         val one = TextComponent("  [")
         one.color = KColors.DARKGRAY
-        val text = TextComponent("Click to join")
+        val text = TextComponent(Localization.INSTANCE.getMessage("party.clickToJoin.message", invited))
         message.color = KColors.MEDIUMPURPLE
-        message.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party join ${leader.name}")
+        message.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND,
+            Localization.INSTANCE.getMessage("party.clickToJoin.hover", mutableMapOf("leaderName" to leader.name), invited))
         val two = TextComponent("]")
         two.color = KColors.DARKGRAY
         message.addExtra(one)
@@ -107,18 +85,8 @@ class Party(val leader: Player) {
     }
 
     fun addPlayer(player: Player) {
-        sendLocalizedMessage(
-            Localization.PARTY_PLAYER_JOINED_DE,
-            Localization.PARTY_PLAYER_JOINED_EN,
-            "%playerName%",
-            player.name
-        )
-        player.sendLocalizedMessage(
-            Localization.PARTY_YOU_JOINED_DE,
-            Localization.PARTY_YOU_JOINED_EN,
-            "%playerName%",
-            leader.name
-        )
+        sendMsg("party.playerJoined", mutableMapOf("playerName" to player.name))
+        player.sendMsg("party.joined", mutableMapOf("leaderName" to leader.name))
         players.add(player)
         PartyInventory.giveItems(player)
         Partys.playerParty[player] = this
@@ -127,11 +95,8 @@ class Party(val leader: Player) {
     fun leave(player: Player) {
         players.remove(player)
         Partys.playerParty.remove(player)
-        sendLocalizedMessage(
-            Localization.PARTY_PLAYER_LEFT_DE,
-            Localization.PARTY_PLAYER_LEFT_EN,
-            "%playerName%", player.name)
-        player.sendLocalizedMessage(Localization.PARTY_YOU_LEFT_DE, Localization.PARTY_YOU_LEFT_EN)
+        sendMsg("party.playerLeft", mutableMapOf("playerName" to player.name))
+        player.sendMsg("party.left")
         if (!player.isInFight())
             player.reset()
     }
@@ -139,15 +104,11 @@ class Party(val leader: Player) {
     fun kick(player: Player) {
         players.remove(player)
         Partys.playerParty.remove(player)
-        sendLocalizedMessage(
-            Localization.PARTY_PLAYER_WAS_KICKED_DE,
-            Localization.PARTY_PLAYER_WAS_KICKED_EN,
-            "%playerName",
-            player.name)
-        player.sendLocalizedMessage(Localization.PARTY_YOU_WERE_KICKED_DE, Localization.PARTY_YOU_WERE_KICKED_EN)
+        sendMsg("party.playerWasKicked", mutableMapOf("playerName" to player.name))
+        player.sendMsg("party.wereKicked")
 
         if (player.isInFight())
-            Data.duelFromPlayer(player).playerLeft(player)
+            Bukkit.getPluginManager().callEvent(PlayerDeathInDuelEvent(player, Data.duelFromPlayer(player), DuelDeathReason.QUIT))
 
         if (player.world.name != "world")
             player.reset()
@@ -156,11 +117,9 @@ class Party(val leader: Player) {
     }
 
     fun togglePrivacy(): Boolean {
-        if (isPublic)
-            sendLocalizedMessage(Localization.PARTY_NOW_PRIVAT_DE, Localization.PARTY_NOW_PRIVAT_EN)
-        else
-            sendLocalizedMessage(Localization.PARTY_NOW_PUBLIC_DE, Localization.PARTY_NOW_PUBLIC_EN)
         isPublic = !isPublic
+        val privacy = if (isPublic) "public" else "private"
+        sendMsg("party.privacy.toggled", mutableMapOf("privacy" to privacy))
         return isPublic
     }
 
@@ -176,7 +135,7 @@ class Party(val leader: Player) {
 
     fun delete() {
         isPublic = false
-        sendLocalizedMessage(Localization.PARTY_DELETED_DE, Localization.PARTY_DELETED_EN)
+        sendMsg("party.delted")
         players.forEach {
             if (!it.isInFight())
                 MainInventory.giveItems(it)
@@ -197,11 +156,15 @@ class Party(val leader: Player) {
         return teamOne to teamTwo
     }
 
-    fun sendLocalizedMessage(germanMessage: String, englishMessage: String) {
-        async { players.forEach { it.sendLocalizedMessage(germanMessage, englishMessage) } }
+    fun sendMessage(string: String) {
+        players.forEach {
+            it.sendMessage(string)
+        }
     }
 
-    fun sendLocalizedMessage(germanMessage: String, englishMessage: String, toReplace: String, replacement: String) {
-        async { players.forEach { it.sendLocalizedMessage(germanMessage, englishMessage, toReplace, replacement) } }
+    fun sendMsg(key: String, values: MutableMap<String, String>? = null) {
+        players.forEach {
+            it.sendMsg(key, values)
+        }
     }
 }

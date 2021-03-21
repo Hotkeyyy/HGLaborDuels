@@ -1,0 +1,12 @@
+package de.hglabor.plugins.duels.events.listeners
+
+import net.axay.kspigot.event.listen
+import org.bukkit.event.entity.FoodLevelChangeEvent
+
+object OnFoodLevelChange {
+    fun enable() {
+        listen<FoodLevelChangeEvent> {
+            it.isCancelled = true
+        }
+    }
+}

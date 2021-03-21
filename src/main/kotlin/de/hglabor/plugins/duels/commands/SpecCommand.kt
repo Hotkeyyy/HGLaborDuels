@@ -2,6 +2,7 @@ package de.hglabor.plugins.duels.commands
 
 import de.hglabor.plugins.duels.data.PlayerSettings
 import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.localization.sendMsg
 import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
@@ -19,54 +20,28 @@ import java.util.ArrayList
 object SpecCommand : CommandExecutor, TabCompleter {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender is Player) {
-            val player = sender
-            if (!player.isInFight() && !player.isInSoupsimulator()) {
+            if (!sender.isInFight() && !sender.isInSoupsimulator()) {
                 if (args.size == 1) {
                     val t = Bukkit.getPlayer(args[0])
                     if (t != null) {
                         if (t.isInFight()) {
                             if (PlayerSettings.get(t).ifAllowSpectators()) {
-                                Data.duelFromSpec[player]?.removeSpectator(player, true)
-                                Data.duelFromPlayer(t).addSpectator(player, true)
+                                Data.duelFromSpec[sender]?.removeSpectator(sender, true)
+                                Data.duelFromPlayer(t).addSpectator(sender, true)
                             } else {
-                                player.sendLocalizedMessage(
-                                    Localization.SPEC_COMMAND_DENIED_DE,
-                                    Localization.SPEC_COMMAND_DENIED_EN,
-                                    "%playerName%",
-                                    t.displayName
-                                )
+                                sender.sendMsg("spec.fail.playerDenied", mutableMapOf("playerName" to t.name))
                             }
                         } else {
-                            if (player.localization("de"))
-                                player.sendMessage(
-                                    Localization.SPEC_COMMAND_PLAYER_NOT_FIGHTING_DE.replace(
-                                        "%playerName%", t.displayName
-                                    )
-                                )
-                            else
-                                player.sendMessage(
-                                    Localization.SPEC_COMMAND_PLAYER_NOT_FIGHTING_EN.replace(
-                                        "%playerName%", t.displayName
-                                    )
-                                )
+                            sender.sendMsg("spec.fail.playerNotFighting", mutableMapOf("playerName" to t.name))
                         }
                     } else {
-                        if (player.localization("de"))
-                            player.sendMessage(Localization.PLAYER_NOT_ONLINE_DE.replace("%playerName%", args[0]))
-                        else
-                            player.sendMessage(Localization.PLAYER_NOT_ONLINE_EN.replace("%playerName%", args[0]))
+                        sender.sendMsg("playerNotOnline", mutableMapOf("playerName" to args[0]))
                     }
                 } else {
-                    if (player.localization("de"))
-                        player.sendMessage(Localization.SPEC_COMMAND_HELP_DE)
-                    else
-                        player.sendMessage(Localization.SPEC_COMMAND_HELP_EN)
+                    sender.sendMsg("spec.help")
                 }
             } else {
-                if (player.localization("de"))
-                    player.sendMessage(Localization.CANT_DO_THAT_RIGHT_NOW_DE)
-                else
-                    player.sendMessage(Localization.CANT_DO_THAT_RIGHT_NOW_EN)
+                sender.sendMsg("command.cantExecuteNot")
             }
         }
         return false

@@ -4,9 +4,10 @@ import de.hglabor.plugins.duels.Manager
 import de.hglabor.plugins.duels.arenas.Arenas
 import de.hglabor.plugins.duels.functionality.MainInventory
 import de.hglabor.plugins.duels.functionality.PartyInventory
+import de.hglabor.plugins.duels.kits.AbstractKit
 import de.hglabor.plugins.duels.kits.Kits
-import de.hglabor.plugins.duels.kits.Kits.Companion.info
 import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.localization.sendMsg
 import de.hglabor.plugins.duels.party.Party
 import de.hglabor.plugins.duels.party.Partys.hasParty
 import de.hglabor.plugins.duels.party.Partys.isInParty
@@ -16,6 +17,7 @@ import de.hglabor.plugins.staff.functionality.StaffInventory
 import de.hglabor.plugins.staff.utils.StaffData.isInStaffMode
 import de.hglabor.plugins.staff.utils.StaffData.isVanished
 import net.axay.kspigot.chat.KColors
+import net.axay.kspigot.chat.sendMessage
 import net.axay.kspigot.extensions.bukkit.feedSaturate
 import net.axay.kspigot.extensions.bukkit.heal
 import net.axay.kspigot.extensions.onlinePlayers
@@ -42,33 +44,20 @@ object PlayerFunctions {
         return Data.duelFromSpec.contains(player)
     }
 
-    fun Player.duel(target: Player, kit: Kits) {
+    fun Player.duel(target: Player, kit: AbstractKit) {
         val player: Player = player!!
 
-        if (!Arenas.arenaWithTagExists(kit.info.arenaTag)) {
-            player.sendLocalizedMessage(
-                Localization.NO_ARENA_FOUND_DE.replace("%tag%", kit.info.arenaTag.toString()),
-                Localization.NO_ARENA_FOUND_EN.replace("%tag%", kit.info.arenaTag.toString())
-            )
+        if (!Arenas.arenaWithTagExists(kit.arenaTag)) {
+            player.sendMsg("arena.notFound", mutableMapOf("tag" to kit.arenaTag.toString()))
             return
         }
 
-        player.sendLocalizedMessage(
-            Localization.YOU_DUELED_DE.replace("%playerName%", target.displayName).replace("%kit%", kit.info.name),
-            Localization.YOU_DUELED_EN.replace("%playerName%", target.displayName).replace("%kit%", kit.info.name))
-
+        player.sendMsg("duel.dueledPlayer", mutableMapOf("playerName" to target.displayName, "kit" to kit.name))
         if (player.hasParty()) {
-            target.sendLocalizedMessage(
-                Localization.YOU_WERE_DUELED_DE.replace("%kit%", kit.info.name),
-                Localization.YOU_WERE_DUELED_EN.replace("%kit%", kit.info.name),
-                "%playerName%", "${player.name}'s ${KColors.CORNSILK}Party (${Party.get(player)!!.players.size})§7")
+            target.sendMsg("duel.playerDueled", mutableMapOf("playerName" to "${player.name}'s ${KColors.CORNSILK}Party (${Party.get(player)!!.players.size})§7", "kit" to kit.name))
         } else {
-            target.sendLocalizedMessage(
-                Localization.YOU_WERE_DUELED_DE.replace("%kit%", kit.info.name),
-                Localization.YOU_WERE_DUELED_EN.replace("%kit%", kit.info.name),
-                "%playerName%", "${player.name}")
+            target.sendMsg("duel.playerDueled", mutableMapOf("playerName" to player.name, "kit" to kit.name))
         }
-
 
         val message = TextComponent("")
         val one = TextComponent("  [")
@@ -76,10 +65,6 @@ object PlayerFunctions {
         val text = TextComponent("Click")
         message.color = KColors.DODGERBLUE
         message.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/challenge accept ${player.name}")
-        if (target.localization("de"))
-            message.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, Text(Localization.ACCEPT_BUTTON_DE))
-        else
-            message.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, Text(Localization.ACCEPT_BUTTON_EN))
         val two = TextComponent("]")
         two.color = KColors.DARKGRAY
         message.addExtra(one)

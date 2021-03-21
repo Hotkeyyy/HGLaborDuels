@@ -11,15 +11,16 @@ import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
 import net.axay.kspigot.items.name
 import org.bukkit.Material
+import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryCloseEvent
 
 object ArenaTagsGUI {
     private var menuCompound: GUIRectSpaceCompound<ForInventoryFourByNine, GUICompoundElement<ForInventoryFourByNine>>? =
         null
 
-    val gui = kSpigotGUI(GUIType.FOUR_BY_NINE) {
+    fun guiBuilder(player: Player) = kSpigotGUI(GUIType.FOUR_BY_NINE) {
 
-        title = Localization.ARENA_CREATEION_TAGSGUI_NAME
+        title = Localization.INSTANCE.getMessage("arenaTagsGUI.name", player)
 
         page(1) {
 

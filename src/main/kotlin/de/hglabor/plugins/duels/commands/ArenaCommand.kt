@@ -6,11 +6,13 @@ import de.hglabor.plugins.duels.arenas.arenaFromPlayer
 import de.hglabor.plugins.duels.functionality.CreateArenaInventory
 import de.hglabor.plugins.duels.guis.CreateArenaGUI
 import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.localization.sendMsg
 import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
 import net.axay.kspigot.chat.KColors
+import net.axay.kspigot.gui.openGUI
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.command.Command
@@ -32,7 +34,7 @@ object ArenaCommand : CommandExecutor, TabCompleter {
                                 arenaFromPlayer[player] = CreateArena(player)
                                 CreateArenaInventory.giveItems(player)
                             }
-                            CreateArenaGUI.openCreateArenaGUI(player)
+                            player.openGUI(CreateArenaGUI.guiBuilder(player))
                             return true
                         } else if (args[0].equals("buildworld", true)) {
                             player.teleport(Location(Bukkit.getWorld("BuildWorld"), 0.0, 5.0, 0.0))
@@ -56,47 +58,25 @@ object ArenaCommand : CommandExecutor, TabCompleter {
                             player.sendMessage("${Localization.PREFIX}Arenas ${KColors.DARKGRAY}» ${KColors.GRAY}$message")
                             return true
                         }
-                    } else if (args.size == 2) {
-                        if (args[0].equals("setname", true)) {
-                            arenaFromPlayer[player]?.name = args[1]
-                            player.sendLocalizedMessage(
-                                Localization.ARENA_CREATION_LISTENER_SET_NAME_DE,
-                                Localization.ARENA_CREATION_LISTENER_SET_NAME_EN,
-                                "%arenaName%", args[1])
-                            return true
-                        }
                     }
-                    if (player.localization("de")) {
-                        player.sendMessage(Localization.COMMAND_WRONG_ARGUMENTS_DE)
-                        player.sendMessage(Localization.ARENA_COMMAND_HELP1_DE)
-                        player.sendMessage(Localization.ARENA_COMMAND_HELP2_DE)
-                        player.sendMessage(Localization.ARENA_COMMAND_HELP3_DE)
-                        player.sendMessage(Localization.ARENA_COMMAND_HELP4_DE)
-                    } else {
-                        player.sendMessage(Localization.COMMAND_WRONG_ARGUMENTS_EN)
-                        player.sendMessage(Localization.ARENA_COMMAND_HELP1_EN)
-                        player.sendMessage(Localization.ARENA_COMMAND_HELP2_EN)
-                        player.sendMessage(Localization.ARENA_COMMAND_HELP3_EN)
-                        player.sendMessage(Localization.ARENA_COMMAND_HELP4_EN)
-                    }
+                    player.sendMsg("command.wrongArguments")
+                    player.sendMsg("arena.help")
                 } else {
-                    if (player.localization("de"))
-                        player.sendMessage(Localization.CANT_DO_THAT_RIGHT_NOW_DE)
-                    else
-                        player.sendMessage(Localization.CANT_DO_THAT_RIGHT_NOW_EN)
+                    player.sendMsg("command.cantExecuteNow")
                 }
 
             } else {
-                if (player.localization("de"))
-                    player.sendMessage(Localization.NO_PERM_DE)
-                else
-                    player.sendMessage(Localization.NO_PERM_EN)
+                player.sendMsg("noPermission")
             }
         }
         return false
     }
 
-    override fun onTabComplete(sender: CommandSender, command: Command, alias: String, args: Array<out String>): MutableList<String>? {
+    override fun onTabComplete(
+        sender: CommandSender,
+        command: Command,
+        alias: String,
+        args: Array<out String>): MutableList<String>? {
         if (command.name.equals("arena", true)) {
             val l: MutableList<String> = ArrayList()
             if (args.size == 1) {

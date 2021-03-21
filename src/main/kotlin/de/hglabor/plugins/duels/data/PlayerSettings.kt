@@ -21,7 +21,7 @@ class PlayerSettings(val player: Player) {
         }
 
         enum class Knockback(val version: String) { OLD("1.8"), NEW("1.16") }
-        enum class Chat { ALL, FIGHT, NONE }
+        enum class AllowSpectators(val key: String) { ALLOW("settingsgui.item.allowSpecs.lore.allow"), DENY("settingsgui.item.allowSpecs.lore.deny") }
     }
 
     private var values = mutableMapOf<String, Any>()
@@ -32,9 +32,7 @@ class PlayerSettings(val player: Player) {
 
         if (document == null) {
             values["knockback"] = Knockback.NEW.toString()
-            values["attackSound"] = true
             values["allowSpectators"] = true
-            values["chatInFight"] = Chat.ALL.toString()
 
             MongoManager.playerSettingsCollection.insertOne(toDocument())
 
@@ -49,22 +47,13 @@ class PlayerSettings(val player: Player) {
         values["knockback"] = knockback.toString()
     }
 
-    fun ifAttackSound() = values["attackSound"] as Boolean
-    fun setAttackSound(boolean: Boolean) {
-        values["attackSound"] = boolean
+    fun allowSpectators() = AllowSpectators.valueOf(values["allowSpectators"] as String)
+    fun ifAllowSpectators() = values["allowSpectators"] == "ALLOW"
+    fun setAllowSpectators(allowSpectators: AllowSpectators) {
+        values["allowSpectators"] = allowSpectators.toString()
     }
 
-    fun ifAllowSpectators() = values["allowSpectators"] as Boolean
-    fun setAllowSpectators(boolean: Boolean) {
-        values["allowSpectators"] = boolean
-    }
-
-    fun chatInFight() = Chat.valueOf(values["chatInFight"] as String)
-    fun setChatInFight(chat: Chat) {
-        values["chatInFight"] = chat.toString()
-    }
-
-    fun toDocument(): Document {
+    private fun toDocument(): Document {
         val document = Document("uuid", player.uniqueId.toString())
         values.forEach(document::append)
         return document

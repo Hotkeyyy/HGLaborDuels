@@ -1,9 +1,8 @@
 package de.hglabor.plugins.staff.commands
 
-import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.localization.sendMsg
 import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
-import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
 import de.hglabor.plugins.staff.Staffmode.follow
 import de.hglabor.plugins.staff.Staffmode.unfollow
 import de.hglabor.plugins.staff.utils.StaffData
@@ -26,24 +25,24 @@ object FollowCommand : CommandExecutor {
                             if (target != null) {
                                 sender.follow(target)
                             } else {
-                                sender.sendLocalizedMessage(Localization.STAFF_PLAYER_NOT_FOUND_DE, Localization.STAFF_PLAYER_NOT_FOUND_EN)
+                                sender.sendMsg("staff.playerNotFound")
                             }
                         } else if (args.isEmpty()) {
                             if (StaffData.followedPlayerFromStaff.containsKey(sender)) {
                                 sender.unfollow()
                             } else {
-                                sender.sendLocalizedMessage(Localization.COMMAND_WRONG_ARGUMENTS_DE, Localization.COMMAND_WRONG_ARGUMENTS_DE)
-                                sender.sendLocalizedMessage(Localization.FOLLOW_COMMAND_HELP_DE, Localization.FOLLOW_COMMAND_HELP_EN)
+                                sender.sendMsg("command.wrongArguments")
+                                sender.sendMsg("staff.follow.help")
                             }
                         }
                     } else {
-                        sender.sendLocalizedMessage(Localization.HAVE_TO_BE_IN_STAFFMODE_DE, Localization.HAVE_TO_BE_IN_STAFFMODE_EN)
+                        sender.sendMsg("staff.staffmodeIsRequired")
                     }
                 } else {
-                    sender.sendLocalizedMessage(Localization.NO_PERM_DE, Localization.NO_PERM_EN)
+                    sender.sendMsg("noPermission")
                 }
             } else {
-                sender.sendLocalizedMessage(Localization.CANT_DO_THAT_RIGHT_NOW_DE, Localization.CANT_DO_THAT_RIGHT_NOW_EN)
+                sender.sendMsg("command.cantExecuteNow")
             }
         }
         return false

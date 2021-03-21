@@ -1,6 +1,7 @@
 package de.hglabor.plugins.duels.utils
 
 import de.hglabor.plugins.duels.duel.Duel
+import de.hglabor.plugins.duels.kits.AbstractKit
 import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.soupsimulator.Soupsimulator
 import org.bukkit.block.Block
@@ -18,7 +19,7 @@ object Data {
     val inFight = arrayListOf<Player>()
     val openedDuelGUI = hashMapOf<Player, Player>()
     val challenged = hashMapOf<Player, Player>() // Challenger Player
-    val challengeKit: HashMap<Player, Kits> = HashMap()
+    val challengeKit: HashMap<Player, AbstractKit> = HashMap()
     val duel = hashMapOf<Player, Player>()
     val duelIDFromPlayer = hashMapOf<Player, String>()
     val duelFromSpec = hashMapOf<Player, Duel>()

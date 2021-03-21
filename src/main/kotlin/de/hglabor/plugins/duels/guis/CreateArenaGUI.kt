@@ -2,8 +2,8 @@ package de.hglabor.plugins.duels.guis
 
 import de.hglabor.plugins.duels.arenas.arenaFromPlayer
 import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.localization.sendMsg
 import de.hglabor.plugins.duels.utils.Data
-import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.chat.input.awaitAnvilInput
@@ -21,14 +21,11 @@ import org.bukkit.inventory.ItemStack
 
 object CreateArenaGUI {
 
-    fun openCreateArenaGUI(player: Player) {
+    fun guiBuilder(player: Player): GUI<ForInventoryThreeByNine> {
         val arena = arenaFromPlayer[player]
-        player.openGUI(kSpigotGUI(GUIType.THREE_BY_NINE) {
+        return kSpigotGUI(GUIType.THREE_BY_NINE) {
 
-            title = if (player.localization("de"))
-                Localization.ARENA_CREATION_GUI_NAME_DE
-            else
-                Localization.ARENA_CREATION_GUI_NAME_EN
+            title = Localization.INSTANCE.getMessage("createArenaGUI.name", player)
 
             page(1) {
 
@@ -41,10 +38,7 @@ object CreateArenaGUI {
 
                 button(Slots.RowTwoSlotFive, itemStack(Material.NAME_TAG) {
                     meta {
-                        name = if (player.localization("de"))
-                            Localization.ARENA_CREATION_GUI_SETNAMEITEM_NAME_DE
-                        else
-                            Localization.ARENA_CREATION_GUI_SETNAMEITEM_NAME_EN
+                        name = Localization.INSTANCE.getMessage("createArenaGUI.item.setName.name", player)
 
                         if (arena?.name != "") {
                             addLore {
@@ -53,9 +47,9 @@ object CreateArenaGUI {
                         }
                     }
                 }) {
-                    player.awaitAnvilInput("Gib den Arenanamen ein!") { servername ->
+                    player.awaitAnvilInput(Localization.INSTANCE.getMessage("createArenaGUI.nameInput.title", player)) { servername ->
                         val name = servername.input ?: kotlin.run {
-                            player.sendMessage("${KColors.RED}ABBRUCH. ${KColors.INDIANRED}Du musst einen gültigen Namen angeben!")
+                            player.sendMsg("createArenaGUI.nameInput.abort")
                             return@awaitAnvilInput
                         }
                         arena!!.name(name)
@@ -64,25 +58,13 @@ object CreateArenaGUI {
 
                 button(Slots.RowTwoSlotThree, itemStack(Material.NETHERITE_PICKAXE) {
                     meta {
-                        name = if (player.localization("de"))
-                            Localization.ARENA_CREATION_GUI_CORNERITEM_NAME_DE
-                        else
-                            Localization.ARENA_CREATION_GUI_CORNERITEM_NAME_EN
+                        name = Localization.INSTANCE.getMessage("createArenaGUI.item.setCorner.name", player)
                         addLore {
-                            if (player.localization("de")) {
-                                +Localization.ARENA_CREATION_GUI_LORE_GETTOOL_DE
-                                if (arena?.corner1 != null)
-                                    +Localization.ARENA_CREATION_GUI_LORE_POS1_DE
-                                if (arena?.corner2 != null)
-                                    +Localization.ARENA_CREATION_GUI_LORE_POS2_DE
-
-                            } else {
-                                +Localization.ARENA_CREATION_GUI_LORE_GETTOOL_EN
-                                if (arena?.corner1 != null)
-                                    +Localization.ARENA_CREATION_GUI_LORE_POS1_EN
-                                if (arena?.corner2 != null)
-                                    +Localization.ARENA_CREATION_GUI_LORE_POS2_EN
-                            }
+                            +Localization.INSTANCE.getMessage("createArenaGUI.item.lore.getTool", player)
+                            if (arena?.corner1 != null)
+                                +Localization.INSTANCE.getMessage("createArenaGUI.item.lore.pos", mutableMapOf("n" to "1"), player)
+                            if (arena?.corner2 != null)
+                                +Localization.INSTANCE.getMessage("createArenaGUI.item.lore.pos", mutableMapOf("n" to "2"), player)
                         }
                     }
                 }) {
@@ -92,25 +74,13 @@ object CreateArenaGUI {
 
                 button(Slots.RowTwoSlotSeven, itemStack(Material.NETHERITE_SHOVEL) {
                     meta {
-                        name = if (player.localization("de"))
-                            Localization.ARENA_CREATION_GUI_SPAWNITEM_NAME_DE
-                        else
-                            Localization.ARENA_CREATION_GUI_SPAWNITEM_NAME_EN
+                        name = Localization.INSTANCE.getMessage("createArenaGUI.item.setSpawn.name", player)
                         addLore {
-                            if (player.localization("de")) {
-                                +Localization.ARENA_CREATION_GUI_LORE_GETTOOL_DE
-                                if (arena?.corner1 != null)
-                                    +Localization.ARENA_CREATION_GUI_LORE_POS1_DE
-                                if (arena?.corner2 != null)
-                                    +Localization.ARENA_CREATION_GUI_LORE_POS2_DE
-
-                            } else {
-                                +Localization.ARENA_CREATION_GUI_LORE_GETTOOL_EN
-                                if (arena?.corner1 != null)
-                                    +Localization.ARENA_CREATION_GUI_LORE_POS1_EN
-                                if (arena?.corner2 != null)
-                                    +Localization.ARENA_CREATION_GUI_LORE_POS2_EN
-                            }
+                            +Localization.INSTANCE.getMessage("createArenaGUI.item.lore.getTool", player)
+                            if (arena?.corner1 != null)
+                                +Localization.INSTANCE.getMessage("createArenaGUI.item.lore.pos", mutableMapOf("n" to "1"), player)
+                            if (arena?.corner2 != null)
+                                +Localization.INSTANCE.getMessage("createArenaGUI.item.lore.pos", mutableMapOf("n" to "2"), player)
                         }
                     }
                 }) {
@@ -120,28 +90,20 @@ object CreateArenaGUI {
 
                 button(Slots.RowThreeSlotFive, itemStack(Material.PAPER) {
                     meta {
-                        name = if (player.localization("de"))
-                            Localization.ARENA_CREATION_GUI_SETTAGITEM_NAME_DE
-                        else
-                            Localization.ARENA_CREATION_GUI_SETTAGITEM_NAME_EN
+                        name = Localization.INSTANCE.getMessage("createArenaGUI.item.setTag.name", player)
                         addLore {
-                            if (arena?.tag != null) {
-                                addLore {
-                                    +"${KColors.CORNSILK}${arena.tag}"
-                                }
+                            addLore {
+                                +"${KColors.CORNSILK}${arena?.tag}"
                             }
                         }
                     }
                 }) {
-                    it.player.openGUI(ArenaTagsGUI.gui)
+                    it.player.openGUI(ArenaTagsGUI.guiBuilder(player))
                 }
 
                 button(Slots.RowOneSlotFour, itemStack(Material.SCUTE) {
                     meta {
-                        name = if (player.localization("de"))
-                            Localization.ARENA_CREATION_GUI_SAVEITEM_NAME_DE
-                        else
-                            Localization.ARENA_CREATION_GUI_SAVEITEM_NAME_EN
+                        name = Localization.INSTANCE.getMessage("createArenaGUI.item.save.name", player)
                     }
                 }) {
                     it.player.closeInventory()
@@ -151,74 +113,47 @@ object CreateArenaGUI {
 
                 button(Slots.RowOneSlotSix, itemStack(Material.BARRIER) {
                     meta {
-                        name = if (player.localization("de"))
-                            Localization.ARENA_CREATION_GUI_ABORTITEM_NAME_DE
-                        else
-                            Localization.ARENA_CREATION_GUI_ABORTITEM_NAME_EN
+                        name = Localization.INSTANCE.getMessage("createArenaGUI.item.abort.name", player)
                         addLore {
-                            if (player.localization("de"))
-                                +Localization.ARENA_CREATION_GUI_ABORTITEM_LORE_DE
-                            else
-                                +Localization.ARENA_CREATION_GUI_ABORTITEM_LORE_EN
+                            +Localization.INSTANCE.getMessage("createArenaGUI.item.abort.lore", player)
                         }
                     }
                 }) {
                     arenaFromPlayer.remove(player)
-                    if (player.localization("de"))
-                        player.sendMessage(Localization.ARENA_CREATION_ABORTED_DE)
-                    else
-                        player.sendMessage(Localization.ARENA_CREATION_ABORTED_EN)
+                    player.sendMsg("createArenaGUI.message.aborted")
                     player.reset()
                 }
             }
-        })
+        }
     }
 
-    fun cornerItem(player: Player): ItemStack {
-        val cornerItem = itemStack(Material.NETHERITE_PICKAXE) {
+    private fun cornerItem(player: Player): ItemStack {
+        return itemStack(Material.NETHERITE_PICKAXE) {
             meta {
-                name = if (player.localization("de"))
-                    Localization.ARENA_CREATION_GUI_CORNERITEM_NAME_DE
-                else
-                    Localization.ARENA_CREATION_GUI_CORNERITEM_NAME_EN
+                name = Localization.INSTANCE.getMessage("createArenaGUI.item.setCorner.name", player)
                 addLore {
-                    if (player.localization("de")) {
-                        +Localization.ARENA_CREATION_CORNERITEM_LORE1_DE
-                        +Localization.ARENA_CREATION_CORNERITEM_LORE2_DE
-                    } else {
-                        +Localization.ARENA_CREATION_CORNERITEM_LORE1_EN
-                        +Localization.ARENA_CREATION_CORNERITEM_LORE2_EN
-                    }
+                    + Localization.INSTANCE.getMessage("createArenaGUI.itemInInventory.corner.lore.leftClick", player)
+                    + Localization.INSTANCE.getMessage("createArenaGUI.itemInInventory.corner.lore.rightClick", player)
                 }
             }
             mark("corner")
             amount = 1
         }
-        return cornerItem
     }
 
-    fun spawnItem(player: Player): ItemStack {
+    private fun spawnItem(player: Player): ItemStack {
         return itemStack(Material.NETHERITE_SHOVEL) {
             meta {
-                name = if (player.localization("de"))
-                    Localization.ARENA_CREATION_GUI_SPAWNITEM_NAME_DE
-                else
-                    Localization.ARENA_CREATION_GUI_SPAWNITEM_NAME_EN
+                name = Localization.INSTANCE.getMessage("createArenaGUI.item.setName.name", player)
                 addLore {
-                    if (player.localization("de")) {
-                        +Localization.ARENA_CREATION_SPAWNITEM_LORE1_DE
-                        +Localization.ARENA_CREATION_SPAWNITEM_LORE2_DE
-                    } else {
-                        +Localization.ARENA_CREATION_SPAWNITEM_LORE1_EN
-                        +Localization.ARENA_CREATION_SPAWNITEM_LORE2_EN
-                    }
+                    + Localization.INSTANCE.getMessage("createArenaGUI.itemInInventory.spawn.lore.leftClick", player)
+                    + Localization.INSTANCE.getMessage("createArenaGUI.itemInInventory.spawn.lore.rightClick", player)
                 }
             }
             mark("spawn")
             amount = 1
         }
     }
-
 
     fun enable() {
         listen<InventoryCloseEvent> {

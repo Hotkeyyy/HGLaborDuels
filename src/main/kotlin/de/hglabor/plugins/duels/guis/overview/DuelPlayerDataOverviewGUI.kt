@@ -1,7 +1,6 @@
 package de.hglabor.plugins.duels.guis.overview
 
 import de.hglabor.plugins.duels.kits.KitType
-import de.hglabor.plugins.duels.kits.Kits.Companion.info
 import de.hglabor.plugins.duels.utils.Data
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
@@ -82,7 +81,7 @@ object DuelPlayerDataOverviewGUI {
         }
         inventory.setItem(51, hits)
 
-        if (duel.kit.info.type == KitType.SOUP) {
+        if (duel.kit.type == KitType.SOUP) {
             val wastedHealth = (yamlConfiguration["data.wastedHealth"] as? Int)?.div(2.0)
             val soups = itemStack(Material.MUSHROOM_STEW) {
                 meta {
@@ -96,7 +95,7 @@ object DuelPlayerDataOverviewGUI {
             }
             inventory.setItem(52, soups)
 
-        } else if (duel.kit.info.type == KitType.POT) {
+        } else if (duel.kit.type == KitType.POT) {
             val pot = ItemStack(Material.SPLASH_POTION)
             val potMeta = pot.itemMeta as PotionMeta
             potMeta.basePotionData = PotionData(PotionType.INSTANT_HEAL, false, true)

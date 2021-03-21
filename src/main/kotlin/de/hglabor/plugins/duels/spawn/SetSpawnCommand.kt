@@ -1,8 +1,7 @@
 package de.hglabor.plugins.duels.spawn
 
-import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.localization.sendMsg
 import de.hglabor.plugins.duels.spawn.SpawnUtils.setSpawn
-import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -16,10 +15,7 @@ object SetSpawnCommand : CommandExecutor {
             if (sender.isOp) {
                 setSpawn(sender)
             } else {
-                if (sender.localization("de"))
-                    sender.sendMessage(Localization.NO_PERM_DE)
-                else
-                    sender.sendMessage(Localization.NO_PERM_EN)
+                sender.sendMsg("noPermission")
             }
         }
         return false

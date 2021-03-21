@@ -34,10 +34,7 @@ object CreateArenaInventory {
         p.inventory.setItem(8, itemStack(Material.REPEATING_COMMAND_BLOCK) {
             amount = 1
             meta {
-                name = if (p.localization("de"))
-                    Localization.ARENA_INVENTORY_ITEM_NAME_DE
-                else
-                    Localization.ARENA_INVENTORY_ITEM_NAME_EN
+                name = Localization.INSTANCE.getMessage("arena.creation.item.name", p)
             }
             mark("createarenaitem")
         })

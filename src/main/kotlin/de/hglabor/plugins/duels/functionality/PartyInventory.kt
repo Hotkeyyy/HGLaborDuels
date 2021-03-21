@@ -31,10 +31,7 @@ object PartyInventory {
                 amount = 1
                 addEnchantment(Enchantment.DURABILITY, 1)
                 meta {
-                    name = if (p.localization("de"))
-                        Localization.MAIN_INVENTORY_DUEL_ITEM_NAME_DE
-                    else
-                        Localization.MAIN_INVENTORY_DUEL_ITEM_NAME_EN
+                    name = Localization.INSTANCE.getMessage("mainInventory.duelItem.name", p)
                     isUnbreakable = true
                     flag(ItemFlag.HIDE_UNBREAKABLE)
                     flag(ItemFlag.HIDE_ENCHANTS)
@@ -45,10 +42,7 @@ object PartyInventory {
             p.inventory.setItem(5, itemStack(Material.WITHER_ROSE) {
                 amount = 1
                 meta {
-                    name = if (p.localization("de"))
-                        Localization.PARTY_INVENTORY_PARTY_GAME_ITEM_NAME_DE
-                    else
-                        Localization.PARTY_INVENTORY_PARTY_GAME_ITEM_NAME_EN
+                    name = Localization.INSTANCE.getMessage("partyInventory.gameItem.name", p)
                 }
                 mark("partygame")
             })
@@ -57,10 +51,7 @@ object PartyInventory {
         p.inventory.setItem(4, itemStack(Material.PAPER) {
             amount = 1
             meta {
-                name = if (p.localization("de"))
-                    Localization.PARTY_INVENTORY_INFO_ITEM_NAME_DE
-                else
-                    Localization.PARTY_INVENTORY_INFO_ITEM_NAME_EN
+                name = Localization.INSTANCE.getMessage("partyInventory.infoItem.name", p)
             }
             mark("partyinfo")
         })
@@ -68,10 +59,7 @@ object PartyInventory {
         p.inventory.setItem(7, itemStack(Material.REPEATER) {
             amount = 1
             meta {
-                name = if (p.localization("de"))
-                    Localization.MAIN_INVENTORY_SETTINGS_ITEM_NAME_DE
-                else
-                    Localization.MAIN_INVENTORY_SETTINGS_ITEM_NAME_EN
+                name = Localization.INSTANCE.getMessage("mainInventory.settingsItem.name", p)
             }
             mark("settings")
         })
@@ -79,10 +67,7 @@ object PartyInventory {
         p.inventory.setItem(1, itemStack(Material.SUSPICIOUS_STEW) {
             amount = 1
             meta {
-                name = if (p.localization("de"))
-                    Localization.MAIN_INVENTORY_SOUPSIMULATOR_ITEM_NAME_DE
-                else
-                    Localization.MAIN_INVENTORY_SOUPSIMULATOR_ITEM_NAME_EN
+                name = Localization.INSTANCE.getMessage("mainInventory.soupsimulatorItem.name", p)
             }
             mark("soupsim")
         })

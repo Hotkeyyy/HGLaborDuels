@@ -5,15 +5,14 @@ import de.hglabor.plugins.duels.data.PlayerStats
 import de.hglabor.plugins.duels.duel.GameState
 import de.hglabor.plugins.duels.kits.KitUtils
 import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.localization.sendMsg
 import de.hglabor.plugins.duels.soupsimulator.Soupsim.endsAfterTime
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
-import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
 import net.axay.kspigot.chat.KColors
+import net.axay.kspigot.extensions.bukkit.actionBar
 import net.axay.kspigot.runnables.task
-import net.md_5.bungee.api.ChatMessageType
-import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
@@ -54,7 +53,7 @@ class Soupsimulator(val player: Player) {
         sendCountdown()
 
         if (level == SoupsimulatorLevel.EASY)
-            player.sendTitle("${KColors.CORNSILK}/Leave", "${KColors.GRAY}To leave", 5, 25, 5)
+            player.sendTitle("${KColors.CORNSILK}/Surrender", Localization.INSTANCE.getMessage("soupsimulator.title.toLeave", player), 10, 30, 10)
 
         Data.soupsimulator[player] = this
         player.inventory.setItem(0, ItemStack(Material.STONE_SWORD))
@@ -74,10 +73,7 @@ class Soupsimulator(val player: Player) {
                 player.sendTitle("§$colorcode$count", "§$colorcode", 3, 13, 3)
                 player.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_PLING, 3f, 2f)
             } else {
-                if (player.localization("de"))
-                    player.sendTitle(Localization.DUEL_STARTING_TITLE_DE, "§b", 3, 13, 3)
-                else
-                    player.sendTitle(Localization.DUEL_STARTING_TITLE_EN, "§b", 3, 13, 3)
+                player.sendTitle(Localization.INSTANCE.getMessage("soupsimulator.title.go", player), "§b", 3, 13, 3)
                 player.closeInventory()
                 runTimer()
                 nextTask()
@@ -87,7 +83,7 @@ class Soupsimulator(val player: Player) {
         }
     }
 
-    fun runTimer() {
+    private fun runTimer() {
         object : BukkitRunnable() {
             override fun run() {
                 if (state != GameState.RUNNING) {
@@ -96,15 +92,12 @@ class Soupsimulator(val player: Player) {
                 val s = timer / 10
                 val ms = timer % 10
 
-                player.sendActionBar("${KColors.DODGERBLUE}$s.$ms ${KColors.GRAY}Sec ${KColors.DARKGRAY}| ${KColors.DEEPSKYBLUE}${score}")
+                player.actionBar("${KColors.DODGERBLUE}$s.$ms ${KColors.GRAY}Sec ${KColors.DARKGRAY}| ${KColors.DEEPSKYBLUE}${score}")
 
                 if (level.endsAfterTime) {
                     if (s == 30) {
                         player.reset()
-                        if (player.localization("de"))
-                            player.sendMessage(Localization.SOUPSIMULATOR_SURVIVED_DE)
-                        else
-                            player.sendMessage(Localization.SOUPSIMULATOR_SURVIVED_EN)
+                        player.sendMsg("soupsimulator.finish.survived")
                         end()
                         cancel()
                         return
@@ -192,27 +185,19 @@ class Soupsimulator(val player: Player) {
     fun stop() {
         state = GameState.ENDED
         player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
-
-        player.sendLocalizedMessage(Localization.SOUPSIMULATOR_END_SCORE_DE, Localization.SOUPSIMULATOR_END_SCORE_EN, "%score%", "$score")
+        player.sendMsg("soupsimulator.finish.score", mutableMapOf("score" to "$score"))
         if (level == SoupsimulatorLevel.BONUS) {
-            player.sendMessage(Localization.SOUPSIMULATOR_END_REFILLS.replace("%refills%", "$refills"))
-            player.sendMessage(Localization.SOUPSIMULATOR_END_RECRAFTS.replace("%recrafts%", "$recrafts"))
+            player.sendMsg("soupsimulator.finish.refills", mutableMapOf("refills" to "$refills"))
+            player.sendMsg("soupsimulator.finish.recrafts", mutableMapOf("recrafts" to "$recrafts"))
         }
-        player.sendLocalizedMessage(Localization.SOUPSIMULATOR_END_WRONGHOTKEYS_DE, Localization.SOUPSIMULATOR_END_WRONGHOTKEYS_EN, "%wrongHotkeys%", "$wrongHotkeys")
-
-        if (player.localization("de"))
-            player.sendLocalizedMessage(Localization.SOUPSIMULATOR_END_WRONGHOTKEYS_DE, Localization.SOUPSIMULATOR_END_WRONGHOTKEYS_EN, "%wrongHotkeys%", "$wrongHotkeys")
-
+        player.sendMsg("soupsimulator.finish.wrongHotkeys", mutableMapOf("hotkeys" to "$wrongHotkeys"))
         player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
 
         if (level == SoupsimulatorLevel.HARD) {
             val stats = PlayerStats.get(player)
             if (stats.soupsimulatorHighscore() < score) {
                 stats.setSoupsimulatorHighscore(score)
-                player.sendLocalizedMessage(
-                    Localization.SOUPSIMULATOR_NEW_RECORD_DE,
-                    Localization.SOUPSIMULATOR_NEW_RECORD_EN
-                )
+                player.sendMsg("soupsimulator.finish.newRecord")
             }
         }
         Data.soupsimulator.remove(player)

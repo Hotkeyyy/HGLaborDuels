@@ -1,113 +1,90 @@
 package de.hglabor.plugins.duels.guis
 
 import de.hglabor.plugins.duels.duel.Duel
-import de.hglabor.plugins.duels.kits.Kit
+import de.hglabor.plugins.duels.kits.AbstractKit
+import de.hglabor.plugins.duels.kits.KitCategory
 import de.hglabor.plugins.duels.kits.Kits
-import de.hglabor.plugins.duels.kits.Kits.Companion.getKit
-import de.hglabor.plugins.duels.kits.Kits.Companion.info
 import de.hglabor.plugins.duels.kits.kit.Random
-import de.hglabor.plugins.duels.kits.kitMap
+import de.hglabor.plugins.duels.kits.kits
 import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.localization.sendMsg
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
-import net.axay.kspigot.extensions.broadcast
 import net.axay.kspigot.gui.*
 import net.axay.kspigot.gui.elements.GUICompoundElement
 import net.axay.kspigot.gui.elements.GUIRectSpaceCompound
 import net.axay.kspigot.items.addLore
+import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
+import net.axay.kspigot.items.name
+import net.axay.kspigot.runnables.firstAsync
+import net.axay.kspigot.runnables.thenSync
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.ItemStack
 
 object QueueGUI {
-    private var menuCompound: GUIRectSpaceCompound<ForInventoryFiveByNine, GUICompoundElement<ForInventoryFiveByNine>>? =
-        null
 
-    val gui = kSpigotGUI(GUIType.FIVE_BY_NINE, SharedGUICreator()) {
+    // rework with all kits also create ranked queue with "main" kits
 
-        title = "${KColors.DODGERBLUE}Queue"
+    val gui = kSpigotGUI(GUIType.FOUR_BY_NINE) {
+
+        title = "${KColors.DODGERBLUE}Unranked Queue"
 
         page(1) {
-            placeholder(Slots.RowOneSlotOne rectTo Slots.RowFiveSlotNine, ItemStack(Material.WHITE_STAINED_GLASS_PANE))
-            //button(Slots.RowOneSlotFive, queueItem(Kits.RANDOM)) { queuePlayer(it.player, Kits.RANDOM) }
 
-            menuCompound = createSimpleRectCompound(Slots.RowTwoSlotTwo, Slots.RowFourSlotEight)
+            placeholder(Slots.Border, itemStack(Material.WHITE_STAINED_GLASS_PANE) { meta { name = null } })
+
+            val compound = createRectCompound<AbstractKit>(
+                Slots.RowTwoSlotTwo, Slots.RowThreeSlotEight,
+                iconGenerator = { queueItem(it) }, onClick = { clickEvent, element ->
+                    queuePlayer(clickEvent.player, element)
+                })
+
+            button(Slots.RowOneSlotFive, queueItem(Random.INSTANCE)) {
+                queuePlayer(it.player, Random.INSTANCE)
+            }
+
+            firstAsync { kits.filter { kit -> Kits.mainKits.contains(kit) } }.thenSync { compound.addContent(it) }.execute()
         }
     }
 
-    fun queuePlayer(player: Player, kit: Kits) {
+    private fun queuePlayer(player: Player, kit: AbstractKit) {
         if (!player.isInFight()) {
             if (Kits.playerQueue.containsKey(player)) {
-                if (Kits.playerQueue[player] == kit) {
+                if (Kits.playerQueue[player]?.contains(kit) == true) {
                     Kits.playerQueue.remove(player)
                     Kits.queue[kit]?.remove(player)
-                    player.sendLocalizedMessage(
-                        Localization.QUEUE_LEFT_DE,
-                        Localization.QUEUE_LEFT_EN,
-                        "%kit%", kit.info.name
-                    )
-                    updateContents()
+                    player.sendMsg("queue.left", mutableMapOf("kit" to kit.name))
                     return
                 }
             }
-            if (Kits.playerQueue[player] != null) {
-                Kits.queue[Kits.playerQueue[player]]?.remove(player)
-            }
-            Kits.playerQueue[player] = kit
+
+            Kits.playerQueue[player]?.plusAssign(kit)
             Kits.queue[kit]?.add(player)
-            player.sendLocalizedMessage(
-                Localization.QUEUE_JOINED_DE,
-                Localization.QUEUE_JOINED_EN,
-                "%kit%", kit.info.name
-            )
+            player.sendMsg("queue.join", mutableMapOf("kit" to kit.name))
             startNewDuelIfEnoughPlayersInQueue(kit)
-            updateContents()
         }
     }
 
-    fun queueItem(kits: Kits): ItemStack {
-        val kit = kitMap[kits]
-        val newItem = kit!!.itemInGUIs.clone()
+    private fun queueItem(kit: AbstractKit): ItemStack {
+        val newItem = kit.itemInGUI.clone()
         newItem.meta {
             addLore {
-                val kits = newItem.getKit()
                 +"§8§m                  "
-                +"§7In Queue §8» ${KColors.MEDIUMPURPLE}${Kits.queue[kits]?.size}"
-                if (kits != Kits.RANDOM)
-                    +"§7In Game §8» ${KColors.DODGERBLUE}${Kits.inGame[kits]?.size}"
+                +"§7In Queue §8» ${KColors.MEDIUMPURPLE}${Kits.queue[kit]?.size}"
+                if (kit != Random.INSTANCE)
+                    +"§7In Game §8» ${KColors.DODGERBLUE}${Kits.inGame[kit]?.size}"
             }
         }
         return newItem
     }
 
-    fun getContent(itemStack: ItemStack): GUICompoundElement<ForInventoryFiveByNine> {
-        return(QueueGUICompoundElement(itemStack))
-    }
-
-    fun updateContents() {
-        val list = arrayListOf<GUICompoundElement<ForInventoryFiveByNine>>()
-        kitMap.keys.forEach {
-            list.add(getContent(queueItem(it)))
-        }
-        menuCompound?.setContent(list)
-    }
-
-    class QueueGUICompoundElement(itemStack: ItemStack) :
-        GUICompoundElement<ForInventoryFiveByNine>(itemStack, onClick = listen@{
-                it.bukkitEvent.isCancelled = true
-                val player = it.player
-                val kit = it.bukkitEvent.currentItem?.getKit()
-                if (kit != null) {
-                    queuePlayer(player, kit)
-                }
-            })
-
-    private fun startNewDuelIfEnoughPlayersInQueue(kit: Kits) {
+    private fun startNewDuelIfEnoughPlayersInQueue(kit: AbstractKit) {
         if (Kits.queue[kit]?.size!! >= 2) {
             Kits.queue[kit]?.first()?.let {
                 Kits.queue[kit]?.last()?.let { it1 ->

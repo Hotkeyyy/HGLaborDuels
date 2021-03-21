@@ -8,7 +8,7 @@ object StaffData {
     val followedPlayerFromStaff = hashMapOf<Player, Player>() // Staff, Player
     val followingStaffFromPlayer = hashMapOf<Player, ArrayList<Player>>() // Player, ArrayList of staff
 
-    val Player.isStaff get() = this.isOp
+    val Player.isStaff get() = this.hasPermission("hglabor.spectator")
 
     val Player.isInStaffMode: Boolean get() = playersInStaffmode.contains(player)
     val Player.isVanished: Boolean get() = vanishedPlayers.contains(player)

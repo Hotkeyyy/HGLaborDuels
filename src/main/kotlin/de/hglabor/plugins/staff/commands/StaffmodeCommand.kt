@@ -1,6 +1,7 @@
 package de.hglabor.plugins.staff.commands
 
 import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.localization.sendMsg
 import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
@@ -18,10 +19,10 @@ object StaffmodeCommand : CommandExecutor {
                 if (sender.isStaff) {
                     Staffmode.toggle(sender)
                 } else {
-                    sender.sendLocalizedMessage(Localization.NO_PERM_DE, Localization.NO_PERM_EN)
+                    sender.sendMsg("noPermission")
                 }
             } else {
-                sender.sendLocalizedMessage(Localization.CANT_DO_THAT_RIGHT_NOW_DE, Localization.CANT_DO_THAT_RIGHT_NOW_EN)
+                sender.sendMsg("command.cantExecuteNow")
             }
         }
         return false

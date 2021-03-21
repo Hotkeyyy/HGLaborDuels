@@ -16,32 +16,20 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 object StaffInventory {
-    fun unvanishItem(player: Player): ItemStack {
-        val item = itemStack(Material.RED_DYE) {
-            amount = 1
-            meta {
-                name = if (player.localization("de"))
-                    Localization.STAFFINVENTORY_TOGGLE_INVISIBILITY_DE
-                else
-                    Localization.STAFFINVENTORY_TOGGLE_INVISIBILITY_EN
-            }
-            mark("unvanishitem")
+    fun unvanishItem(player: Player) = itemStack(Material.RED_DYE) {
+        amount = 1
+        meta {
+            name = Localization.INSTANCE.getMessage("staff.inventory.item.unvanish.name", player)
         }
-        return item
+        mark("unvanishitem")
     }
 
-    fun vanishItem(player: Player): ItemStack {
-       val item = itemStack(Material.SCUTE) {
-            amount = 1
-            meta {
-                name = if (player.localization("de"))
-                    Localization.STAFFINVENTORY_TOGGLE_VISIBILITY_DE
-                else
-                    Localization.STAFFINVENTORY_TOGGLE_VISIBILITY_EN
-            }
-            mark("vanishitem")
+    fun vanishItem(player: Player) = itemStack(Material.SCUTE) {
+        amount = 1
+        meta {
+            name = Localization.INSTANCE.getMessage("staff.inventory.item.vanish.name", player)
         }
-        return item
+        mark("vanishitem")
     }
 
     fun giveItems(p: Player) {
@@ -66,10 +54,7 @@ object StaffInventory {
         p.inventory.setItem(5, itemStack(Material.BOOK) {
             amount = 1
             meta {
-                name = if (p.localization("de"))
-                    Localization.STAFFINVENTORY_INVSEE_DE
-                else
-                    Localization.STAFFINVENTORY_INVSEE_EN
+                name = Localization.INSTANCE.getMessage("staff.inventory.item.invsee.name", p)
             }
             mark("invseeitem")
         })

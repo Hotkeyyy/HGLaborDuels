@@ -80,17 +80,6 @@ object LobbyScoreboard {
             "", ChatColor.WHITE)).score = 0
     }
 
-
-    fun getTeam(sb: Scoreboard, teamName: String): Team {
-        var team = sb.getTeam(teamName)
-        if (team == null) {
-            team = sb.registerNewTeam(teamName)
-        }
-        team.setCanSeeFriendlyInvisibles(false)
-        team.setAllowFriendlyFire(true)
-        return team
-    }
-
     private fun updateTeam(sb: Scoreboard, teamName: String, prefix: String, suffix: String, entry: ChatColor): String {
         var team = sb.getTeam(teamName)
         if (team == null) {

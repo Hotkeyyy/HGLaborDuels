@@ -17,91 +17,61 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 
 object SoupsimulatorGUI {
-    fun open(player: Player) {
-        val gui = kSpigotGUI(GUIType.ONE_BY_NINE) {
+    fun guiBuilder(player: Player) = kSpigotGUI(GUIType.ONE_BY_NINE) {
 
-            title = "${KColors.DODGERBLUE}Soupsimulator"
+        title = "${KColors.DODGERBLUE}Soupsimulator"
 
-            page(1) {
+        page(1) {
 
-                placeholder(Slots.All, itemStack(Material.WHITE_STAINED_GLASS_PANE) { meta { name = null } })
+            placeholder(Slots.All, itemStack(Material.WHITE_STAINED_GLASS_PANE) { meta { name = null } })
 
-                button(Slots.RowOneSlotTwo, itemStack(Material.LIME_CONCRETE) {
-                    meta {
-                        name = if (player.localization("de"))
-                            Localization.SOUPSIMULATOR_GUI_EASY_NAME_DE
-                        else
-                            Localization.SOUPSIMULATOR_GUI_EASY_NAME_EN
-                        addLore {
-                            if (player.localization("de")) {
-                                +Localization.SOUPSIMULATOR_GUI_EASY_LORE1_DE
-                                +Localization.SOUPSIMULATOR_GUI_EASY_LORE2_DE
-                            } else {
-                                +Localization.SOUPSIMULATOR_GUI_EASY_LORE1_EN
-                                +Localization.SOUPSIMULATOR_GUI_EASY_LORE2_EN
-                            }
-                        }
+            button(Slots.RowOneSlotTwo, itemStack(Material.LIME_CONCRETE) {
+                meta {
+                    name = Localization.INSTANCE.getMessage("soupsimulator.easy.name", player)
+                    addLore {
+                        +Localization.INSTANCE.getMessage("soupsimulator.easy.lore", player)
                     }
-                }) {
-                    it.player.closeInventory()
-                    Soupsimulator(player).start(SoupsimulatorLevel.EASY)
                 }
+            }) {
+                it.player.closeInventory()
+                Soupsimulator(player).start(SoupsimulatorLevel.EASY)
+            }
 
-                button(Slots.RowOneSlotFour, itemStack(Material.YELLOW_CONCRETE) {
-                    meta {
-                        name = if (player.localization("de"))
-                            Localization.SOUPSIMULATOR_GUI_MEDIUM_NAME_DE
-                        else
-                            Localization.SOUPSIMULATOR_GUI_MEDIUM_NAME_EN
-                        addLore {
-                            if (player.localization("de"))
-                                +Localization.SOUPSIMULATOR_GUI_MEDIUM_LORE1_DE
-                            else
-                                +Localization.SOUPSIMULATOR_GUI_MEDIUM_LORE1_EN
-                        }
+            button(Slots.RowOneSlotFour, itemStack(Material.YELLOW_CONCRETE) {
+                meta {
+                    name = Localization.INSTANCE.getMessage("soupsimulator.medium.name", player)
+                    addLore {
+                        +Localization.INSTANCE.getMessage("soupsimulator.medium.lore", player)
                     }
-                }) {
-                    it.player.closeInventory()
-                    Soupsimulator(player).start(SoupsimulatorLevel.MEDIUM)
                 }
+            }) {
+                it.player.closeInventory()
+                Soupsimulator(player).start(SoupsimulatorLevel.MEDIUM)
+            }
 
-                button(Slots.RowOneSlotSix, itemStack(Material.RED_CONCRETE) {
-                    meta {
-                        name = if (player.localization("de"))
-                        Localization.SOUPSIMULATOR_GUI_HARD_NAME_DE
-                    else
-                        Localization.SOUPSIMULATOR_GUI_HARD_NAME_EN
-                        addLore {
-                            if (player.localization("de"))
-                                +Localization.SOUPSIMULATOR_GUI_HARD_LORE1_DE
-                            else
-                                +Localization.SOUPSIMULATOR_GUI_HARD_LORE1_EN
-                        }
+            button(Slots.RowOneSlotSix, itemStack(Material.RED_CONCRETE) {
+                meta {
+                    name = Localization.INSTANCE.getMessage("soupsimulator.hard.name", player)
+                    addLore {
+                        +Localization.INSTANCE.getMessage("soupsimulator.hard.lore", player)
                     }
-                }) {
-                    it.player.closeInventory()
-                    Soupsimulator(player).start(SoupsimulatorLevel.HARD)
                 }
+            }) {
+                it.player.closeInventory()
+                Soupsimulator(player).start(SoupsimulatorLevel.HARD)
+            }
 
-                button(Slots.RowOneSlotEight, itemStack(Material.PURPLE_CONCRETE) {
-                    meta {
-                        name = Localization.SOUPSIMULATOR_GUI_BONUS_NAME
-                        addLore {
-                            if (player.localization("de")) {
-                                +Localization.SOUPSIMULATOR_GUI_BONUS_LORE1_DE
-                                +Localization.SOUPSIMULATOR_GUI_BONUS_LORE2_DE
-                            } else {
-                                +Localization.SOUPSIMULATOR_GUI_BONUS_LORE1_EN
-                                +Localization.SOUPSIMULATOR_GUI_BONUS_LORE2_EN
-                            }
-                        }
+            button(Slots.RowOneSlotEight, itemStack(Material.PURPLE_CONCRETE) {
+                meta {
+                    name = Localization.INSTANCE.getMessage("soupsimulator.bonus.name", player)
+                    addLore {
+                        +Localization.INSTANCE.getMessage("soupsimulator.bonus.lore", player)
                     }
-                }) {
-                    it.player.closeInventory()
-                    Soupsimulator(player).start(SoupsimulatorLevel.BONUS)
                 }
+            }) {
+                it.player.closeInventory()
+                Soupsimulator(player).start(SoupsimulatorLevel.BONUS)
             }
         }
-        player.openGUI(gui)
     }
 }

@@ -2,7 +2,6 @@ package de.hglabor.plugins.duels.scoreboard
 
 import de.hglabor.plugins.duels.Manager
 import de.hglabor.plugins.duels.duel.Duel
-import de.hglabor.plugins.duels.kits.Kits.Companion.info
 import net.axay.kspigot.chat.KColors
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -26,7 +25,7 @@ object FightSB {
 
             val ownTeamSize = duel.getTeam(player).size
             val enemyTeamSize = duel.getOtherTeam(player).size
-            val kit = duel.kit.info.name
+            val kit = duel.kit.name
             val knockback = duel.knockbackType?.version
 
             obj.getScore(updateTeam(sb, "lineone", "${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                  §a",
@@ -96,7 +95,7 @@ object FightSB {
         return entry.toString()
     }
 
-    fun getTeam(sb: Scoreboard, Team: String?, color: ChatColor): Team {
+    private fun getTeam(sb: Scoreboard, Team: String?, color: ChatColor): Team {
         var team = sb.getTeam(Team!!)
         if (team == null) {
             team = sb.registerNewTeam(Team)

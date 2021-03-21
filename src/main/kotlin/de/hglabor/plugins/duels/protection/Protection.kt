@@ -1,7 +1,6 @@
 package de.hglabor.plugins.duels.protection
 
 import de.hglabor.plugins.duels.kits.KitType
-import de.hglabor.plugins.duels.kits.Kits.Companion.info
 import de.hglabor.plugins.duels.kits.specials.Specials
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
@@ -77,7 +76,6 @@ object Protection {
 
         listen<EntityDamageByEntityEvent> {
             if (it.entity is Player && it.damager is Player) {
-
                 if ((it.damager as Player).getHandItem(EquipmentSlot.HAND)!!.hasMark("duelitem"))
                     it.isCancelled = true
                 if ((it.damager as Player).isInStaffMode)
@@ -86,6 +84,10 @@ object Protection {
                     it.isCancelled = true
                 if ((it.damager as Player).isInFight() && (it.entity as Player).isInFight()) {
                     it.isCancelled = false
+                }
+            } else {
+                if (it.damager is Player && it.entity !is Player) {
+                    it.isCancelled = (it.damager as Player).gameMode != GameMode.CREATIVE
                 }
             }
         }
@@ -116,7 +118,7 @@ object Protection {
                 val player = it.entity as Player
                 if (player.isInFight()) {
                     val duel = Data.duelFromPlayer(player)
-                    if (duel.kit.info.specials.contains(Specials.UHC)) {
+                    if (duel.kit.specials.contains(Specials.UHC)) {
                         if (it.regainReason == EntityRegainHealthEvent.RegainReason.EATING ||
                             it.regainReason == EntityRegainHealthEvent.RegainReason.REGEN ||
                             it.regainReason == EntityRegainHealthEvent.RegainReason.SATIATED)
@@ -130,14 +132,13 @@ object Protection {
         }
 
         listen<CreatureSpawnEvent> {
-            if (it.entity.location.world != Bukkit.getWorld("FightWorld")) {
-                it.isCancelled = true
-            }
-        }
-
-        listen<EntitySpawnEvent> {
-            if (it.entity.location.world != Bukkit.getWorld("FightWorld")) {
-                it.isCancelled = true
+            if (it.spawnReason == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG ||
+                it.spawnReason == CreatureSpawnEvent.SpawnReason.DEFAULT) {
+                it.isCancelled = false
+            } else {
+                if (it.entity.location.world != Bukkit.getWorld("FightWorld")) {
+                    it.isCancelled = true
+                }
             }
         }
 
@@ -168,7 +169,7 @@ object Protection {
 
                 if (player.isInFight()) {
                     val duel = Data.duelFromPlayer(player)
-                    if (duel.kit.info.type != KitType.SOUP) {
+                    if (duel.kit.type != KitType.SOUP) {
                         if (it.currentItem?.type!! == Material.MUSHROOM_STEW) {
                             it.isCancelled = true
                             player.sendLocalizedMessage(

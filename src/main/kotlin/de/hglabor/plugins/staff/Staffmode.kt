@@ -2,6 +2,7 @@ package de.hglabor.plugins.staff
 
 import de.hglabor.plugins.duels.Manager
 import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.localization.sendMsg
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
 import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
@@ -22,8 +23,7 @@ object Staffmode {
             StaffData.playersInStaffmode.add(player)
             toggleVanish(player)
             StaffInventory.giveItems(player)
-            player.sendLocalizedMessage(Localization.STAFFMODE_ENABLED_DE, Localization.STAFFMODE_ENABLED_EN)
-
+            player.sendMsg("staff.enabled")
         } else {
             StaffData.playersInStaffmode.remove(player)
             if (followedPlayerFromStaff.containsKey(player)) {
@@ -32,7 +32,7 @@ object Staffmode {
             }
 
             toggleVanish(player)
-            player.sendLocalizedMessage(Localization.STAFFMODE_DISABLED_DE, Localization.STAFFMODE_DISABLED_EN)
+            player.sendMsg("staff.disabled")
             player.reset()
         }
     }
@@ -63,15 +63,13 @@ object Staffmode {
         player.teleportToFollowedPlayer()
     }
 
-    fun Player.teleportToFollowedPlayer() {
-        if (followedPlayerFromStaff.containsKey(player)) {
-            val target = followedPlayerFromStaff[player]
+    private fun Player.teleportToFollowedPlayer() {
+        if (followedPlayerFromStaff.containsKey(this)) {
+            val target = followedPlayerFromStaff[this]
             if (!target!!.isInFight()) {
-                player!!.sendLocalizedMessage(Localization.STAFF_PLAYER_IS_AT_SPAWN_DE.replace("%playerName%", target.displayName),
-                    Localization.STAFF_PLAYER_IS_AT_SPAWN_EN.replace("%playerName%", target.displayName))
+                this.sendMsg("staff.follow.playerAtSpawn", mutableMapOf("playerName" to target.name))
             } else {
-                player!!.sendLocalizedMessage(Localization.FOLLOW_COMMAND_PLAYER_STARTED_FIGHTING_DE.replace("%playerName%", target.displayName),
-                    Localization.FOLLOW_COMMAND_PLAYER_STARTED_FIGHTING_EN.replace("%playerName%", target.displayName))
+                this.sendMsg("staff.follow.playerStartedFight", mutableMapOf("playerName" to target.name))
                 player!!.teleport(target)
             }
         }

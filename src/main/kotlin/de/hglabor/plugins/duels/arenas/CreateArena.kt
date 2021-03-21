@@ -25,6 +25,7 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter
 import com.sk89q.worldedit.WorldEdit
 
 import com.sk89q.worldedit.EditSession
+import de.hglabor.plugins.duels.localization.sendMsg
 
 
 val arenaFromPlayer = HashMap<Player, CreateArena>()
@@ -59,26 +60,15 @@ class CreateArena(val creator: Player) {
 
     fun save() {
         if (name == "" || world == null || corner1 == null || corner2 == null || spawn1 == null || spawn2 == null) {
-            if (creator.localization("de"))
-                creator.sendMessage(Localization.ARENA_CREATION_FAILED_VALUE_MISSING_DE)
-            else
-                creator.sendMessage(Localization.ARENA_CREATION_FAILED_VALUE_MISSING_EN)
+            creator.sendMsg("arena.creation.failed.valueMissing")
             return
         }
 
         val schemfile = File("arenas//$name.schematic")
-
-        if (creator.localization("de"))
-            creator.sendMessage(Localization.ARENA_CREATION_SAVING_DE.replace("%schematicName%", name))
-        else
-            creator.sendMessage(Localization.ARENA_CREATION_SAVING_EN.replace("%schematicName%", name))
+        creator.sendMsg("arena.creation.saving")
 
         if (schemfile.exists()) {
-            if (creator.localization("de"))
-                creator.sendMessage(Localization.ARENA_CREATION_FAILED_ALREADY_EXISTING_DE)
-            else
-                creator.sendMessage(Localization.ARENA_CREATION_FAILED_ALREADY_EXISTING_EN)
-            return
+            creator.sendMsg("arena.creation.failed.alreadyExisting")
         }
 
         // Position1 as NorthWest
@@ -107,10 +97,7 @@ class CreateArena(val creator: Player) {
             yamlConfiguration.save(file)
         } catch (e: IOException) {
             e.printStackTrace()
-            if (creator.localization("de"))
-                creator.sendMessage(Localization.ARENA_CREATION_FAILED_FILE_DE)
-            else
-                creator.sendMessage(Localization.ARENA_CREATION_FAILED_FILE_EN)
+            creator.sendMsg("arena.creation.failed.file")
             return
         }
 
@@ -136,17 +123,11 @@ class CreateArena(val creator: Player) {
 
         } catch (e: IOException) {
             e.printStackTrace()
-            if (creator.localization("de"))
-                creator.sendMessage(Localization.ARENA_CREATION_FAILED_SCHEMATIC_DE)
-            else
-                creator.sendMessage(Localization.ARENA_CREATION_FAILED_SCHEMATIC_EN)
+            creator.sendMsg("arena.creation.failed.schematic")
             return
         } finally {
             try {
-                if (creator.localization("de"))
-                    creator.sendMessage(Localization.ARENA_CREATION_SUCCESS_DE)
-                else
-                    creator.sendMessage(Localization.ARENA_CREATION_SUCCESS_EN)
+                creator.sendMsg("arena.creation.success")
                 arenaFromPlayer.remove(creator)
                 Arenas.allArenas[name] = Pair(tag, Arenas.getClipboard(name))
             } catch (ignore: IOException) {

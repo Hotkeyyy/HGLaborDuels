@@ -2,9 +2,9 @@ package de.hglabor.plugins.duels.tournament
 
 import de.hglabor.plugins.duels.duel.Duel
 import de.hglabor.plugins.duels.duel.GameState
-import de.hglabor.plugins.duels.kits.Kits
-import de.hglabor.plugins.duels.kits.kitMap
+import de.hglabor.plugins.duels.kits.AbstractKit
 import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.localization.sendMsg
 import de.hglabor.plugins.duels.party.Party
 import de.hglabor.plugins.duels.party.Partys.isInParty
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
@@ -19,7 +19,7 @@ import org.bukkit.entity.Player
 
 class Tournament {
     companion object {
-        fun createPublic(host: Player, kit: Kits) {
+        fun createPublic(host: Player, kit: AbstractKit) {
             val tournament = Tournament()
             tournament.host = host
             tournament.type = TournamentType.PUBLIC
@@ -38,7 +38,7 @@ class Tournament {
     }
 
     lateinit var host: Player
-    lateinit var kit: Kits
+    lateinit var kit: AbstractKit
     lateinit var type: TournamentType
     var state = GameState.COUNTDOWN
     val players = arrayListOf<Player>()
@@ -58,10 +58,7 @@ class Tournament {
             onlinePlayers.forEach {
                 if (ifHost) {
                     it.playSound(it.location, Sound.ENTITY_ENDER_DRAGON_GROWL, 3f, 3f)
-                    if (it.localization("de"))
-                        it.sendMessage("${Localization.PREFIX}${KColors.DODGERBLUE}${host.name} ${KColors.GRAY}veranstaltet ein ${KColors.MEDIUMPURPLE}${kitMap[kit]?.name} Turnier§7.")
-                    else
-                        it.sendMessage("${Localization.PREFIX}${KColors.DODGERBLUE}${host.name} ${KColors.GRAY}is hosting a ${KColors.MEDIUMPURPLE}${kitMap[kit]?.name} Tournament§7.")
+                    it.sendMsg("tournament.hosted", mutableMapOf("hostName" to host.name, "kit" to kit.name))
                 }
                 if (it.localization("de"))
                     it.sendMessage("${Localization.PREFIX}Das Turnier startet in ${KColors.MEDIUMPURPLE}$min${KColors.DARKGRAY}:${KColors.MEDIUMPURPLE}$sec ${(if (min == 1) "Minute" else "Minuten")}§7.")
@@ -82,10 +79,7 @@ class Tournament {
                     if (timeToStart == 0) {
                         async {
                             onlinePlayers.forEach { players ->
-                                if (players.localization("de"))
-                                    players.sendMessage("${Localization.PREFIX}Das Turnier hat begonnen. Es nehmen ${KColors.MEDIUMPURPLE}${teams.size} Teams §7teil.")
-                                else
-                                    players.sendMessage("${Localization.PREFIX}The tournament started. There're ${KColors.MEDIUMPURPLE}${teams.size} Teams §7participating.")
+                                players.sendMsg("tournament.start", mutableMapOf("teamCount" to "${teams.size}"))
                             }
                         }
                         state = GameState.RUNNING
@@ -113,10 +107,7 @@ class Tournament {
                 teams.add(arrayListOf(player))
                 async {
                     onlinePlayers.forEach { players ->
-                        if (players.localization("de"))
-                            players.sendMessage("${Localization.PREFIX}${KColors.MEDIUMPURPLE}${player.name} §7ist dem Turnier ${KColors.LIGHTGREEN}beigetreten§7.")
-                        else
-                            players.sendMessage("${Localization.PREFIX}${KColors.MEDIUMPURPLE}${player.name} §7${KColors.LIGHTGREEN}joined §7the tournament.")
+                        players.sendMsg("tournament.playerJoined", mutableMapOf("playerName" to player.name))
                     }
                 }
             } else {
@@ -124,10 +115,7 @@ class Tournament {
                 teams.add(party.players)
                 async {
                     onlinePlayers.forEach { players ->
-                        if (players.localization("de"))
-                            players.sendMessage("${Localization.PREFIX}${KColors.MEDIUMPURPLE}${player.name}'s Party §7ist dem Turnier ${KColors.LIGHTGREEN}beigetreten§7.")
-                        else
-                            players.sendMessage("${Localization.PREFIX}${KColors.MEDIUMPURPLE}${player.name}'s party §7${KColors.LIGHTGREEN}joined §7the tournament.")
+                        players.sendMsg("tournament.partyJoined", mutableMapOf("leaderName" to player.name))
                     }
                 }
             }
@@ -136,10 +124,7 @@ class Tournament {
             teams.add(arrayListOf(player))
             async {
                 onlinePlayers.forEach { players ->
-                    if (players.localization("de"))
-                        players.sendMessage("${Localization.PREFIX}${KColors.MEDIUMPURPLE}${player.name} §7ist dem Turnier ${KColors.LIGHTGREEN}beigetreten§7.")
-                    else
-                        players.sendMessage("${Localization.PREFIX}${KColors.MEDIUMPURPLE}${player.name} §7${KColors.LIGHTGREEN}joined §7the tournament.")
+                    players.sendMsg("tournament.playerJoined", mutableMapOf("playerName" to player.name))
                 }
             }
         }
@@ -153,16 +138,13 @@ class Tournament {
         }
         async {
             onlinePlayers.forEach { players ->
-                if (players.localization("de"))
-                    players.sendMessage("${Localization.PREFIX}${KColors.MEDIUMPURPLE}${player.name} §7hat das Turnier ${KColors.TOMATO}verlassen§7.")
-                else
-                    players.sendMessage("${Localization.PREFIX}${KColors.MEDIUMPURPLE}${player.name} §7${KColors.TOMATO}left §7the tournament.")
+                players.sendMsg("tournament.playerLeft", mutableMapOf("playerName" to player.name))
             }
         }
         players.remove(player)
     }
 
-    fun startDuels() {
+    private fun startDuels() {
         val teamlist = arrayListOf<ArrayList<Player>>()
         teamlist.addAll(teams)
 
@@ -193,10 +175,7 @@ class Tournament {
                 async {
                     teamlist.forEach {
                         it.forEach { players ->
-                            if (players.localization("de"))
-                                players.sendMessage("${Localization.PREFIX}Es wurde ${KColors.MEDIUMPURPLE}kein Gegner §7für dein Team gefunden. Damit seid ihr automatisch eine Runde weiter.")
-                            else
-                                players.sendMessage("${Localization.PREFIX}${KColors.MEDIUMPURPLE}No opponent §7was found for your team. You will be competing in the next round.")
+                            players.sendMsg("tournament.noEnemyFound")
                         }
                         teamlist.remove(it)
                     }
@@ -219,10 +198,7 @@ class Tournament {
                 roundEnded()
                 async {
                     onlinePlayers.forEach { players ->
-                        if (players.localization("de"))
-                            players.sendMessage("${Localization.PREFIX}Die Runde ist geendet. Es verbleiben ${KColors.MEDIUMPURPLE}${teams.size} Teams§7.")
-                        else
-                            players.sendMessage("${Localization.PREFIX}The round ended. There're ${KColors.MEDIUMPURPLE}${teams.size} teams §7left.")
+                        players.sendMsg("tournament.roundEnded")
                     }
                 }
             }
@@ -237,10 +213,7 @@ class Tournament {
         } else if (teams.size > 1) {
             async {
                 onlinePlayers.forEach { players ->
-                    if (players.localization("de"))
-                        players.sendMessage("${Localization.PREFIX}Die nächste Runde startet in ${KColors.MEDIUMPURPLE}3 Sekunden§7!")
-                    else
-                        players.sendMessage("${Localization.PREFIX}The next round starts in ${KColors.MEDIUMPURPLE}3 seconds§7!")
+                    players.sendMsg("tournament.nextRoundStarting")
                 }
             }
             taskRunLater(60L, false) { startDuels() }
@@ -257,10 +230,7 @@ class Tournament {
         }
         async {
             onlinePlayers.forEach { players ->
-                if (players.localization("de"))
-                    players.sendMessage("${Localization.PREFIX}Das Team bestehend aus ${KColors.MEDIUMPURPLE}$winners ${KColors.LIGHTGREEN}hat das Turnier gewonnen§7.")
-                else
-                    players.sendMessage("${Localization.PREFIX}The team consisting of ${KColors.MEDIUMPURPLE}$winners ${KColors.LIGHTGREEN}won the tournament§7!")
+                players.sendMsg("tournament.teamWins", mutableMapOf("winner" to winners))
             }
         }
         Tournaments.publicTournament = null

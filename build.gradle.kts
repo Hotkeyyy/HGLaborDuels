@@ -37,7 +37,7 @@ plugins {
 
 repositories {
     mavenLocal()
-    jcenter()
+    mavenCentral()
     maven("https://papermc.io/repo/repository/maven-public/")
     // FAWE
     maven("https://mvn.intellectualsites.com/content/repositories/releases/")
@@ -49,14 +49,13 @@ dependencies {
     implementation(kotlin("reflect"))
 
     // SPIGOT
-    //compileOnly("org.spigotmc", "spigot", "1.16.5-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc", "spigot", "1.16.5-R0.1-SNAPSHOT")
 
     // PAPER
     compileOnly("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT")
 
-
     // KSPIGOT
-    implementation("net.axay", "KSpigot", "v1.16.5_R23")
+    implementation("net.axay:kspigot:1.16.25")
 
     // KMONGO and MONGODB
     implementation("org.litote.kmongo", "kmongo-core", "4.2.3")
