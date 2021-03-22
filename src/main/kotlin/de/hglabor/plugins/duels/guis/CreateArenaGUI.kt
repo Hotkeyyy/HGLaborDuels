@@ -98,7 +98,7 @@ object CreateArenaGUI {
                         }
                     }
                 }) {
-                    it.player.openGUI(ArenaTagsGUI.guiBuilder(player))
+                    it.player.openGUI(ArenaTagsGUI.gui)
                 }
 
                 button(Slots.RowOneSlotFour, itemStack(Material.SCUTE) {

@@ -14,6 +14,7 @@ import de.hglabor.plugins.duels.kits.kit.pot.NoDebuff
 import de.hglabor.plugins.duels.kits.kit.soup.*
 import de.hglabor.plugins.duels.kits.kit.trash.Archer
 import de.hglabor.plugins.duels.kits.kit.trash.OnlySword
+import de.hglabor.plugins.duels.kits.kit.trash.SG
 import de.hglabor.plugins.duels.kits.kit.trash.Sumo
 import de.hglabor.plugins.duels.kits.kit.uhc.UHC
 import de.hglabor.plugins.duels.kits.specials.Specials
@@ -25,6 +26,7 @@ import net.axay.kspigot.extensions.broadcast
 import net.axay.kspigot.extensions.bukkit.feedSaturate
 import net.axay.kspigot.extensions.bukkit.heal
 import net.axay.kspigot.gui.ForInventoryFiveByNine
+import net.axay.kspigot.gui.ForInventorySixByNine
 import net.axay.kspigot.gui.elements.GUICompoundElement
 import net.axay.kspigot.items.*
 import org.bukkit.Material
@@ -36,7 +38,7 @@ import org.bukkit.scheduler.BukkitTask
 
 enum class KitType { SOUP, POT, BOW }
 enum class KitCategory(val itemStack: ItemStack, val pageNumber: Int) {
-    Main(itemStack(Material.LODESTONE) { meta { name = "${KColors.DODGERBLUE}Main" } }, 1),
+    MAIN(itemStack(Material.LODESTONE) { meta { name = "${KColors.DODGERBLUE}Main" } }, 1),
     SOUP(itemStack(Material.MUSHROOM_STEW) { meta { name = "${KColors.DODGERBLUE}Soup" } }, 2),
     POT(itemStack(Material.SPLASH_POTION) { meta<org.bukkit.inventory.meta.PotionMeta> {
         name = "${KColors.DODGERBLUE}Pot"
@@ -92,13 +94,30 @@ object Kits {
         Onebar().enable()
         OnlySword().enable()
         Speed().enable()
+        SG().enable()
         Spleef().enable()
         Sumo().enable()
         UHC().enable()
         Underwater().enable()
-        Specials.enable()
 
-        //QueueGUI.updateContents()
+        KitCategory.values().forEach { category ->
+            KitsGUI.categoryCompound?.addContent(KitsGUI.CategoryGUICompoundElement(category))
+        }
+
+        kits.forEach { kit ->
+            val compoundElement = KitsGUI.KitsGUICompoundElement(kit)
+            if (mainKits.contains(kit))
+                KitsGUI.mainCompound?.addContent(KitsGUI.KitsGUICompoundElement(kit))
+
+            when (kit.category) {
+                KitCategory.POT -> KitsGUI.potCompound?.addContent(compoundElement)
+                KitCategory.TRASH -> KitsGUI.trashCompound?.addContent(compoundElement)
+                KitCategory.COOLDOWN -> KitsGUI.cooldownCompound?.addContent(compoundElement)
+                KitCategory.FUN -> KitsGUI.funCompound?.addContent(compoundElement)
+                KitCategory.UHC -> KitsGUI.uhcCompound?.addContent(compoundElement)
+                KitCategory.SOUP -> KitsGUI.soupCompound?.addContent(compoundElement)
+            }
+        }
     }
 
     fun setCooldown(player: Player, seconds: Long) {

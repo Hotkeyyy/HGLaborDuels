@@ -12,7 +12,7 @@ import org.bukkit.inventory.EquipmentSlot
 
 
 object OnAccept {
-    fun enable() {
+    init {
         listen<EntityDamageByEntityEvent> {
             if (it.damager is Player && it.entity is Player) {
                 val damager = it.damager as Player

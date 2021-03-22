@@ -1,9 +1,10 @@
 package de.hglabor.plugins.duels.kits.kit.`fun`
 
 import de.hglabor.plugins.duels.arenas.ArenaTags
-import de.hglabor.plugins.duels.guis.KitsGUI
-import de.hglabor.plugins.duels.kits.*
-import de.hglabor.plugins.duels.kits.kit.cooldown.Classic
+import de.hglabor.plugins.duels.kits.AbstractKit
+import de.hglabor.plugins.duels.kits.KitCategory
+import de.hglabor.plugins.duels.kits.Kits
+import de.hglabor.plugins.duels.kits.kits
 import de.hglabor.plugins.duels.kits.specials.Specials
 import net.axay.kspigot.items.flag
 import net.axay.kspigot.items.itemStack
@@ -19,10 +20,8 @@ class IceFishing : AbstractKit() {
     }
 
     override val name = "Ice Fishing"
-    override val itemInGUI = Kits.guiItem(Material.FISHING_ROD, name, "Pull your enemy into the water")
+    override val itemInGUI = Kits.guiItem(Material.FISHING_ROD, name)
     override val arenaTag = ArenaTags.ICEFISHING
-    override val type = null
-    override val allowsRespawn = false
     override val category = KitCategory.FUN
     override val specials = setOf(Specials.NODAMAGE, Specials.DEADINWATER)
 

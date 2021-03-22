@@ -30,7 +30,7 @@ import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 
 object SoupsimulatorEvents {
-    fun enable() {
+    init {
         listen<PlayerDropItemEvent> {
             if (it.player.isInSoupsimulator()) {
                 it.isCancelled = it.itemDrop.itemStack.type == Material.BOWL

@@ -5,6 +5,7 @@ import de.hglabor.plugins.duels.database.MongoManager
 import org.bson.Document
 import org.bukkit.entity.Player
 import org.litote.kmongo.MongoOperator
+import java.util.*
 
 class PlayerSettings(val player: Player) {
 
@@ -20,7 +21,12 @@ class PlayerSettings(val player: Player) {
             return settings
         }
 
-        enum class Knockback(val version: String) { OLD("1.8"), NEW("1.16") }
+        fun exist(uuid: UUID): Boolean {
+            val document = MongoManager.playerSettingsCollection.find(Filters.eq("uuid", uuid.toString())).first()
+            return document != null
+        }
+
+        enum class Knockback(val version: String) { OLD("1.8"), NEW("1.16"), ANCHOR("Anchor") }
         enum class AllowSpectators(val key: String) { ALLOW("settingsgui.item.allowSpecs.lore.allow"), DENY("settingsgui.item.allowSpecs.lore.deny") }
     }
 

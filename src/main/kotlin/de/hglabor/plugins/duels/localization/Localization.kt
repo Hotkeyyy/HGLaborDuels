@@ -45,7 +45,6 @@ class Localization {
     private fun loadKColors() {
         val fields = KColors::class.java.declaredFields
         fields.forEach { field ->
-            broadcast(field.get(field).toString() + field.name)
             kcolors[field.name] = field.get(field) as ChatColor
         }
     }
@@ -60,6 +59,12 @@ class Localization {
 
     fun getMessage(key: String, player: Player): String {
         val locale = INSTANCE.getLocalization(player)
+
+        if (INSTANCE.translations.containsKey(locale)) {
+            if (INSTANCE.translations[locale]!!.getOrDefault(key, key) == "")
+                return key
+        }
+
         return if (INSTANCE.translations.containsKey(locale))
             INSTANCE.translations[locale]!!.getOrDefault(key, key)
         else
@@ -93,7 +98,7 @@ class Localization {
     }
 
     companion object {
-        val INSTANCE = Localization()
+        lateinit var INSTANCE: Localization
         val PREFIX = " ${KColors.DARKGRAY}| ${KColors.DEEPSKYBLUE}Duels ${KColors.DARKGRAY}» ${KColors.GRAY}"
         val SOUPSIMULATOR_PREFIX = " ${KColors.DARKGRAY}| ${KColors.DEEPSKYBLUE}Soupsimulator ${KColors.DARKGRAY}» ${KColors.GRAY}"
         val PARTY_PREFIX = " ${KColors.DARKGRAY}| ${KColors.MAGENTA}Party ${KColors.DARKGRAY}» ${KColors.GRAY}"
@@ -101,6 +106,7 @@ class Localization {
     }
 
     init {
+        INSTANCE = this
         loadLanguageFiles(Paths.get("${Manager.INSTANCE.dataFolder}/lang"))
         loadKColors()
     }

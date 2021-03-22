@@ -6,7 +6,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityPickupItemEvent
 
 object OnItemPickUp {
-    fun enable() {
+    init {
         listen<EntityPickupItemEvent> {
             if(it.entity is Player) {
                 val player = it.entity as Player

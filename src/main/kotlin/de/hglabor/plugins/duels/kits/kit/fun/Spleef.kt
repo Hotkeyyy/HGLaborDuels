@@ -15,8 +15,6 @@ class Spleef: AbstractKit() {
     override val name = "Spleef"
     override val itemInGUI = Kits.guiItem(Material.DIAMOND_SHOVEL, name)
     override val arenaTag = ArenaTags.SPLEEF
-    override val type = null
-    override val allowsRespawn = true
     override val category = KitCategory.FUN
     override val specials = setOf(Specials.INVINICIBLE)
 

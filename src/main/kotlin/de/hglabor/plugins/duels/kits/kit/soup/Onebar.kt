@@ -1,10 +1,6 @@
 package de.hglabor.plugins.duels.kits.kit.soup
 
-import de.hglabor.plugins.duels.arenas.ArenaTags
-import de.hglabor.plugins.duels.guis.KitsGUI
 import de.hglabor.plugins.duels.kits.*
-import de.hglabor.plugins.duels.kits.kit.`fun`.HardJumpAndRun
-import de.hglabor.plugins.duels.kits.kit.cooldown.Classic
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
@@ -17,11 +13,8 @@ class Onebar : AbstractKit() {
 
     override val name = "Onebar"
     override val itemInGUI = Kits.guiItem(Material.WOODEN_SWORD, name)
-    override val arenaTag = ArenaTags.NONE
     override val type = KitType.SOUP
-    override val allowsRespawn = false
     override val category = KitCategory.SOUP
-    override val specials = setOf(null)
 
     override fun giveKit(player: Player) {
         player.inventory.clear()

@@ -20,7 +20,7 @@ object TournamentCommand : CommandExecutor {
                     if (sender.isStaff) {
                         if (Tournaments.publicTournament == null) {
                             Data.openedKitInventory[sender] = Data.KitInventories.TOURNAMENT
-                            sender.openGUI(KitsGUI.guiBuilder(sender))
+                            sender.openGUI(KitsGUI.gui)
                         } else {
                             sender.sendMsg("tournament.fail.publicExists")
                         }

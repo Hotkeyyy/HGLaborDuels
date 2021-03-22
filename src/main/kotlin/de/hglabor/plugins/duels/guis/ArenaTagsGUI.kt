@@ -1,6 +1,5 @@
 package de.hglabor.plugins.duels.guis
 
-import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.utils.Data
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
@@ -11,16 +10,15 @@ import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
 import net.axay.kspigot.items.name
 import org.bukkit.Material
-import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryCloseEvent
 
 object ArenaTagsGUI {
     private var menuCompound: GUIRectSpaceCompound<ForInventoryFourByNine, GUICompoundElement<ForInventoryFourByNine>>? =
         null
 
-    fun guiBuilder(player: Player) = kSpigotGUI(GUIType.FOUR_BY_NINE) {
+    val gui = kSpigotGUI(GUIType.FOUR_BY_NINE) {
 
-        title = Localization.INSTANCE.getMessage("arenaTagsGUI.name", player)
+        title = "${KColors.DEEPSKYBLUE}Arena Tags"
 
         page(1) {
 

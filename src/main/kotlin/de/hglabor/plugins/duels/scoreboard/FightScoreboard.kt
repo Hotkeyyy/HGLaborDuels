@@ -12,7 +12,7 @@ import org.bukkit.scoreboard.Team
 
 object FightSB {
     fun setCountdownScoreboard(duel: Duel, player: Player) {
-        val sb = Bukkit.getScoreboardManager()!!.newScoreboard
+        val sb = Bukkit.getScoreboardManager().newScoreboard
 
         if (duel.alivePlayers.contains(player)) {
             var obj = sb.getObjective("aaa")
@@ -70,7 +70,7 @@ object FightSB {
     }
 
     fun setGameScoreboard(duel: Duel, player: Player) {
-        val sb = Bukkit.getScoreboardManager()!!.newScoreboard
+        val sb = Bukkit.getScoreboardManager().newScoreboard
         val teamOne = getTeam(sb, "0001teamOne", ChatColor.AQUA)
         val teamTwo = getTeam(sb, "0002teamTwo", ChatColor.LIGHT_PURPLE)
         for (on in Bukkit.getOnlinePlayers()) {

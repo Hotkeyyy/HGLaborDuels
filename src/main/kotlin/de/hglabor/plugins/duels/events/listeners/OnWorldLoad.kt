@@ -5,7 +5,7 @@ import net.axay.kspigot.event.listen
 import org.bukkit.event.world.WorldLoadEvent
 
 object OnWorldLoad {
-    fun enable() {
+    init {
         listen<WorldLoadEvent> {
             val world = it.world
             WorldManager.configureWorld(world)

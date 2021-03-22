@@ -11,6 +11,7 @@ import de.hglabor.plugins.duels.kits.KitType
 import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.kits.Kits.giveKit
 import de.hglabor.plugins.duels.kits.kit.Random
+import de.hglabor.plugins.duels.kits.kit.soup.Anchor
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.localization.sendMsg
 import de.hglabor.plugins.duels.party.Party
@@ -147,14 +148,10 @@ class Duel {
             presoups[it] = 0; missedPots[it] = 0; wastedHealth[it] = 0
             playersAndSpecs.add(it)
             totalPlayers.add(it)
-            Data.challengeKit.remove(it)
-            Data.challenged.remove(it)
-            Data.duelIDFromPlayer[it] = ID
-            Data.inFight.add(it)
             Soupsimulator.get(it)?.stop()
             it.isGlowing = false
             it.inventory.clear()
-            PlayerStats.get(it).addTotalGame()
+            //TODO PlayerStats.get(it).addTotalGame()
 
             if (knockbackType == PlayerSettings.Companion.Knockback.OLD)
                 it.setMetadata("oldKnockback", FixedMetadataValue(Manager.INSTANCE, ""))
@@ -166,6 +163,11 @@ class Duel {
     }
 
     private fun getKnockbackForDuel(): PlayerSettings.Companion.Knockback {
+        // TODO
+        if (kit == Anchor.INSTANCE) {
+            return PlayerSettings.Companion.Knockback.ANCHOR
+        }
+        return PlayerSettings.Companion.Knockback.OLD
         var oldKB = 0
         var newKB = 0
         alivePlayers.forEach {
@@ -259,45 +261,6 @@ class Duel {
             finalLoc.pitch = 0f
             player.teleport(finalLoc)
         }
-    }
-    // TODO Move to playerdiedinduel listener
-    /*
-       fun playerDied(player: Player, germanMessage: String, englishMessage: String) {
-        Data.duelFromSpec[player] = this
-        Data.inFight.remove(player)
-        alivePlayers.remove(player)
-        val newAlivePlayers = alivePlayers
-        alivePlayers = newAlivePlayers
-        savePlayerdata(player)
-        Kits.removeCooldown(player)
-
-        sendMessage(germanMessage, englishMessage)
-
-        if (ifTeamDied(getTeam(player))) {
-            loser = getTeam(player)
-            winner = getOtherTeam(player)
-            stop()
-        }
-
-        val stats = PlayerStats.get(player)
-        stats.addDeath()
-    }*/
-
-    // TODO Move to playerleftinduel listener
-    fun playerLeft(player: Player) {
-        Data.inFight.remove(player)
-        alivePlayers.remove(player)
-        Kits.inGame[kit]?.remove(player)
-        Kits.removeCooldown(player)
-        savePlayerdata(player)
-        sendMsg("duel.playerLeft", mutableMapOf("teamColor" to teamColor(player).toString(), "playerName" to player.name))
-
-        if (ifTeamDied(getTeam(player))) {
-            loser = getTeam(player)
-            winner = getOtherTeam(player)
-            stop()
-        }
-        player.reset()
     }
 
     fun ifTeamDied(team: ArrayList<Player>): Boolean {

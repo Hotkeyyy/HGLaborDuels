@@ -15,10 +15,10 @@ import de.hglabor.plugins.duels.events.listeners.soupsimulator.SoupsimulatorEven
 import de.hglabor.plugins.duels.functionality.EnderPearlFix
 import de.hglabor.plugins.duels.functionality.SoupHealing
 import de.hglabor.plugins.duels.guis.KitsGUI
-import de.hglabor.plugins.duels.guis.PlayerSettingsGUI
 import de.hglabor.plugins.duels.guis.overview.DuelPlayerDataOverviewGUI
 import de.hglabor.plugins.duels.guis.overview.DuelTeamOverviewGUI
 import de.hglabor.plugins.duels.kits.Kits
+import de.hglabor.plugins.duels.kits.specials.Specials
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.protection.Protection
 import de.hglabor.plugins.duels.scoreboard.LobbyScoreboard
@@ -70,19 +70,18 @@ class Manager : KSpigot() {
         }
         File("plugins//HGLaborDuels//temp//duels//").mkdir()
 
-        broadcast("enable kits in main")
-        Kits.enable()
-
         broadcast("${Localization.PREFIX}${KColors.DODGERBLUE}ENABLED PLUGIN")
 
     }
 
     override fun startup() {
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord")
+        ArenaTags.enable()
+        Kits.enable()
         register()
         LobbyScoreboard.startRunnable()
         CreateFiles
-        connectMongo()
+        //connectMongo()
         WorldManager.createFightWorld()
         WorldManager.createBuildWorld()
         console.success("Duels plugin enabled.")
@@ -105,33 +104,34 @@ class Manager : KSpigot() {
     }
 
     private fun register() {
-        Localization.INSTANCE
-        SoupHealing.enable()
-        ArenaTags.enable()
-        OnPlayerChat.enable()
-        OnPlayerQuit.enable()
-        OnPlayerJoin.enable()
-        OnChallenge.enable()
-        OnAccept.enable()
-        OnDamage.enable()
-        OnDeath.enable()
-        OnFoodLevelChange.enable()
-        OnInteractWithItem.enable()
-        OnItemPickUp.enable()
-        OnBuild.enable()
-        OnPlayerCommandPreprocess.enable()
-        OnInteractAtEntity.enable()
-        OnInteractWithPressureplate.enable()
-        OnDropItem.enable()
-        OnWorldLoad.enable()
-        OnPotionSplash.enable()
-        Protection.enable()
-        SoupsimulatorEvents.enable()
-        CreateArenaListener.enable()
-        OnChunkUnload.enable()
-        OnBlockForm.enable()
-        OnArrowPickUp.enable()
+        Localization()
+        SoupHealing
+        OnPlayerChat
+        OnPlayerQuit
+        OnPlayerJoin
+        OnChallenge
+        OnAccept
+        OnDamage
+        OnDeath
+        OnFoodLevelChange
+        OnInteractWithItem
+        OnItemPickUp
+        OnBuild
+        OnPlayerCommandPreprocess
+        OnInteractAtEntity
+        OnInteractWithPressureplate
+        OnDropItem
+        OnWorldLoad
+        OnPotionSplash
+        Protection
+        SoupsimulatorEvents
+        CreateArenaListener
+        OnChunkUnload
+        OnBlockForm
+        OnArrowPickUp
         OnDeathInDuel
+        OnDuelStart
+        Specials.enable()
 
         DuelPlayerDataOverviewGUI.enable()
         DuelTeamOverviewGUI.enable()

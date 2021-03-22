@@ -18,7 +18,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 
 object OnInteractWithItem {
-    fun enable() {
+    init {
         listen<PlayerInteractEvent> {
             if(it.hand == EquipmentSlot.OFF_HAND) return@listen
 

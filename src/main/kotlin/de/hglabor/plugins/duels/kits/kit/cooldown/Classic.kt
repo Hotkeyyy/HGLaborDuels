@@ -1,6 +1,5 @@
 package de.hglabor.plugins.duels.kits.kit.cooldown
 
-import de.hglabor.plugins.duels.arenas.ArenaTags
 import de.hglabor.plugins.duels.kits.*
 import de.hglabor.plugins.duels.kits.specials.Specials
 import org.bukkit.Material
@@ -15,9 +14,6 @@ class Classic : AbstractKit() {
 
     override val name = "Classic"
     override val itemInGUI = Kits.guiItem(Material.SHIELD, name)
-    override val arenaTag = ArenaTags.NONE
-    override val type = null
-    override val allowsRespawn = false
     override val category = KitCategory.COOLDOWN
     override val specials = setOf(Specials.HITCOOLDOWN)
 

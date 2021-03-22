@@ -15,6 +15,7 @@ import net.axay.kspigot.utils.hasMark
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockExplodeEvent
@@ -36,7 +37,7 @@ object Protection {
             else -> false
         }
 
-    fun enable() {
+    init {
         listen<BlockBreakEvent> {
             if (it.player.isInStaffMode)
                 it.isCancelled = true
@@ -148,6 +149,8 @@ object Protection {
         }
 
         listen<EntityExplodeEvent> {
+            if (it.entityType == EntityType.ENDER_CRYSTAL && it.entity.world == Bukkit.getWorld("FightWorld"))
+                return@listen
             it.blockList().clear()
         }
 

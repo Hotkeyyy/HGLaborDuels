@@ -7,7 +7,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.entity.PotionSplashEvent
 
 object OnPotionSplash {
-    fun enable() {
+    init {
         listen<PotionSplashEvent> {
             if (it.potion.shooter is Player) {
                 val potion = it.potion

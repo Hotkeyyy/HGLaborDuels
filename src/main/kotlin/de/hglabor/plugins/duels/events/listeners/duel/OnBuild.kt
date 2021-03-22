@@ -8,7 +8,7 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 
 object OnBuild {
-    fun enable() {
+    init {
         listen<BlockBreakEvent> {
             val player = it.player
             if (it.player.isInStaffMode)

@@ -4,7 +4,6 @@ import de.hglabor.plugins.duels.data.DataHolder
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import net.axay.kspigot.event.listen
-import net.axay.kspigot.extensions.bukkit.getHandItem
 import net.axay.kspigot.extensions.events.isRightClick
 import net.axay.kspigot.runnables.async
 import org.bukkit.Material
@@ -13,8 +12,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 
 object SoupHealing {
-
-    fun enable() {
+    init {
         listen<PlayerInteractEvent> {
             if (it.action.isRightClick || it.action == Action.LEFT_CLICK_BLOCK) {
                 val p = it.player

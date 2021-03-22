@@ -49,7 +49,7 @@ dependencies {
     implementation(kotlin("reflect"))
 
     // SPIGOT
-    compileOnly("org.spigotmc", "spigot", "1.16.5-R0.1-SNAPSHOT")
+    // compileOnly("org.spigotmc", "spigot", "1.16.5-R0.1-SNAPSHOT")
 
     // PAPER
     compileOnly("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT")

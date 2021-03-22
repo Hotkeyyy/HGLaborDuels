@@ -42,11 +42,8 @@ class Debuff : AbstractKit() {
             flag(ItemFlag.HIDE_ATTRIBUTES)
         }
     }
-    override val arenaTag = ArenaTags.NONE
-    override val type = null
-    override val allowsRespawn = false
     override val category = KitCategory.POT
-    override val specials = setOf(Specials.PEARLCOOLDOWN)
+    override val specials = setOf(Specials.PEARLCOOLDOWN, Specials.HUNGER)
 
     override fun giveKit(player: Player) {
         player.inventory.clear()
@@ -82,6 +79,8 @@ class Debuff : AbstractKit() {
                 })
             }
         }
+
+        player.inventory.setItem(8, ItemStack(Material.GOLDEN_CARROT, 64))
 
         player.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)?.baseValue = 0.0
         player.getAttribute(Attribute.GENERIC_ATTACK_SPEED)?.baseValue = 100.0

@@ -6,7 +6,7 @@ import org.bukkit.entity.ItemFrame
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
 
 object OnInteractAtEntity {
-    fun enable() {
+    init {
         listen<PlayerInteractAtEntityEvent> {
             if (it.rightClicked is ArmorStand || it.rightClicked is ItemFrame)
                 it.isCancelled = true

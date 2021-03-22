@@ -1,19 +1,17 @@
 package de.hglabor.plugins.duels.events.listeners.duel
 
-import de.hglabor.plugins.duels.data.PlayerStats
 import de.hglabor.plugins.duels.duel.GameState
 import de.hglabor.plugins.duels.kits.specials.Specials
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
-import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import org.bukkit.Material
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 
 object OnInteractWithPressureplate {
-    fun enable() {
+    init {
         listen<PlayerInteractEvent> {
             val player = it.player
             if (player.isInFight()) {

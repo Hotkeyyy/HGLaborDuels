@@ -1,8 +1,10 @@
 package de.hglabor.plugins.duels.kits.kit.cooldown
 
 import de.hglabor.plugins.duels.arenas.ArenaTags
-import de.hglabor.plugins.duels.kits.*
-import de.hglabor.plugins.duels.kits.kit.soup.Anchor
+import de.hglabor.plugins.duels.kits.AbstractKit
+import de.hglabor.plugins.duels.kits.KitCategory
+import de.hglabor.plugins.duels.kits.Kits
+import de.hglabor.plugins.duels.kits.kits
 import de.hglabor.plugins.duels.kits.specials.Specials
 import net.axay.kspigot.items.flag
 import net.axay.kspigot.items.itemStack
@@ -25,8 +27,6 @@ class Crystal : AbstractKit() {
     override val name = "Crystal"
     override val itemInGUI = Kits.guiItem(Material.END_CRYSTAL, name)
     override val arenaTag = ArenaTags.DEFAULT
-    override val type = null
-    override val allowsRespawn = false
     override val category = KitCategory.COOLDOWN
     override val specials = setOf(Specials.HITCOOLDOWN)
 
@@ -78,7 +78,7 @@ class Crystal : AbstractKit() {
         player.inventory.setItem(2, ItemStack(Material.OBSIDIAN, 64))
         player.inventory.setItem(3, ItemStack(Material.END_CRYSTAL, 64))
         player.inventory.setItem(4, ItemStack(Material.GOLDEN_APPLE, 64))
-        player.inventory.setItem(7, itemStack(Material.CROSSBOW) {
+        player.inventory.setItem(8, itemStack(Material.CROSSBOW) {
             meta {
                 addEnchant(Enchantment.MULTISHOT, 1, false)
                 addEnchant(Enchantment.QUICK_CHARGE, 3, false)

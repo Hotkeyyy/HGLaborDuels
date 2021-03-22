@@ -7,7 +7,7 @@ import org.bukkit.Material
 import org.bukkit.event.player.PlayerDropItemEvent
 
 object OnDropItem {
-    fun enable() {
+    init {
         listen<PlayerDropItemEvent> {
             val player = it.player
             if (player.isInFight()) {

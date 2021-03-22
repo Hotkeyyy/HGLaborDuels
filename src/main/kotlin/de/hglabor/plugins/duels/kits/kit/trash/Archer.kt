@@ -1,10 +1,6 @@
 package de.hglabor.plugins.duels.kits.kit.trash
 
-import de.hglabor.plugins.duels.arenas.ArenaTags
-import de.hglabor.plugins.duels.guis.KitsGUI
 import de.hglabor.plugins.duels.kits.*
-import de.hglabor.plugins.duels.kits.kit.`fun`.HardJumpAndRun
-import de.hglabor.plugins.duels.kits.kit.soup.Anchor
 import net.axay.kspigot.items.itemStack
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
@@ -19,11 +15,8 @@ class Archer : AbstractKit() {
 
     override val name = "Archer"
     override val itemInGUI = Kits.guiItem(Material.BOW, name)
-    override val arenaTag = ArenaTags.NONE
     override val type = KitType.BOW
-    override val allowsRespawn = false
     override val category = KitCategory.TRASH
-    override val specials = setOf(null)
 
     override fun giveKit(player: Player) {
         player.inventory.clear()

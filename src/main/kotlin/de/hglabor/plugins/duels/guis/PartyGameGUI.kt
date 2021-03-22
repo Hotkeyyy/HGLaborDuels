@@ -2,7 +2,6 @@ package de.hglabor.plugins.duels.guis
 
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.utils.Data
-import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.gui.GUIType
 import net.axay.kspigot.gui.Slots
 import net.axay.kspigot.gui.kSpigotGUI
@@ -28,7 +27,7 @@ object PartyGameGUI {
                 }
             }) {
                 Data.openedKitInventory[player] = Data.KitInventories.SPLITPARTY
-                player.openGUI(KitsGUI.guiBuilder(player))
+                player.openGUI(KitsGUI.gui)
             }
         }
     }

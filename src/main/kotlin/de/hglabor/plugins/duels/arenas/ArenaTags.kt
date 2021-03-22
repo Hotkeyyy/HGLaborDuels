@@ -32,7 +32,7 @@ enum class ArenaTags(val material: Material) {
                             it.player.closeInventory()
                             val arena = arenaFromPlayer[it.player]
                             arena!!.tag = tag
-                            it.player.sendMsg("arena.creation.choseTag", mutableMapOf("tag" to tag.toString()))
+                            //it.player.sendMsg("arena.creation.choseTag", mutableMapOf("tag" to tag.toString()))
                             it.player.openGUI(CreateArenaGUI.guiBuilder(it.player))
                         }
                     ))

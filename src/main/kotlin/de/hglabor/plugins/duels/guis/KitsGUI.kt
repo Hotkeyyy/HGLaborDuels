@@ -1,20 +1,20 @@
 package de.hglabor.plugins.duels.guis
 
+import com.google.gson.Gson
 import de.hglabor.plugins.duels.duel.Duel
 import de.hglabor.plugins.duels.kits.AbstractKit
 import de.hglabor.plugins.duels.kits.KitCategory
-import de.hglabor.plugins.duels.kits.Kits
-import de.hglabor.plugins.duels.kits.kit.Random
 import de.hglabor.plugins.duels.kits.kit.`fun`.HardJumpAndRun
 import de.hglabor.plugins.duels.kits.kit.`fun`.JumpAndRun
-import de.hglabor.plugins.duels.kits.kits
-import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.localization.sendMsg
 import de.hglabor.plugins.duels.party.Party
 import de.hglabor.plugins.duels.party.Partys.isInParty
 import de.hglabor.plugins.duels.tournament.Tournament
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.duel
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.serializer
+import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.gui.*
 import net.axay.kspigot.gui.elements.GUICompoundElement
@@ -22,8 +22,6 @@ import net.axay.kspigot.gui.elements.GUIRectSpaceCompound
 import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
 import net.axay.kspigot.items.name
-import net.axay.kspigot.runnables.firstAsync
-import net.axay.kspigot.runnables.thenSync
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryCloseEvent
@@ -32,39 +30,77 @@ object  KitsGUI {
 
     // TODO rework and shorten code
 
-    private var categoryCompound: GUIRectSpaceCompound<ForInventorySixByNine, GUICompoundElement<ForInventorySixByNine>>? = null
+    var categoryCompound: GUIRectSpaceCompound<ForInventorySixByNine, GUICompoundElement<ForInventorySixByNine>>? = null
+    var mainCompound: GUIRectSpaceCompound<ForInventorySixByNine, GUICompoundElement<ForInventorySixByNine>>? = null
+    var soupCompound: GUIRectSpaceCompound<ForInventorySixByNine, GUICompoundElement<ForInventorySixByNine>>? = null
+    var potCompound: GUIRectSpaceCompound<ForInventorySixByNine, GUICompoundElement<ForInventorySixByNine>>? = null
+    var uhcCompound: GUIRectSpaceCompound<ForInventorySixByNine, GUICompoundElement<ForInventorySixByNine>>? = null
+    var cooldownCompound: GUIRectSpaceCompound<ForInventorySixByNine, GUICompoundElement<ForInventorySixByNine>>? = null
+    var funCompound: GUIRectSpaceCompound<ForInventorySixByNine, GUICompoundElement<ForInventorySixByNine>>? = null
+    var trashCompound: GUIRectSpaceCompound<ForInventorySixByNine, GUICompoundElement<ForInventorySixByNine>>? = null
 
-    fun guiBuilder(player: Player) = kSpigotGUI(GUIType.SIX_BY_NINE) {
+    fun copy(compound: GUIRectSpaceCompound<ForInventorySixByNine, GUICompoundElement<ForInventorySixByNine>>?): GUIRectSpaceCompound<*, *>? {
+        val JSON = Gson().toJson(compound)
+        return Gson().fromJson(JSON, GUIRectSpaceCompound::class.java)
+    }
 
-        title = Localization.INSTANCE.getMessage("kitsgui.title", player)
+    val gui = kSpigotGUI(GUIType.SIX_BY_NINE) {
+
+        title = "kits"
+
+        page(1) {
+            placeholder(Slots.Border, itemStack(Material.WHITE_STAINED_GLASS_PANE) { meta { name = null } })
+            categoryCompound = createSimpleRectCompound(Slots.RowFiveSlotTwo, Slots.RowFiveSlotEight)
+            placeholder(Slots.RowFourSlotTwo linTo Slots.RowFourSlotEight,
+                itemStack(Material.LIGHT_BLUE_STAINED_GLASS_PANE) { meta { name = null } })
+            placeholder(Slots.RowFourSlotTwo, itemStack(Material.MAGENTA_STAINED_GLASS_PANE) { meta { name = null } })
+            mainCompound = createSimpleRectCompound(Slots.RowTwoSlotTwo, Slots.RowThreeSlotEight)
+        }
+
+        page(2) {
+            placeholder(Slots.Border, itemStack(Material.WHITE_STAINED_GLASS_PANE) { meta { name = null } })
+            /*var cCompound = copy(categoryCompound)
+            cCompound = createSimpleRectCompound(Slots.RowFiveSlotTwo, Slots.RowFiveSlotEight)*/
+            placeholder(Slots.RowFourSlotTwo linTo Slots.RowFourSlotEight,
+                itemStack(Material.LIGHT_BLUE_STAINED_GLASS_PANE) { meta { name = null } })
+            placeholder(Slots.RowFourSlotThree, itemStack(Material.MAGENTA_STAINED_GLASS_PANE) { meta { name = null } })
+            soupCompound = createSimpleRectCompound(Slots.RowTwoSlotTwo, Slots.RowThreeSlotEight)
+        }
+    }
+
+    /*val gui = kSpigotGUI(GUIType.SIX_BY_NINE) {
+
+        title = "${KColors.DODGERBLUE}Kits"
 
         // Main
         page(1) {
 
             placeholder(Slots.Border, itemStack(Material.WHITE_STAINED_GLASS_PANE) { meta { name = null } })
 
-            categoryCompound = createSimpleRectCompound(Slots.RowFiveSlotTwo, Slots.RowFiveSlotEight)
+            categoryCompound = createSimpleRectCompound(Slots.RowTwoSlotTwo, Slots.RowTwoSlotEight)
 
-            /*val categoryGUICompound = createRectCompound<KitCategory>(Slots.RowFiveSlotTwo, Slots.RowFiveSlotEight,
+            *//*val categoryGUICompound = createRectCompound<KitCategory>(Slots.RowFiveSlotTwo, Slots.RowFiveSlotEight,
                 iconGenerator = { it.itemStack }, onClick = { clickEvent, element ->
                     clickEvent.guiInstance.gotoPage(element.pageNumber)
                 })
-            firstAsync { listOf(*KitCategory.values()) }.thenSync { categoryGUICompound.addContent(it) }.execute()*/
+            firstAsync { listOf(*KitCategory.values()) }.thenSync { categoryGUICompound.addContent(it) }.execute()*//*
 
             placeholder(Slots.RowFourSlotTwo linTo Slots.RowFourSlotEight,
                 itemStack(Material.LIGHT_BLUE_STAINED_GLASS_PANE) { meta { name = null } })
             placeholder(Slots.RowFourSlotTwo, itemStack(Material.MAGENTA_STAINED_GLASS_PANE) { meta { name = null } })
 
-            val compound = createRectCompound<AbstractKit>(Slots.RowTwoSlotTwo, Slots.RowThreeSlotEight,
+            mainCompound = createSimpleRectCompound(Slots.RowTwoSlotTwo, Slots.RowThreeSlotEight)
+
+            *//*val compound = createRectCompound<AbstractKit>(Slots.RowTwoSlotTwo, Slots.RowThreeSlotEight,
                 iconGenerator = { it.itemInGUI }, onClick = { clickEvent, element ->
                     chooseKit(clickEvent.player, element)
-                })
+                })*//*
 
             button(Slots.RowOneSlotFive, Random.INSTANCE.itemInGUI) {
                 chooseKit(it.player, Random.INSTANCE)
             }
 
-            firstAsync { kits.filter { kit -> Kits.mainKits.contains(kit) } }.thenSync { compound.addContent(it) }.execute()
+//            firstAsync { kits.filter { kit -> Kits.mainKits.contains(kit) } }.thenSync { compound.addContent(it) }.execute()
         }
 
         // Soup
@@ -101,8 +137,7 @@ object  KitsGUI {
 
             val categoryGUICompound = createRectCompound<KitCategory>(Slots.RowFiveSlotTwo, Slots.RowFiveSlotEight,
                 iconGenerator = { it.itemStack }, onClick = { clickEvent, element ->
-                    clickEvent.guiInstance.gotoPage(element.pageNumber)
-                })
+                    clickEvent.guiInstance.gotoPage(element.pageNumber)  })
             firstAsync { listOf(*KitCategory.values()) }.thenSync { categoryGUICompound.addContent(it) }.execute()
 
             placeholder(Slots.RowFourSlotTwo linTo Slots.RowFourSlotEight,
@@ -229,18 +264,19 @@ object  KitsGUI {
             firstAsync { kits.filter { kit -> kit.category == KitCategory.TRASH } }.thenSync { compound.addContent(it) }.execute()
         }
 
-    }
-
-    private fun fillCategoryCompound() {
-        KitCategory.values().forEach { categoryCompound?.addContent(CategoryGUICompoundElement(it)) }
-    }
+    }*/
 
     class CategoryGUICompoundElement(category: KitCategory) : GUICompoundElement<ForInventorySixByNine>(
         category.itemStack,
         onClick = { clickEvent ->
             clickEvent.guiInstance.gotoPage(category.pageNumber)
-        }
-    )
+        })
+
+    class KitsGUICompoundElement(kit: AbstractKit) : GUICompoundElement<ForInventorySixByNine>(
+        kit.itemInGUI,
+        onClick = { clickEvent ->
+            chooseKit(clickEvent.player, kit)
+        })
 
     private fun chooseKit(player: Player, kit: AbstractKit) {
         if (Data.openedKitInventory.containsKey(player)) {
@@ -267,9 +303,8 @@ object  KitsGUI {
     }
 
     fun enable() {
-        fillCategoryCompound()
         listen<InventoryCloseEvent> {
-            if (it.view.title == Localization.INSTANCE.getMessage("kitsgui.title", it.player as Player)) {
+            if (it.view.title == "${KColors.DODGERBLUE}Kits") {
                 Data.openedDuelGUI.remove(it.player)
                 Data.openedKitInventory.remove(it.player)
             }

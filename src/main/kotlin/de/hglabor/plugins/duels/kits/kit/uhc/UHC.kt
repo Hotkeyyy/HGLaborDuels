@@ -1,10 +1,6 @@
 package de.hglabor.plugins.duels.kits.kit.uhc
 
-import de.hglabor.plugins.duels.arenas.ArenaTags
-import de.hglabor.plugins.duels.guis.KitsGUI
 import de.hglabor.plugins.duels.kits.*
-import de.hglabor.plugins.duels.kits.kit.cooldown.Classic
-import de.hglabor.plugins.duels.kits.kit.trash.Sumo
 import de.hglabor.plugins.duels.kits.specials.Specials
 import net.axay.kspigot.items.itemStack
 import org.bukkit.Material
@@ -20,9 +16,6 @@ class UHC : AbstractKit() {
 
     override val name = "UHC"
     override val itemInGUI = Kits.guiItem(Material.GOLDEN_APPLE, name)
-    override val arenaTag = ArenaTags.NONE
-    override val type = null
-    override val allowsRespawn = false
     override val category = KitCategory.UHC
     override val specials = setOf(Specials.ROD_KNOCKBACK)
 

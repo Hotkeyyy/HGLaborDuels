@@ -18,7 +18,6 @@ class HardJumpAndRun: AbstractKit() {
     override val name = "${KColors.DARKRED}HARD ${KColors.DEEPSKYBLUE}Jump and Run"
     override val itemInGUI = Kits.guiItem(Material.NETHERITE_BOOTS, name)
     override val arenaTag = ArenaTags.HARDJUMPANDRUN
-    override val type = null
     override val allowsRespawn = true
     override val category = KitCategory.FUN
     override val specials = setOf(Specials.INVINICIBLE, Specials.JUMPANDRUN)

@@ -1,10 +1,9 @@
 package de.hglabor.plugins.duels.kits.kit.trash
 
-import de.hglabor.plugins.duels.arenas.ArenaTags
-import de.hglabor.plugins.duels.guis.KitsGUI
-import de.hglabor.plugins.duels.kits.*
-import de.hglabor.plugins.duels.kits.kit.`fun`.HardJumpAndRun
-import de.hglabor.plugins.duels.kits.kit.cooldown.Classic
+import de.hglabor.plugins.duels.kits.AbstractKit
+import de.hglabor.plugins.duels.kits.KitCategory
+import de.hglabor.plugins.duels.kits.Kits
+import de.hglabor.plugins.duels.kits.kits
 import net.axay.kspigot.items.flag
 import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
@@ -21,11 +20,7 @@ class OnlySword : AbstractKit() {
 
     override val name = "Only Sword"
     override val itemInGUI = Kits.guiItem(Material.GOLDEN_SWORD, name)
-    override val arenaTag = ArenaTags.NONE
-    override val type = null
-    override val allowsRespawn = false
     override val category = KitCategory.TRASH
-    override val specials = setOf(null)
 
     override fun giveKit(player: Player) {
         player.inventory.clear()

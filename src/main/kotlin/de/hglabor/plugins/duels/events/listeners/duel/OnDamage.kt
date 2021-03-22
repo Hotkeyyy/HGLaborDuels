@@ -1,23 +1,17 @@
 package de.hglabor.plugins.duels.events.listeners.duel
 
 import de.hglabor.plugins.duels.data.DataHolder
-import de.hglabor.plugins.duels.data.PlayerStats
-import de.hglabor.plugins.duels.duel.Duel
 import de.hglabor.plugins.duels.duel.GameState
 import de.hglabor.plugins.duels.kits.AbstractKit
 import de.hglabor.plugins.duels.kits.specials.Specials
 import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
-import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.runnables.async
 import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.entity.AbstractArrow
-import org.bukkit.entity.Arrow
-import org.bukkit.entity.Player
-import org.bukkit.entity.Trident
+import org.bukkit.entity.*
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
@@ -26,11 +20,12 @@ import org.bukkit.event.entity.EntityDamageEvent
 object OnDamage {
 
     private val NERFED_ITEMS = arrayListOf("_PICKAXE", "_AXE", "_SHOVEL", "TRIDENT")
-    val HANDLED_CAUSES =
-        arrayListOf(EntityDamageEvent.DamageCause.ENTITY_ATTACK, EntityDamageEvent.DamageCause.PROJECTILE)
 
-    fun enable() {
+    init {
         listen<EntityDamageEvent> {
+            if (it.entity is EnderCrystal) {
+                it.isCancelled = false
+            }
             if (it.entity is Player) {
                 val player = it.entity as Player
                 if (player.isInFight()) {
@@ -53,6 +48,9 @@ object OnDamage {
         }
 
         listen<EntityDamageByEntityEvent>(priority = EventPriority.HIGHEST) {
+            if (it.entity is EnderCrystal) {
+                it.isCancelled = false
+            }
             if (it.entity is Player) {
                 val player = it.entity as Player
                 if (player.isInFight()) {

@@ -17,7 +17,6 @@ class JumpAndRun: AbstractKit() {
     override val name = "Jump and Run"
     override val itemInGUI = Kits.guiItem(Material.DIAMOND_BOOTS, name)
     override val arenaTag = ArenaTags.JUMPANDRUN
-    override val type = null
     override val allowsRespawn = true
     override val category = KitCategory.FUN
     override val specials = setOf(Specials.INVINICIBLE, Specials.JUMPANDRUN)

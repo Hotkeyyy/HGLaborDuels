@@ -6,7 +6,7 @@ import org.bukkit.entity.Trident
 import org.bukkit.event.player.PlayerPickupArrowEvent
 
 object OnArrowPickUp {
-    fun enable() {
+    init {
         listen<PlayerPickupArrowEvent> {
             val player = it.player
             if (player.isSpectator())

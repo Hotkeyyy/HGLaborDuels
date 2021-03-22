@@ -5,7 +5,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.world.ChunkUnloadEvent
 
 object OnChunkUnload {
-    fun enable() {
+    init {
         listen<ChunkUnloadEvent> {
             if (it.world.name == "FightWorld")
                 it.chunk.entities.forEach { entity ->

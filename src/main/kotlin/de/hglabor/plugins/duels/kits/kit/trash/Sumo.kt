@@ -1,10 +1,10 @@
 package de.hglabor.plugins.duels.kits.kit.trash
 
 import de.hglabor.plugins.duels.arenas.ArenaTags
-import de.hglabor.plugins.duels.guis.KitsGUI
-import de.hglabor.plugins.duels.kits.*
-import de.hglabor.plugins.duels.kits.kit.`fun`.HardJumpAndRun
-import de.hglabor.plugins.duels.kits.kit.cooldown.Classic
+import de.hglabor.plugins.duels.kits.AbstractKit
+import de.hglabor.plugins.duels.kits.KitCategory
+import de.hglabor.plugins.duels.kits.Kits
+import de.hglabor.plugins.duels.kits.kits
 import de.hglabor.plugins.duels.kits.specials.Specials
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
@@ -18,8 +18,6 @@ class Sumo : AbstractKit() {
     override val name = "Sumo"
     override val itemInGUI = Kits.guiItem(Material.LEAD, name)
     override val arenaTag = ArenaTags.SUMO
-    override val type = null
-    override val allowsRespawn = false
     override val category = KitCategory.TRASH
     override val specials = setOf(Specials.NODAMAGE, Specials.DEADINWATER)
 

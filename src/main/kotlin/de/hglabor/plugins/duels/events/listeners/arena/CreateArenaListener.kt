@@ -1,9 +1,7 @@
 package de.hglabor.plugins.duels.events.listeners.arena
 
 import de.hglabor.plugins.duels.arenas.*
-import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.localization.sendMsg
-import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.events.isLeftClick
 import net.axay.kspigot.extensions.events.isRightClick
@@ -15,7 +13,7 @@ import org.bukkit.inventory.EquipmentSlot
 
 object CreateArenaListener : Listener {
 
-    fun enable() {
+    init {
        listen<PlayerInteractEvent> {
             if (arenaFromPlayer.containsKey(it.player)) {
                 val player = it.player

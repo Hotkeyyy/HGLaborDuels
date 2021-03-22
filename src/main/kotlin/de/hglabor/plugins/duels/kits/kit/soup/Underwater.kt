@@ -26,9 +26,7 @@ class Underwater : AbstractKit() {
     override val itemInGUI = Kits.guiItem(Material.TROPICAL_FISH_BUCKET, name)
     override val arenaTag = ArenaTags.UNDERWATER
     override val type = KitType.SOUP
-    override val allowsRespawn = false
     override val category = KitCategory.SOUP
-    override val specials = setOf(null)
 
     override fun giveKit(player: Player) {
         player.inventory.clear()

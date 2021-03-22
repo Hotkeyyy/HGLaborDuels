@@ -10,7 +10,7 @@ import org.bukkit.event.entity.PlayerDeathEvent
 
 object OnDeath {
 
-    fun enable() {
+    init {
         listen<PlayerDeathEvent> {
             val player = it.entity
             player.world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true)

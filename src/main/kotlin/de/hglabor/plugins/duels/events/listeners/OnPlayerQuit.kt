@@ -22,7 +22,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 
 object OnPlayerQuit {
 
-    fun enable() {
+    init {
 
         listen<PlayerQuitEvent>(EventPriority.HIGHEST) {
             val player = it.player

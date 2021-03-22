@@ -13,7 +13,7 @@ import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.bukkit.inventory.EquipmentSlot
 
 object OnChallenge {
-    fun enable() {
+    init {
         listen<PlayerInteractAtEntityEvent> {
             if(it.hand == EquipmentSlot.OFF_HAND) return@listen
             if (it.rightClicked is Player) {
@@ -23,7 +23,7 @@ object OnChallenge {
                     if(!(player.isInFight() && target.isInFight())) {
                         Data.openedDuelGUI[player] = target
                         Data.openedKitInventory[player] = Data.KitInventories.DUEL
-                        player.openGUI(KitsGUI.guiBuilder(player))
+                        player.openGUI(KitsGUI.gui)
                     }
                 }
             }
@@ -39,7 +39,7 @@ object OnChallenge {
                             it.isCancelled = true
                             Data.openedDuelGUI[damager] = target
                             Data.openedKitInventory[damager] = Data.KitInventories.DUEL
-                            damager.openGUI(KitsGUI.guiBuilder(damager))
+                            damager.openGUI(KitsGUI.gui)
                         }
                     }
                 } else {

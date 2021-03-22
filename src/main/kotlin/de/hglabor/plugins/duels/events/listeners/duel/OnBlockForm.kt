@@ -7,7 +7,7 @@ import org.bukkit.Material
 import org.bukkit.event.block.BlockFormEvent
 
 object OnBlockForm {
-    fun enable() {
+    init {
         listen<BlockFormEvent> {
             Data.breakableBlocks += it.block
 

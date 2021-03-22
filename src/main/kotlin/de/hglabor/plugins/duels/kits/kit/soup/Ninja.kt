@@ -1,10 +1,6 @@
 package de.hglabor.plugins.duels.kits.kit.soup
 
-import de.hglabor.plugins.duels.arenas.ArenaTags
-import de.hglabor.plugins.duels.guis.KitsGUI
 import de.hglabor.plugins.duels.kits.*
-import de.hglabor.plugins.duels.kits.kit.`fun`.HardJumpAndRun
-import de.hglabor.plugins.duels.kits.kit.cooldown.Classic
 import de.hglabor.plugins.duels.kits.specials.Specials
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
@@ -17,9 +13,7 @@ class Ninja : AbstractKit() {
 
     override val name = "Ninja"
     override val itemInGUI = Kits.guiItem(Material.INK_SAC, name)
-    override val arenaTag = ArenaTags.NONE
     override val type = KitType.SOUP
-    override val allowsRespawn = false
     override val category = KitCategory.SOUP
     override val specials = setOf(Specials.NINJA)
 
@@ -36,6 +30,5 @@ class Ninja : AbstractKit() {
 
     fun enable() {
         kits += INSTANCE
-
     }
 }
