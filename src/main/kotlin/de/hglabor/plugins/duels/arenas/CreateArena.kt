@@ -1,7 +1,7 @@
 package de.hglabor.plugins.duels.arenas
 
+import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.bukkit.BukkitWorld
-import com.sk89q.worldedit.bukkit.WorldEditPlugin
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard
 import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy
@@ -9,23 +9,14 @@ import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.math.Vector3
 import com.sk89q.worldedit.regions.CuboidRegion
-import com.sk89q.worldedit.util.io.Closer
-import de.hglabor.plugins.duels.localization.Localization
-import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
-import org.bukkit.Bukkit
+import de.hglabor.plugins.duels.localization.sendMsg
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
-import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter
-import com.sk89q.worldedit.WorldEdit
-
-import com.sk89q.worldedit.EditSession
-import de.hglabor.plugins.duels.localization.sendMsg
 
 
 val arenaFromPlayer = HashMap<Player, CreateArena>()

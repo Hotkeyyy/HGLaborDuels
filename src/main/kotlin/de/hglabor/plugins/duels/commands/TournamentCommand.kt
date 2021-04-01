@@ -19,8 +19,8 @@ object TournamentCommand : CommandExecutor {
                 if (args[0].equals("create", true)) {
                     if (sender.isStaff) {
                         if (Tournaments.publicTournament == null) {
-                            Data.openedKitInventory[sender] = Data.KitInventories.TOURNAMENT
-                            sender.openGUI(KitsGUI.gui)
+                            Data.openedKitInventory[sender] = KitsGUI.KitInventories.TOURNAMENT
+                            sender.openGUI(KitsGUI.guiBuilder())
                         } else {
                             sender.sendMsg("tournament.fail.publicExists")
                         }
@@ -29,7 +29,7 @@ object TournamentCommand : CommandExecutor {
                     return true
                 } else if (args[0].equals("join", true)) {
                     if (Tournaments.publicTournament?.players?.contains(sender) == false)
-                        if (Tournaments.publicTournament?.state != GameState.RUNNING)
+                        if (Tournaments.publicTournament?.state != GameState.INGAME)
                             Tournaments.publicTournament?.join(sender)
                         else
                             sender.sendMsg("tournament.fail.alreadyJoined")

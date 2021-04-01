@@ -2,14 +2,12 @@ package de.hglabor.plugins.duels.events.listeners
 
 import de.hglabor.plugins.duels.guis.PartyGameGUI
 import de.hglabor.plugins.duels.guis.PlayerSettingsGUI
-import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.guis.QueueGUI
 import de.hglabor.plugins.duels.localization.sendMsg
 import de.hglabor.plugins.duels.party.Party
+import de.hglabor.plugins.duels.player.DuelsPlayer
 import de.hglabor.plugins.duels.protection.Protection.isRestricted
-import de.hglabor.plugins.duels.utils.Data
-import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
 import de.hglabor.plugins.staff.utils.StaffData.isInStaffMode
-import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.events.isRightClick
 import net.axay.kspigot.gui.openGUI
@@ -27,8 +25,9 @@ object OnInteractWithItem {
                 // Staff things
                 if (item.hasMark("stopspec")) {
                     it.isCancelled = true
-                    Data.duelFromSpec[it.player]?.removeSpectator(it.player, true)
+                    DuelsPlayer.get(it.player).spectatingDuel()?.removeSpectator(it.player, true)
                 }
+
                 if (item.hasMark("createarenaitem")) {
                     it.isCancelled = true
                     it.player.performCommand("arena create")
@@ -42,7 +41,7 @@ object OnInteractWithItem {
 
                 if (item.hasMark("queue")) {
                     it.isCancelled = true
-                    //it.player.openGUI(QueueGUI.gui)
+                    it.player.openGUI(QueueGUI.guiBuilder())
                 }
 
                 if (item.hasMark("createparty")) {

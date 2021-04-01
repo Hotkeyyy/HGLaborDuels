@@ -1,25 +1,23 @@
 package de.hglabor.plugins.duels.kits.kit.soup
 
-import de.hglabor.plugins.duels.arenas.ArenaTags
-import de.hglabor.plugins.duels.kits.*
+import de.hglabor.plugins.duels.kits.AbstractKit
+import de.hglabor.plugins.duels.kits.KitCategory
+import de.hglabor.plugins.duels.kits.KitType
+import de.hglabor.plugins.duels.utils.KitUtils
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
 import net.axay.kspigot.items.name
 import org.bukkit.Material
-import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.potion.PotionData
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.potion.PotionType
 
-class Speed : AbstractKit() {
-    companion object {
-        val INSTANCE = Speed()
-    }
-
+object Speed : AbstractKit() {
     override val name = "Speed"
     override val itemInGUI = itemStack(Material.POTION) {
             meta<PotionMeta> {
@@ -31,24 +29,25 @@ class Speed : AbstractKit() {
     override val type = KitType.SOUP
     override val category = KitCategory.SOUP
 
-    override fun giveKit(player: Player) {
-        player.inventory.clear()
-        KitUtils.armor(player,
-            Material.IRON_HELMET,
-            Material.IRON_CHESTPLATE,
-            Material.IRON_LEGGINGS,
-            Material.IRON_BOOTS)
-        player.inventory.setItem(0, KitUtils.sword(Material.DIAMOND_SWORD, true))
+    override val armor = KitUtils.armor(
+        Material.IRON_HELMET,
+        Material.IRON_CHESTPLATE,
+        Material.IRON_LEGGINGS,
+        Material.IRON_BOOTS
+    )
 
-        KitUtils.giveRecraft(player, 32)
-        KitUtils.fillEmptySlotsWithSoup(player)
+    override val defaultInventory = mutableMapOf(
+        0 to KitUtils.sword(Material.DIAMOND_SWORD, true),
+        13 to ItemStack(Material.BROWN_MUSHROOM, 32),
+        14 to ItemStack(Material.RED_MUSHROOM, 32),
+        15 to ItemStack(Material.BOWL, 32)
+    )
 
-        player.addPotionEffect(PotionEffect(PotionEffectType.SPEED, Int.MAX_VALUE, 1))
-        player.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)?.baseValue = 0.0
-        player.getAttribute(Attribute.GENERIC_ATTACK_SPEED)?.baseValue = 100.0
+    override fun giveRest(player: Player) {
+        KitUtils.fillEmptySlotsWithItemStack(player, ItemStack(Material.MUSHROOM_STEW))
     }
 
-    fun enable() {
-        kits += INSTANCE
+    override fun setAttributes(player: Player) {
+        player.addPotionEffect(PotionEffect(PotionEffectType.SPEED, Int.MAX_VALUE, 1))
     }
 }

@@ -2,17 +2,13 @@ package de.hglabor.plugins.duels.arenas
 
 import de.hglabor.plugins.duels.guis.ArenaTagsGUI
 import de.hglabor.plugins.duels.guis.CreateArenaGUI
-import de.hglabor.plugins.duels.localization.Localization
-import de.hglabor.plugins.duels.localization.sendMsg
-import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
-import net.axay.kspigot.extensions.broadcast
 import net.axay.kspigot.gui.openGUI
 import org.bukkit.Material
 
 enum class ArenaTags(val material: Material) {
     NONE(Material.BARRIER),
     SUMO(Material.LEAD),
-    GLADIATOR(Material.IRON_BARS),
+    HG(Material.MUSHROOM_STEW),
     UNDERWATER(Material.WATER_BUCKET),
     ICEFISHING(Material.ICE),
     NETHER(Material.NETHERRACK),
@@ -30,8 +26,8 @@ enum class ArenaTags(val material: Material) {
                         tag.toString().toLowerCase().capitalize(),
                         onClick = {
                             it.player.closeInventory()
-                            val arena = arenaFromPlayer[it.player]
-                            arena!!.tag = tag
+                            val arena = arenaFromPlayer[it.player] ?: return@TagsGUICompoundElement
+                            arena.tag = tag
                             //it.player.sendMsg("arena.creation.choseTag", mutableMapOf("tag" to tag.toString()))
                             it.player.openGUI(CreateArenaGUI.guiBuilder(it.player))
                         }

@@ -2,7 +2,6 @@ package de.hglabor.plugins.duels.functionality
 
 import de.hglabor.plugins.duels.Manager
 import de.hglabor.plugins.duels.localization.Localization
-import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import net.axay.kspigot.extensions.bukkit.appear
 import net.axay.kspigot.extensions.bukkit.heal
 import net.axay.kspigot.items.flag
@@ -32,18 +31,16 @@ object MainInventory {
         p.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)!!.baseValue = 0.0
 
         p.inventory.setItem(5, itemStack(Material.POPPY) {
-            amount = 1
             meta {
-                name = Localization.INSTANCE.getMessage("mainInventory.partyItem.name", p)
+                name = Localization.getMessage("mainInventory.partyItem.name", p)
             }
             mark("createparty")
         })
 
         p.inventory.setItem(3, itemStack(Material.NETHERITE_SWORD) {
-            amount = 1
             addEnchantment(Enchantment.DURABILITY, 1)
             meta {
-                name = Localization.INSTANCE.getMessage("mainInventory.duelItem.name", p)
+                name = Localization.getMessage("mainInventory.duelItem.name", p)
                 isUnbreakable = true
                 flag(ItemFlag.HIDE_UNBREAKABLE)
                 flag(ItemFlag.HIDE_ENCHANTS)
@@ -52,30 +49,24 @@ object MainInventory {
         })
 
         p.inventory.setItem(4, itemStack(Material.CLOCK) {
-            amount = 1
             meta {
-                name = Localization.INSTANCE.getMessage("mainInventory.queueItem.name", p)
+                name = Localization.getMessage("mainInventory.unrankedQueueItem.name", p)
             }
             mark("queue")
         })
 
         p.inventory.setItem(1, itemStack(Material.SUSPICIOUS_STEW) {
-            amount = 1
             meta {
-                name = Localization.INSTANCE.getMessage("mainInventory.soupsimulatorItem.name", p)
+                name = Localization.getMessage("mainInventory.soupsimulatorItem.name", p)
             }
             mark("soupsim")
         })
 
         p.inventory.setItem(7, itemStack(Material.REPEATER) {
-            amount = 1
             meta {
-                name = Localization.INSTANCE.getMessage("mainInventory.settingsItem.name", p)
+                name = Localization.getMessage("mainInventory.settingsItem.name", p)
             }
             mark("settings")
         })
-
-
     }
-
 }

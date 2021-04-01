@@ -2,10 +2,12 @@ package de.hglabor.plugins.duels.data
 
 import com.mongodb.client.model.Filters
 import de.hglabor.plugins.duels.database.MongoManager
+import de.hglabor.plugins.duels.guis.ChooseKnockbackGUI
+import net.axay.kspigot.gui.openGUI
+import net.axay.kspigot.runnables.task
 import org.bson.Document
 import org.bukkit.entity.Player
 import org.litote.kmongo.MongoOperator
-import java.util.*
 
 class PlayerSettings(val player: Player) {
 
@@ -21,13 +23,11 @@ class PlayerSettings(val player: Player) {
             return settings
         }
 
-        fun exist(uuid: UUID): Boolean {
-            val document = MongoManager.playerSettingsCollection.find(Filters.eq("uuid", uuid.toString())).first()
-            return document != null
+        enum class Knockback(val version: String) { OLD("1.8"), NEW("1.16") }
+        enum class AllowSpectators(val key: String) {
+            ALLOW("settingsgui.item.allowSpecs.lore.allow"),
+            DENY("settingsgui.item.allowSpecs.lore.deny")
         }
-
-        enum class Knockback(val version: String) { OLD("1.8"), NEW("1.16"), ANCHOR("Anchor") }
-        enum class AllowSpectators(val key: String) { ALLOW("settingsgui.item.allowSpecs.lore.allow"), DENY("settingsgui.item.allowSpecs.lore.deny") }
     }
 
     private var values = mutableMapOf<String, Any>()
@@ -38,13 +38,14 @@ class PlayerSettings(val player: Player) {
 
         if (document == null) {
             values["knockback"] = Knockback.NEW.toString()
-            values["allowSpectators"] = true
+            values["allowSpectators"] = AllowSpectators.ALLOW.toString()
 
             MongoManager.playerSettingsCollection.insertOne(toDocument())
-
+            task(true, 10) {
+                player.openGUI(ChooseKnockbackGUI.guiBuilder(player))
+            }
             return
         }
-
         values.putAll(document)
     }
 
@@ -53,7 +54,7 @@ class PlayerSettings(val player: Player) {
         values["knockback"] = knockback.toString()
     }
 
-    fun allowSpectators() = AllowSpectators.valueOf(values["allowSpectators"] as String)
+    fun allowSpectators() = AllowSpectators.valueOf(values["allowSpectators"].toString())
     fun ifAllowSpectators() = values["allowSpectators"] == "ALLOW"
     fun setAllowSpectators(allowSpectators: AllowSpectators) {
         values["allowSpectators"] = allowSpectators.toString()

@@ -1,10 +1,14 @@
 package de.hglabor.plugins.duels.duel
 
+import com.boydti.fawe.FaweAPI
+import com.boydti.fawe.`object`.RelightMode
+import com.sk89q.worldedit.bukkit.BukkitWorld
+import com.sk89q.worldedit.math.Vector3
+import com.sk89q.worldedit.regions.CuboidRegion
 import de.hglabor.plugins.duels.Manager
 import de.hglabor.plugins.duels.arenas.Arena
 import de.hglabor.plugins.duels.arenas.Arenas
 import de.hglabor.plugins.duels.data.PlayerSettings
-import de.hglabor.plugins.duels.data.PlayerStats
 import de.hglabor.plugins.duels.events.events.duel.DuelStartEvent
 import de.hglabor.plugins.duels.kits.AbstractKit
 import de.hglabor.plugins.duels.kits.KitType
@@ -16,12 +20,11 @@ import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.localization.sendMsg
 import de.hglabor.plugins.duels.party.Party
 import de.hglabor.plugins.duels.party.Partys.isInParty
-import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
+import de.hglabor.plugins.duels.player.DuelsPlayer
 import de.hglabor.plugins.duels.soupsimulator.Soupsimulator
 import de.hglabor.plugins.duels.spawn.SpawnUtils
 import de.hglabor.plugins.duels.tournament.Tournament
 import de.hglabor.plugins.duels.utils.Data
-import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
 import de.hglabor.plugins.staff.utils.StaffData
 import net.axay.kspigot.chat.KColors
@@ -34,7 +37,6 @@ import net.axay.kspigot.utils.mark
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.TextComponent
-import org.apache.commons.lang.mutable.Mutable
 import org.bukkit.*
 import org.bukkit.block.Block
 import org.bukkit.configuration.file.YamlConfiguration
@@ -44,12 +46,12 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import java.io.File
 import java.io.IOException
-import java.util.*
-import kotlin.collections.ArrayList
 
 
 class Duel {
     companion object {
+        enum class Knockback(val version: String) { OLD("1.8"), NEW("1.16"), ANCHOR("Anchor") }
+
         fun get(duelID: String): Duel? {
             return Data.duelFromID[duelID]
         }
@@ -106,7 +108,7 @@ class Duel {
     val ID = Data.getFreeGameID()
     var state = GameState.STARTING
     var countdownTask: KSpigotRunnable? = null
-    var knockbackType: PlayerSettings.Companion.Knockback? = null
+    var knockbackType: Knockback? = null
 
     var ifTournament = false
     var tournament: Tournament? = null
@@ -126,6 +128,7 @@ class Duel {
     val blocksPlacedDuringGame = arrayListOf<Block>()
 
     val path = File("plugins//HGLaborDuels//temp//duels//$ID//")
+
     val hits = hashMapOf<Player, Int>()
     val currentCombo = hashMapOf<Player, Int>()
     val longestCombo = hashMapOf<Player, Int>()
@@ -144,43 +147,40 @@ class Duel {
         knockbackType = getKnockbackForDuel()
         alivePlayers.forEach {
             it.closeInventory()
-            hits[it] = 0; currentCombo[it] = 0; longestCombo[it] = 0
-            presoups[it] = 0; missedPots[it] = 0; wastedHealth[it] = 0
             playersAndSpecs.add(it)
             totalPlayers.add(it)
             Soupsimulator.get(it)?.stop()
             it.isGlowing = false
             it.inventory.clear()
-            //TODO PlayerStats.get(it).addTotalGame()
 
-            if (knockbackType == PlayerSettings.Companion.Knockback.OLD)
+            if (knockbackType == Knockback.OLD)
                 it.setMetadata("oldKnockback", FixedMetadataValue(Manager.INSTANCE, ""))
             else
                 it.removeMetadata("oldKnockback", Manager.INSTANCE)
         }
-        alivePlayers.filter { it.isInSoupsimulator() }.forEach { Soupsimulator.forceStop(it) }
+        alivePlayers.filter { DuelsPlayer.get(it).isInSoupsimulator() }.forEach { Soupsimulator.forceStop(it) }
         Data.duelFromID[ID] = this
     }
 
-    private fun getKnockbackForDuel(): PlayerSettings.Companion.Knockback {
-        // TODO
-        if (kit == Anchor.INSTANCE) {
-            return PlayerSettings.Companion.Knockback.ANCHOR
+    private fun getKnockbackForDuel(): Knockback {
+        if (kit == Anchor) {
+            return Knockback.ANCHOR
         }
-        return PlayerSettings.Companion.Knockback.OLD
         var oldKB = 0
         var newKB = 0
+
         alivePlayers.forEach {
-            if (PlayerSettings.get(it).knockback() == PlayerSettings.Companion.Knockback.OLD) oldKB++
+            val duelsPlayer = DuelsPlayer.get(it)
+            if (duelsPlayer.settings.knockback() == PlayerSettings.Companion.Knockback.OLD) oldKB++
             else newKB++
         }
 
         val oldPercentage = 100.0 / alivePlayers.size * oldKB
 
         return if (oldPercentage > 66)
-            PlayerSettings.Companion.Knockback.OLD
+            Knockback.OLD
         else
-            PlayerSettings.Companion.Knockback.NEW
+            Knockback.NEW
     }
 
     fun start() {
@@ -188,10 +188,8 @@ class Duel {
         Data.gameIDs.add(ID)
         alivePlayers.forEach { player ->
             player.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 40, 200))
-            async {
-                StaffData.followingStaffFromPlayer[player]?.forEach {
-                    this.addSpectator(it, false)
-                }
+            StaffData.followingStaffFromPlayer[player]?.forEach {
+                this.addSpectator(it, false)
             }
         }
 
@@ -223,34 +221,42 @@ class Duel {
                 }
             } else {
                 playersAndSpecs.forEach { player ->
-                    player.sendTitle(Localization.INSTANCE.getMessage("duel.starting.title", player), "§b", 3, 13, 3)
+                    player.sendTitle(Localization.getMessage("duel.starting.title", player), "§b", 3, 13, 3)
                     player.playSound(player.location, Sound.EVENT_RAID_HORN, 10f, 1f)
                     player.closeInventory()
                     player.removePotionEffect(PotionEffectType.SLOW)
                     player.removePotionEffect(PotionEffectType.JUMP)
                 }
-                state = GameState.RUNNING
+                state = GameState.INGAME
             }
             count--
         }!!
     }
 
     private fun teleportPlayersToSpawns() {
-        sync {
-            alivePlayers.forEach { player ->
-                if (teamOne.contains(player)) {
-                    player.teleport(arena.spawn1Loc)
-                    direction(player, arena.spawn2Loc)
-                } else {
-                    player.teleport(arena.spawn2Loc)
-                    direction(player, arena.spawn1Loc)
-                }
-
-                player.addPotionEffect(PotionEffect(PotionEffectType.SLOW, Int.MAX_VALUE, 200, false, false))
-                player.addPotionEffect(PotionEffect(PotionEffectType.JUMP, Int.MAX_VALUE, 200, false, false))
-                //player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 200, false, false))
+        alivePlayers.forEach { player ->
+            if (teamOne.contains(player)) {
+                player.teleport(arena.spawn1Loc)
+                direction(player, arena.spawn2Loc)
+            } else {
+                player.teleport(arena.spawn2Loc)
+                direction(player, arena.spawn1Loc)
             }
+
+            player.addPotionEffect(PotionEffect(PotionEffectType.SLOW, Int.MAX_VALUE, 200, false, false))
+            player.addPotionEffect(PotionEffect(PotionEffectType.JUMP, Int.MAX_VALUE, 200, false, false))
+            //player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 200, false, false))
         }
+        val v1 =
+            Vector3.at(loc.first * Data.locationMultiplier, 100.0, loc.second * Data.locationMultiplier).toBlockPoint()
+        val v2 = Vector3.at(
+            loc.first * Data.locationMultiplier + arena.clipboard.dimensions.x,
+            100.0 + arena.clipboard.dimensions.y,
+            loc.second * Data.locationMultiplier + arena.clipboard.dimensions.z
+        ).toBlockPoint()
+        val region = CuboidRegion(v1, v2)
+        val bukkitWorld = BukkitWorld(Bukkit.getWorld("FightWorld")!!)
+        FaweAPI.fixLighting(bukkitWorld, region, null, RelightMode.OPTIMAL)
     }
 
 
@@ -284,8 +290,8 @@ class Duel {
             yamlConfiguration["data.health"] = player.health.toInt()
         else
             yamlConfiguration["data.health"] = 0
-        yamlConfiguration["data.hits"] = hits[player]
-        yamlConfiguration["data.longestCombo"] = longestCombo[player]
+        yamlConfiguration["data.hits"] = hits[player] ?: 0
+        yamlConfiguration["data.longestCombo"] = longestCombo[player] ?: 0
 
         if (kit.type == KitType.SOUP) {
             var soupsLeft = 0
@@ -295,8 +301,8 @@ class Duel {
                         soupsLeft++
                 }
             }
-            yamlConfiguration["data.presoups"] = presoups[player]
-            yamlConfiguration["data.wastedHealth"] = wastedHealth[player]
+            yamlConfiguration["data.presoups"] = presoups[player] ?: 0
+            yamlConfiguration["data.wastedHealth"] = wastedHealth[player] ?: 0
             yamlConfiguration["data.soupsLeft"] = soupsLeft
         }
 
@@ -308,8 +314,8 @@ class Duel {
                         potsLeft++
                 }
             }
-            yamlConfiguration["data.missedPots"] = missedPots[player]
-            yamlConfiguration["data.wastedHealth"] = wastedHealth[player]
+            yamlConfiguration["data.missedPots"] = missedPots[player] ?: 0
+            yamlConfiguration["data.wastedHealth"] = wastedHealth[player] ?: 0
             yamlConfiguration["data.potsLeft"] = potsLeft
         }
 
@@ -338,7 +344,7 @@ class Duel {
     }
 
     fun addSpectator(player: Player, notifyPlayers: Boolean) {
-        Data.duelFromSpec[player] = this
+        Data.duelOfSpec[player] = this
         val newPlayersAndSpecs = playersAndSpecs
         newPlayersAndSpecs.remove(player)
         newPlayersAndSpecs.add(player)
@@ -348,16 +354,14 @@ class Duel {
         newSpecList.add(player)
         specs = newSpecList
 
-        if (notifyPlayers)
+        if (notifyPlayers) {
             sendMsg("duel.playerSpectating", mutableMapOf("playerName" to player.name))
-        spectate(player)
-    }
+        }
 
-    fun spectate(player: Player) {
         val spawnOne = arena.spawn1Loc
         val spawnTwo = arena.spawn2Loc
         val x = (spawnOne.x + spawnTwo.x) / 2
-        val y = spawnOne.y + 3
+        val y = spawnOne.y + 2
         val z = (spawnOne.z + spawnTwo.z) / 2
         val centerLoc = Location(Bukkit.getWorld("FightWorld"), x, y, z)
 
@@ -372,10 +376,9 @@ class Duel {
         player.isFlying = true
         player.inventory.setItem(8, itemStack(Material.MAGENTA_GLAZED_TERRACOTTA) {
             meta {
-                name = Localization.INSTANCE.getMessage("duel.item.stopSpectating", player)
+                name = Localization.getMessage("duel.item.stopSpectating", player)
             }; mark("stopspec")
         })
-        Data.duelFromSpec[player] = this
     }
 
     fun removeSpectator(player: Player, notifyPlayers: Boolean) {
@@ -389,9 +392,8 @@ class Duel {
     fun stop() {
         state = GameState.ENDED
         countdownTask?.cancel()
-        alivePlayers.forEach { savePlayerdata(it); Kits.inGame[kit]?.remove(it); Kits.removeCooldown(it) }
+        alivePlayers.forEach { savePlayerdata(it); Kits.removeCooldown(it) }
         sendResults()
-        //QueueGUI.updateContents()
 
         taskRunLater(45, true) {
             resetAll()
@@ -421,11 +423,23 @@ class Duel {
 
         sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                        ")
         if (winner == teamOne) {
-            sendMsg("duel.result.winner.teamOne", mutableMapOf("teamColor" to teamColor(teamOne.first()).toString(), "teamPlayers" to teamOnePlayers))
-            sendMsg("duel.result.loser.teamTwo", mutableMapOf("teamColor" to teamColor(teamTwo.first()).toString(), "teamPlayers" to teamTwoPlayers))
+            sendMsg(
+                "duel.result.winner.teamOne",
+                mutableMapOf("teamColor" to teamColor(teamOne.first()).toString(), "teamPlayers" to teamOnePlayers)
+            )
+            sendMsg(
+                "duel.result.loser.teamTwo",
+                mutableMapOf("teamColor" to teamColor(teamTwo.first()).toString(), "teamPlayers" to teamTwoPlayers)
+            )
         } else {
-            sendMsg("duel.result.winner.teamTwo", mutableMapOf("teamColor" to teamColor(teamTwo.first()).toString(), "teamPlayers" to teamTwoPlayers))
-            sendMsg("duel.result.loser.teamOne", mutableMapOf("teamColor" to teamColor(teamOne.first()).toString(), "teamPlayers" to teamOnePlayers))
+            sendMsg(
+                "duel.result.winner.teamTwo",
+                mutableMapOf("teamColor" to teamColor(teamTwo.first()).toString(), "teamPlayers" to teamTwoPlayers)
+            )
+            sendMsg(
+                "duel.result.loser.teamOne",
+                mutableMapOf("teamColor" to teamColor(teamOne.first()).toString(), "teamPlayers" to teamOnePlayers)
+            )
         }
 
         val message = TextComponent("Click to open the duel overview")
@@ -450,7 +464,7 @@ class Duel {
             }
             it.reset()
             Data.inFight.remove(it)
-            Data.duelFromSpec.remove(it)
+            Data.duelOfSpec.remove(it)
         }
         arena.removeSchematic()
     }

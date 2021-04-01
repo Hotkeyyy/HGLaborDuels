@@ -1,10 +1,8 @@
 package de.hglabor.plugins.duels.kits.kit.pot
 
-import de.hglabor.plugins.duels.arenas.ArenaTags
-import de.hglabor.plugins.duels.guis.KitsGUI
-import de.hglabor.plugins.duels.kits.*
-import de.hglabor.plugins.duels.kits.kit.`fun`.HardJumpAndRun
-import de.hglabor.plugins.duels.kits.kit.cooldown.Classic
+import de.hglabor.plugins.duels.kits.AbstractKit
+import de.hglabor.plugins.duels.kits.KitCategory
+import de.hglabor.plugins.duels.utils.KitUtils
 import de.hglabor.plugins.duels.kits.specials.Specials
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.items.flag
@@ -12,27 +10,15 @@ import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
 import net.axay.kspigot.items.name
 import org.bukkit.Material
-import org.bukkit.attribute.Attribute
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.PotionMeta
-import org.bukkit.potion.*
+import org.bukkit.potion.PotionData
+import org.bukkit.potion.PotionType
 
-class Debuff : AbstractKit() {
-    companion object {
-        val INSTANCE = Debuff()
-
-        fun enchantArmor(material: Material): ItemStack {
-            return itemStack(material) {
-                addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1)
-                addEnchantment(Enchantment.DURABILITY, 3)
-                if (material.toString().toLowerCase().contains("boots"))
-                    addEnchantment(Enchantment.PROTECTION_FALL, 4)
-            }
-        }
-    }
+object Debuff : AbstractKit() {
 
     override val name = "Debuff"
     override val itemInGUI = itemStack(Material.SPLASH_POTION) {
@@ -45,48 +31,35 @@ class Debuff : AbstractKit() {
     override val category = KitCategory.POT
     override val specials = setOf(Specials.PEARLCOOLDOWN, Specials.HUNGER)
 
-    override fun giveKit(player: Player) {
-        player.inventory.clear()
-        player.inventory.helmet = enchantArmor(Material.DIAMOND_HELMET)
-        player.inventory.chestplate = enchantArmor(Material.DIAMOND_CHESTPLATE)
-        player.inventory.leggings = enchantArmor(Material.DIAMOND_LEGGINGS)
-        player.inventory.boots = enchantArmor(Material.DIAMOND_BOOTS)
+    override val armor = KitUtils.armor(
+        enchantArmor(Material.DIAMOND_HELMET),
+        enchantArmor(Material.DIAMOND_CHESTPLATE),
+        enchantArmor(Material.DIAMOND_LEGGINGS),
+        enchantArmor(Material.DIAMOND_BOOTS)
+    )
 
-        player.inventory.setItem(0, KitUtils.sword(Material.DIAMOND_SWORD, true))
-        player.inventory.setItem(1, ItemStack(Material.ENDER_PEARL, 16))
+    override val defaultInventory = mutableMapOf(
+        0 to KitUtils.sword(Material.DIAMOND_SWORD, true),
+        1 to ItemStack(Material.ENDER_PEARL, 16),
+        7 to KitUtils.potion(false, PotionType.SPEED, upgraded = true),
+        17 to KitUtils.potion(false, PotionType.SPEED, upgraded = true),
+        26 to KitUtils.potion(false, PotionType.SPEED, upgraded = true),
+        35 to KitUtils.potion(false, PotionType.SPEED, upgraded = true),
+        1 to KitUtils.potion(true, PotionType.POISON),
+        27 to KitUtils.potion(true, PotionType.POISON),
+        2 to KitUtils.potion(true, PotionType.SLOWNESS),
+        28 to KitUtils.potion(true, PotionType.SLOWNESS),
+        8 to ItemStack(Material.BAKED_POTATO, 64)
+    )
 
-        for (i in setOf(8, 17, 26, 35)) {
-            player.inventory.setItem(i, itemStack(Material.POTION) {
-                meta<PotionMeta> { basePotionData = PotionData(PotionType.SPEED, false, true) }
-            })
-        }
-
-        for (i in setOf(1, 27)) {
-            player.inventory.setItem(i, itemStack(Material.SPLASH_POTION) {
-                meta<PotionMeta> { basePotionData = PotionData(PotionType.POISON, false, false) }
-            })
-        }
-        for (i in setOf(2, 28)) {
-            player.inventory.setItem(i, itemStack(Material.SPLASH_POTION) {
-                meta<PotionMeta> { basePotionData = PotionData(PotionType.SLOWNESS, false, false) }
-            })
-        }
-
-        for (i in 0..35) {
-            if (player.inventory.getItem(i) == null) {
-                player.inventory.setItem(i, itemStack(Material.SPLASH_POTION) {
-                    meta<PotionMeta> { basePotionData = PotionData(PotionType.INSTANT_HEAL, false, true) }
-                })
-            }
-        }
-
-        player.inventory.setItem(8, ItemStack(Material.GOLDEN_CARROT, 64))
-
-        player.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)?.baseValue = 0.0
-        player.getAttribute(Attribute.GENERIC_ATTACK_SPEED)?.baseValue = 100.0
+    override fun giveRest(player: Player) {
+        KitUtils.fillEmptySlotsWithItemStack(player, KitUtils.potion(true, PotionType.INSTANT_HEAL, upgraded = true))
     }
 
-    fun enable() {
-        kits += INSTANCE
+    private fun enchantArmor(material: Material) = itemStack(material) {
+        addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1)
+        addEnchantment(Enchantment.DURABILITY, 3)
+        if (material.toString().toLowerCase().contains("boots"))
+            addEnchantment(Enchantment.PROTECTION_FALL, 4)
     }
 }

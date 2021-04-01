@@ -1,52 +1,45 @@
 package de.hglabor.plugins.duels.kits.kit.uhc
 
-import de.hglabor.plugins.duels.kits.*
+import de.hglabor.plugins.duels.kits.AbstractKit
+import de.hglabor.plugins.duels.kits.KitCategory
+import de.hglabor.plugins.duels.utils.KitUtils
+import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.kits.specials.Specials
 import net.axay.kspigot.items.itemStack
 import org.bukkit.Material
-import org.bukkit.attribute.Attribute
 import org.bukkit.enchantments.Enchantment
-import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-class UHC : AbstractKit() {
-    companion object {
-        val INSTANCE = UHC()
-    }
+object UHC : AbstractKit() {
 
     override val name = "UHC"
     override val itemInGUI = Kits.guiItem(Material.GOLDEN_APPLE, name)
     override val category = KitCategory.UHC
     override val specials = setOf(Specials.ROD_KNOCKBACK)
+    override val allowsRanked = true
+    override val isMainKit = true
 
-    override fun giveKit(player: Player) {
-        player.inventory.clear()
-        player.inventory.helmet = itemStack(Material.DIAMOND_HELMET) { addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2)}
-        player.inventory.chestplate = itemStack(Material.DIAMOND_CHESTPLATE) { addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 3)}
-        player.inventory.leggings = itemStack(Material.IRON_LEGGINGS) { addEnchantment(Enchantment.PROTECTION_PROJECTILE, 1)}
-        player.inventory.boots = itemStack(Material.DIAMOND_BOOTS) { addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2)}
+    override val armor = KitUtils.armor(
+        itemStack(Material.DIAMOND_HELMET) { addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1)},
+        itemStack(Material.DIAMOND_CHESTPLATE) { addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 3)},
+        itemStack(Material.IRON_LEGGINGS) { addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2)},
+        itemStack(Material.DIAMOND_BOOTS) { addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2)}
+    )
 
-        player.inventory.setItem(0, itemStack(Material.DIAMOND_SWORD) { addEnchantment(Enchantment.DAMAGE_ALL, 3) })
-        player.inventory.setItem(1, ItemStack(Material.FISHING_ROD))
-        player.inventory.setItem(2, itemStack(Material.BOW) { addEnchantment(Enchantment.ARROW_DAMAGE, 2) })
-        player.inventory.setItem(3, ItemStack(Material.LAVA_BUCKET))
-        player.inventory.setItem(4, ItemStack(Material.GOLDEN_APPLE, 7))
-        player.inventory.setItem(5, KitUtils.goldenHead(4))
-        player.inventory.setItem(6, ItemStack(Material.COBBLESTONE, 64))
-        player.inventory.setItem(7, ItemStack(Material.WATER_BUCKET))
-        player.inventory.setItem(8, ItemStack(Material.WATER_BUCKET))
-        player.inventory.addItem(ItemStack(Material.ARROW, 24))
-        player.inventory.addItem(ItemStack(Material.DIAMOND_AXE))
-        player.inventory.addItem(ItemStack(Material.DIAMOND_PICKAXE))
-        player.inventory.addItem(ItemStack(Material.OAK_PLANKS, 64))
-
-        player.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)?.baseValue = 0.0
-        player.getAttribute(Attribute.GENERIC_ATTACK_SPEED)?.baseValue = 100.0
-    }
-
-    fun enable() {
-        kits += INSTANCE
-        Kits.mainKits += INSTANCE
-    }
+    override val defaultInventory = mutableMapOf(
+        0 to itemStack(Material.DIAMOND_SWORD) { addEnchantment(Enchantment.DAMAGE_ALL, 3) },
+        1 to ItemStack(Material.FISHING_ROD),
+        2 to itemStack(Material.BOW) { addEnchantment(Enchantment.ARROW_DAMAGE, 2) },
+        3 to ItemStack(Material.LAVA_BUCKET),
+        4 to ItemStack(Material.GOLDEN_APPLE, 7),
+        5 to ItemStack(KitUtils.goldenHead(4)),
+        6 to ItemStack(Material.COBBLESTONE, 64),
+        7 to ItemStack(Material.WATER_BUCKET),
+        8 to ItemStack(Material.WATER_BUCKET),
+        9 to ItemStack(Material.ARROW, 24),
+        10 to ItemStack(Material.DIAMOND_AXE),
+        11 to ItemStack(Material.DIAMOND_PICKAXE),
+        12 to ItemStack(Material.OAK_PLANKS, 64)
+    )
 }
 

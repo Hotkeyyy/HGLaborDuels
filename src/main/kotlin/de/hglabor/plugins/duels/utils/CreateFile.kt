@@ -28,7 +28,7 @@ object CreateFiles {
         }
     }
 
-    private fun mongoDBFile() {
+    private fun mongoDBFile(): File {
         val file = File("plugins//HGLaborDuels//MongoDB.yml")
         val yamlConfiguration = YamlConfiguration.loadConfiguration(file)
         if (!file.exists()) {
@@ -49,5 +49,6 @@ object CreateFiles {
         } catch (e: IOException) {
             e.printStackTrace()
         }
+        return file
     }
 }

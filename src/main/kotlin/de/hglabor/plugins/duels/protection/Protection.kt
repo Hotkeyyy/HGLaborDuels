@@ -1,15 +1,14 @@
 package de.hglabor.plugins.duels.protection
 
+import de.hglabor.plugins.duels.guis.KitsGUI
 import de.hglabor.plugins.duels.kits.KitType
 import de.hglabor.plugins.duels.kits.specials.Specials
-import de.hglabor.plugins.duels.localization.Localization
-import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
+import de.hglabor.plugins.duels.localization.sendMsg
+import de.hglabor.plugins.duels.player.DuelsPlayer
 import de.hglabor.plugins.duels.utils.Data
-import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
-import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
 import de.hglabor.plugins.staff.utils.StaffData.isInStaffMode
-import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
+import net.axay.kspigot.extensions.broadcast
 import net.axay.kspigot.extensions.bukkit.getHandItem
 import net.axay.kspigot.utils.hasMark
 import org.bukkit.Bukkit
@@ -39,18 +38,24 @@ object Protection {
 
     init {
         listen<BlockBreakEvent> {
-            if (it.player.isInStaffMode)
+            val player = it.player
+            val duelsPlayer = DuelsPlayer.get(player)
+
+            if (player.isInStaffMode)
                 it.isCancelled = true
 
-            if (!it.player.isInFight())
+            if (!duelsPlayer.isInFight())
                 it.isCancelled = it.player.gameMode.isRestricted
         }
 
         listen<BlockPlaceEvent> {
-            if (it.player.isInStaffMode)
+            val player = it.player
+            val duelsPlayer = DuelsPlayer.get(player)
+
+            if (player.isInStaffMode)
                 it.isCancelled = true
 
-            if (!it.player.isInFight())
+            if (!duelsPlayer.isInFight())
                 it.isCancelled = it.player.gameMode.isRestricted
         }
 
@@ -60,11 +65,14 @@ object Protection {
 
         listen<EntityDamageEvent> {
             if (it.entity is Player) {
-                if ((it.entity as Player).isInStaffMode)
+                val player = it.entity as Player
+                val duelsPlayer = DuelsPlayer.get(player)
+
+                if (player.isInStaffMode)
                     it.isCancelled = true
 
-                if ((it.entity as Player).isInFight()) return@listen
-                if ((it.entity as Player).isInSoupsimulator()) {
+                if (duelsPlayer.isInFight()) return@listen
+                if (duelsPlayer.isInSoupsimulator()) {
                     if (it.cause != DamageCause.CUSTOM) {
                         it.isCancelled = true
                     }
@@ -77,13 +85,18 @@ object Protection {
 
         listen<EntityDamageByEntityEvent> {
             if (it.entity is Player && it.damager is Player) {
-                if ((it.damager as Player).getHandItem(EquipmentSlot.HAND)!!.hasMark("duelitem"))
+                val damager = it.damager as Player
+                val entity = it.entity as Player
+                val duelsDamager = DuelsPlayer.get(damager)
+                val duelsEntity = DuelsPlayer.get(entity)
+
+                if (damager.getHandItem(EquipmentSlot.HAND)!!.hasMark("duelitem"))
                     it.isCancelled = true
-                if ((it.damager as Player).isInStaffMode)
+                if (damager.isInStaffMode)
                     it.isCancelled = true
-                if ((it.entity as Player).isInStaffMode)
+                if (entity.isInStaffMode)
                     it.isCancelled = true
-                if ((it.damager as Player).isInFight() && (it.entity as Player).isInFight()) {
+                if (duelsDamager.isInFight() && duelsEntity.isInFight()) {
                     it.isCancelled = false
                 }
             } else {
@@ -94,19 +107,28 @@ object Protection {
         }
 
         listen<PlayerDropItemEvent> {
-            val p = it.player
-            if (p.isInStaffMode)
+            val player = it.player
+            val duelsPlayer = DuelsPlayer.get(player)
+
+            if (player.isInStaffMode)
                 it.isCancelled = true
 
-            if (!p.isInFight() && p.gameMode.isRestricted) {
+            if (!duelsPlayer.isInFight() && player.gameMode.isRestricted) {
                 it.isCancelled = true
             }
         }
 
         listen<InventoryClickEvent> {
             if (it.whoClicked is Player) {
-                val p = it.whoClicked as Player
-                if (!p.isInFight() && p.gameMode.isRestricted && !p.isInSoupsimulator()) {
+                val player = it.whoClicked as Player
+                val duelsPlayer = DuelsPlayer.get(player)
+
+                if (Data.openedKitInventory[player] == KitsGUI.KitInventories.INVENTORYSORTING) {
+                    it.isCancelled = false
+                    return@listen
+                }
+
+                if (!duelsPlayer.isInFight() && player.gameMode.isRestricted && !duelsPlayer.isInSoupsimulator()) {
                     it.isCancelled = true
                 }
             }
@@ -114,19 +136,22 @@ object Protection {
 
         listen<EntityRegainHealthEvent> {
             if (it.entity is Player) {
-                if (it.isFastRegen)
-                    it.isCancelled = true
                 val player = it.entity as Player
-                if (player.isInFight()) {
-                    val duel = Data.duelFromPlayer(player)
+                val duelsPlayer = DuelsPlayer.get(player)
+
+                if (duelsPlayer.isInFight()) {
+                    val duel = duelsPlayer.currentDuel() ?: return@listen
                     if (duel.kit.specials.contains(Specials.UHC)) {
-                        if (it.regainReason == EntityRegainHealthEvent.RegainReason.EATING ||
-                            it.regainReason == EntityRegainHealthEvent.RegainReason.REGEN ||
-                            it.regainReason == EntityRegainHealthEvent.RegainReason.SATIATED)
-                                it.isCancelled = true
+                        if (!(it.regainReason == EntityRegainHealthEvent.RegainReason.MAGIC ||
+                                    it.regainReason == EntityRegainHealthEvent.RegainReason.MAGIC_REGEN ||
+                                    it.regainReason == EntityRegainHealthEvent.RegainReason.CUSTOM)
+                        ) {
+                            it.isCancelled = true
+                        }
                     }
                 }
-                if (player.isInSoupsimulator()) {
+
+                if (duelsPlayer.isInSoupsimulator()) {
                     it.isCancelled = true
                 }
             }
@@ -134,7 +159,8 @@ object Protection {
 
         listen<CreatureSpawnEvent> {
             if (it.spawnReason == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG ||
-                it.spawnReason == CreatureSpawnEvent.SpawnReason.DEFAULT) {
+                it.spawnReason == CreatureSpawnEvent.SpawnReason.DEFAULT
+            ) {
                 it.isCancelled = false
             } else {
                 if (it.entity.location.world != Bukkit.getWorld("FightWorld")) {
@@ -161,24 +187,19 @@ object Protection {
         listen<CraftItemEvent> {
             if (it.whoClicked is Player) {
                 val player = it.whoClicked as Player
+                val duelsPlayer = DuelsPlayer.get(player)
 
                 if (it.currentItem?.type!!.name.contains("BOAT")) {
                     it.isCancelled = true
-                    player.sendLocalizedMessage(
-                        "${Localization.PREFIX}${KColors.TOMATO}Du kannst dieses Item nicht craften.",
-                        "${Localization.PREFIX}${KColors.TOMATO}You cant craft this item."
-                    )
+                    player.sendMsg("itemCantBeCrafted")
                 }
 
-                if (player.isInFight()) {
-                    val duel = Data.duelFromPlayer(player)
+                if (duelsPlayer.isInFight()) {
+                    val duel = duelsPlayer.currentDuel() ?: return@listen
                     if (duel.kit.type != KitType.SOUP) {
                         if (it.currentItem?.type!! == Material.MUSHROOM_STEW) {
                             it.isCancelled = true
-                            player.sendLocalizedMessage(
-                                "${Localization.PREFIX}${KColors.TOMATO}Du kannst dieses Item nicht craften.",
-                                "${Localization.PREFIX}${KColors.TOMATO}You cant craft this item."
-                            )
+                            player.sendMsg("itemCantBeCrafted")
                         }
                     }
                 }

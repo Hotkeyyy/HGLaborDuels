@@ -3,12 +3,10 @@ package de.hglabor.plugins.duels.guis
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.soupsimulator.Soupsimulator
 import de.hglabor.plugins.duels.soupsimulator.SoupsimulatorLevel
-import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.gui.GUIType
 import net.axay.kspigot.gui.Slots
 import net.axay.kspigot.gui.kSpigotGUI
-import net.axay.kspigot.gui.openGUI
 import net.axay.kspigot.items.addLore
 import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
@@ -27,9 +25,9 @@ object SoupsimulatorGUI {
 
             button(Slots.RowOneSlotTwo, itemStack(Material.LIME_CONCRETE) {
                 meta {
-                    name = Localization.INSTANCE.getMessage("soupsimulator.easy.name", player)
+                    name = Localization.getMessage("soupsimulator.easy.name", player)
                     addLore {
-                        +Localization.INSTANCE.getMessage("soupsimulator.easy.lore", player)
+                        +Localization.getMessage("soupsimulator.easy.lore", player)
                     }
                 }
             }) {
@@ -39,9 +37,9 @@ object SoupsimulatorGUI {
 
             button(Slots.RowOneSlotFour, itemStack(Material.YELLOW_CONCRETE) {
                 meta {
-                    name = Localization.INSTANCE.getMessage("soupsimulator.medium.name", player)
+                    name = Localization.getMessage("soupsimulator.medium.name", player)
                     addLore {
-                        +Localization.INSTANCE.getMessage("soupsimulator.medium.lore", player)
+                        +Localization.getMessage("soupsimulator.medium.lore", player)
                     }
                 }
             }) {
@@ -51,9 +49,10 @@ object SoupsimulatorGUI {
 
             button(Slots.RowOneSlotSix, itemStack(Material.RED_CONCRETE) {
                 meta {
-                    name = Localization.INSTANCE.getMessage("soupsimulator.hard.name", player)
+                    name = Localization.getMessage("soupsimulator.hard.name", player)
                     addLore {
-                        +Localization.INSTANCE.getMessage("soupsimulator.hard.lore", player)
+                        +Localization.getMessage("soupsimulator.hard.lore.1", player)
+                        +Localization.getMessage("soupsimulator.hard.lore.2", player)
                     }
                 }
             }) {
@@ -63,9 +62,11 @@ object SoupsimulatorGUI {
 
             button(Slots.RowOneSlotEight, itemStack(Material.PURPLE_CONCRETE) {
                 meta {
-                    name = Localization.INSTANCE.getMessage("soupsimulator.bonus.name", player)
+                    name = Localization.getMessage("soupsimulator.bonus.name", player)
                     addLore {
-                        +Localization.INSTANCE.getMessage("soupsimulator.bonus.lore", player)
+                        +Localization.getMessage("soupsimulator.bonus.lore.1", player)
+                        +Localization.getMessage("soupsimulator.bonus.lore.2", player)
+                        +Localization.getMessage("soupsimulator.bonus.lore.3", player)
                     }
                 }
             }) {

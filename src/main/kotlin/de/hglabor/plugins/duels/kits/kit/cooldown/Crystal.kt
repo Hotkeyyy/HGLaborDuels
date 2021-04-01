@@ -3,8 +3,8 @@ package de.hglabor.plugins.duels.kits.kit.cooldown
 import de.hglabor.plugins.duels.arenas.ArenaTags
 import de.hglabor.plugins.duels.kits.AbstractKit
 import de.hglabor.plugins.duels.kits.KitCategory
+import de.hglabor.plugins.duels.utils.KitUtils
 import de.hglabor.plugins.duels.kits.Kits
-import de.hglabor.plugins.duels.kits.kits
 import de.hglabor.plugins.duels.kits.specials.Specials
 import net.axay.kspigot.items.flag
 import net.axay.kspigot.items.itemStack
@@ -19,42 +19,39 @@ import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.potion.PotionData
 import org.bukkit.potion.PotionType
 
-class Crystal : AbstractKit() {
-    companion object {
-        val INSTANCE = Crystal()
-    }
+object Crystal : AbstractKit() {
 
     override val name = "Crystal"
     override val itemInGUI = Kits.guiItem(Material.END_CRYSTAL, name)
     override val arenaTag = ArenaTags.DEFAULT
     override val category = KitCategory.COOLDOWN
     override val specials = setOf(Specials.HITCOOLDOWN)
+    override val isMainKit = true
+    override val allowsRanked = true
 
-    override fun giveKit(player: Player) {
-        player.inventory.clear()
-
-        player.inventory.helmet = itemStack(Material.NETHERITE_HELMET) {
+    override val armor = KitUtils.armor(
+        itemStack(Material.NETHERITE_HELMET) {
             meta {
                 addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 4, false)
                 addEnchant(Enchantment.DURABILITY, 3, false)
                 addEnchant(Enchantment.MENDING, 1, false)
             }
-        }
-        player.inventory.chestplate = itemStack(Material.NETHERITE_CHESTPLATE) {
+        },
+        itemStack(Material.NETHERITE_CHESTPLATE) {
             meta {
                 addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 4, false)
                 addEnchant(Enchantment.DURABILITY, 3, false)
                 addEnchant(Enchantment.MENDING, 1, false)
             }
-        }
-        player.inventory.leggings = itemStack(Material.NETHERITE_LEGGINGS) {
+        },
+        itemStack(Material.NETHERITE_LEGGINGS) {
             meta {
                 addEnchant(Enchantment.PROTECTION_EXPLOSIONS, 4, false)
                 addEnchant(Enchantment.DURABILITY, 3, false)
                 addEnchant(Enchantment.MENDING, 1, false)
             }
-        }
-        player.inventory.boots = itemStack(Material.NETHERITE_BOOTS) {
+        },
+        itemStack(Material.NETHERITE_BOOTS) {
             meta {
                 addEnchant(Enchantment.PROTECTION_EXPLOSIONS, 4, false)
                 addEnchant(Enchantment.DURABILITY, 3, false)
@@ -62,73 +59,69 @@ class Crystal : AbstractKit() {
                 addEnchant(Enchantment.PROTECTION_FALL, 4, false)
             }
         }
+    )
 
-        player.inventory.setItem(0, itemStack(Material.NETHERITE_SWORD) {
+    override val offHand = ItemStack(Material.TOTEM_OF_UNDYING)
+
+    override val defaultInventory = mutableMapOf(
+        0 to itemStack(Material.NETHERITE_SWORD) {
             meta {
                 addEnchant(Enchantment.DAMAGE_ALL, 5, false)
                 addEnchant(Enchantment.KNOCKBACK, 2, false)
                 isUnbreakable = true
                 flag(ItemFlag.HIDE_UNBREAKABLE)
             }
-        })
+        },
 
-        for (i in setOf(1, 9, 18, 27))
-            player.inventory.setItem(i, ItemStack(Material.ENDER_PEARL, 16))
-
-        player.inventory.setItem(2, ItemStack(Material.OBSIDIAN, 64))
-        player.inventory.setItem(3, ItemStack(Material.END_CRYSTAL, 64))
-        player.inventory.setItem(4, ItemStack(Material.GOLDEN_APPLE, 64))
-        player.inventory.setItem(8, itemStack(Material.CROSSBOW) {
+        1 to ItemStack(Material.ENDER_PEARL, 16),
+        9 to ItemStack(Material.ENDER_PEARL, 16),
+        18 to ItemStack(Material.ENDER_PEARL, 16),
+        27 to ItemStack(Material.ENDER_PEARL, 16),
+        2 to ItemStack(Material.OBSIDIAN, 64),
+        3 to ItemStack(Material.END_CRYSTAL, 64),
+        4 to ItemStack(Material.GOLDEN_APPLE, 64),
+        8 to itemStack(Material.CROSSBOW) {
             meta {
                 addEnchant(Enchantment.MULTISHOT, 1, false)
                 addEnchant(Enchantment.QUICK_CHARGE, 3, false)
                 isUnbreakable = true
                 flag(ItemFlag.HIDE_UNBREAKABLE)
             }
-        })
-        player.inventory.setItem(10, itemStack(Material.TIPPED_ARROW) {
+        },
+        10 to itemStack(Material.TIPPED_ARROW) {
             amount = 64
             meta<PotionMeta> { basePotionData = PotionData(PotionType.SLOW_FALLING, true, false) }
-        })
-        player.inventory.setItem(11, ItemStack(Material.EXPERIENCE_BOTTLE, 64))
-        player.inventory.setItem(16, itemStack(Material.TIPPED_ARROW) {
+        },
+        11 to ItemStack(Material.EXPERIENCE_BOTTLE, 64),
+        16 to itemStack(Material.TIPPED_ARROW) {
             amount = 64
             meta<PotionMeta> { basePotionData = PotionData(PotionType.SLOWNESS, false, true) }
-        })
+        },
+        5 to KitUtils.potion(true, PotionType.SPEED, upgraded = true),
+        19 to KitUtils.potion(true, PotionType.SPEED, upgraded = true),
+        20 to KitUtils.potion(true, PotionType.SPEED, upgraded = true),
+        21 to KitUtils.potion(true, PotionType.SPEED, upgraded = true),
+        22 to KitUtils.potion(true, PotionType.SPEED, upgraded = true),
+        23 to KitUtils.potion(true, PotionType.SPEED, upgraded = true),
+        24 to KitUtils.potion(true, PotionType.SPEED, upgraded = true),
+        25 to KitUtils.potion(true, PotionType.SPEED, upgraded = true),
+        19 to KitUtils.potion(true, PotionType.SPEED, upgraded = true),
+        6 to KitUtils.potion(true, PotionType.STRENGTH, upgraded = true),
+        28 to KitUtils.potion(true, PotionType.STRENGTH, upgraded = true),
+        29 to KitUtils.potion(true, PotionType.STRENGTH, upgraded = true),
+        30 to KitUtils.potion(true, PotionType.STRENGTH, upgraded = true),
+        31 to KitUtils.potion(true, PotionType.STRENGTH, upgraded = true),
+        32 to KitUtils.potion(true, PotionType.STRENGTH, upgraded = true),
+        33 to KitUtils.potion(true, PotionType.STRENGTH, upgraded = true),
+        34 to KitUtils.potion(true, PotionType.STRENGTH, upgraded = true),
+        7 to ItemStack(Material.TOTEM_OF_UNDYING),
+        12 to ItemStack(Material.TOTEM_OF_UNDYING),
+        13 to ItemStack(Material.TOTEM_OF_UNDYING),
+        14 to ItemStack(Material.TOTEM_OF_UNDYING)
+    )
 
-        val speedPot = itemStack(Material.SPLASH_POTION) {
-            meta<PotionMeta> { basePotionData = PotionData(PotionType.SPEED, false, true) }
-        }
-        for (i in 19..25) {
-            player.inventory.setItem(i, speedPot)
-        }
-        player.inventory.setItem(5, speedPot)
-
-        val strengthPot = itemStack(Material.SPLASH_POTION) {
-            meta<PotionMeta> { basePotionData = PotionData(PotionType.STRENGTH, false, true) }
-        }
-        for (i in 28..34) {
-            player.inventory.setItem(i, strengthPot)
-        }
-        player.inventory.setItem(6, strengthPot)
-
-        val fireresPot = itemStack(Material.SPLASH_POTION) {
-            meta<PotionMeta> { basePotionData = PotionData(PotionType.FIRE_RESISTANCE, true, false) }
-        }
-        for (i in setOf(17, 26)) {
-            player.inventory.setItem(i, fireresPot)
-        }
-
-        for (i in setOf(7, 12, 13, 14, 40)) {
-            player.inventory.setItem(i, ItemStack(Material.TOTEM_OF_UNDYING))
-        }
-
+    override fun setAttributes(player: Player) {
         player.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)?.baseValue = 0.0
         player.getAttribute(Attribute.GENERIC_ATTACK_SPEED)?.baseValue = 4.0
-    }
-
-    fun enable() {
-        kits += INSTANCE
-        Kits.mainKits += INSTANCE
     }
 }

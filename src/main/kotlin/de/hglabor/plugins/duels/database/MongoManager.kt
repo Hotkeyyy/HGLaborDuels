@@ -13,6 +13,7 @@ object MongoManager {
     private lateinit var database: MongoDatabase
     lateinit var playerStatsCollection: MongoCollection<Document>
     lateinit var playerSettingsCollection: MongoCollection<Document>
+    lateinit var inventorySorting: MongoCollection<Document>
 
     fun connect() {
 
@@ -24,6 +25,7 @@ object MongoManager {
 
             playerStatsCollection = getCollection("duels_playerStats")
             playerSettingsCollection = getCollection("duels_playerSettings")
+            inventorySorting = getCollection("duels_inventorySorting")
         } catch (e: MongoException) {
             e.printStackTrace()
         }

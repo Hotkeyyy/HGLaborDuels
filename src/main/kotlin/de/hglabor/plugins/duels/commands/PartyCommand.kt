@@ -1,14 +1,10 @@
 package de.hglabor.plugins.duels.commands
 
-import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.localization.sendMsg
 import de.hglabor.plugins.duels.party.Party
 import de.hglabor.plugins.duels.party.Partys.hasParty
 import de.hglabor.plugins.duels.party.Partys.isInParty
-import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
-import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
-import de.hglabor.plugins.duels.utils.PlayerFunctions.isSpectator
-import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
+import de.hglabor.plugins.duels.player.DuelsPlayer
 import net.axay.kspigot.extensions.onlinePlayers
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
@@ -16,38 +12,36 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
-import java.util.ArrayList
+import java.util.*
 
 object PartyCommand : CommandExecutor, TabCompleter {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender is Player) {
             val player = sender
+            val duelsPlayer = DuelsPlayer.get(player)
 
-            if (player.isInFight() || player.isSpectator() || player.isInSoupsimulator()) {
+            if (duelsPlayer.isBusy()) {
                 if (!args[0].equals("info", true))
                     player.sendMsg("command.cantExecuteNow")
             }
 
             if (args.size == 1) {
                 if (args[0].equals("create", true)) {
-                    if (!player.isInFight()) {
-                        if (!player.isInParty()) {
-                            Party(player).create(true)
-                        } else
-                            player.sendMsg("party.fail.alreadyInParty")
-                    } else
-                        player.sendMsg("command.cantExecuteNow")
+                    if (!player.isInParty()) {
+                        Party(player).create(true)
+                    } else {
+                        player.sendMsg("party.fail.alreadyInParty")
+                    }
 
                 } else if (args[0].equals("leave", true)) {
                     if (player.isInParty()) {
-                        if (!player.isInFight()) {
-                            if (player.hasParty())
-                                Party.get(player)?.delete()
-                            else
-                                Party.get(player)?.leave(player)
-                        }
-                    } else
+                        if (player.hasParty())
+                            Party.get(player)?.delete()
+                        else
+                            Party.get(player)?.leave(player)
+                    } else {
                         player.sendMsg("party.fail.notInParty")
+                    }
 
                 } else if (args[0].equals("info", true)) {
                     if (player.isInParty()) {
@@ -72,17 +66,17 @@ object PartyCommand : CommandExecutor, TabCompleter {
                                 if (!party.invitedPlayers.contains(target)) {
                                     party.invitePlayer(target)
                                 } else
-                                    player.sendMsg("party.fail.playerAlreadyInvited", mutableMapOf("playerName" to target.name))
+                                    player.sendMsg("party.fail.playerAlreadyInvited",
+                                        mutableMapOf("playerName" to target.name))
                             }
                         } else
                             player.sendMsg("party.fail.playerAlreadyInParty", mutableMapOf("playerName" to target.name))
-
                     else
                         player.sendMsg("playerNotOnline", mutableMapOf("playerName" to args[1]))
 
                 } else if (args[0].equals("join", true)) {
                     if (!player.isInParty()) {
-                        if (!player.isInFight() && !player.isInSoupsimulator()) {
+                        if (duelsPlayer.isBusy()) {
                             val target = Bukkit.getPlayer(args[1])
                             if (target != null)
                                 if (target.hasParty()) {
@@ -90,9 +84,13 @@ object PartyCommand : CommandExecutor, TabCompleter {
                                     if (party!!.invitedPlayers.contains(player) || party.isPublic)
                                         party.addPlayer(player)
                                     else
-                                        player.sendMsg("party.fail.playerNotOwningPublicParty", mutableMapOf("playerName" to target.name))
+                                        player.sendMsg(
+                                            "party.fail.playerNotOwningPublicParty",
+                                            mutableMapOf("playerName" to target.name))
                                 } else
-                                    player.sendMsg("party.fail.playerNotOwningPublicParty", mutableMapOf("playerName" to target.name))
+                                    player.sendMsg(
+                                        "party.fail.playerNotOwningPublicParty",
+                                        mutableMapOf("playerName" to target.name))
                             else
                                 player.sendMsg("playerNotOnline", mutableMapOf("playerName" to args[1]))
 
@@ -111,7 +109,10 @@ object PartyCommand : CommandExecutor, TabCompleter {
                                 if (party.players.contains(target)) {
                                     party.kick(target)
                                 } else
-                                    player.sendMsg("party.fail.playerNotInYourParty", mutableMapOf("playerName" to target.name))
+                                    player.sendMsg(
+                                        "party.fail.playerNotInYourParty",
+                                        mutableMapOf("playerName" to target.name)
+                                    )
 
                             } else
                                 player.sendMsg("playerNotOnline", mutableMapOf("playerName" to args[1]))

@@ -1,9 +1,9 @@
 package de.hglabor.plugins.duels.kits.kit
 
 import de.hglabor.plugins.duels.arenas.ArenaTags
-import de.hglabor.plugins.duels.kits.*
+import de.hglabor.plugins.duels.kits.AbstractKit
+import de.hglabor.plugins.duels.kits.Kits
 import org.bukkit.Material
-import org.bukkit.entity.Player
 
 class Random : AbstractKit() {
     companion object {
@@ -17,10 +17,4 @@ class Random : AbstractKit() {
     override val allowsRespawn = false
     override val category = null
     override val specials = setOf(null)
-
-    override fun giveKit(player: Player) { }
-
-    fun enable() {
-        kits += INSTANCE
-    }
 }

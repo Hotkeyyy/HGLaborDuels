@@ -2,7 +2,6 @@ package de.hglabor.plugins.staff.functionality
 
 import de.hglabor.plugins.duels.Manager
 import de.hglabor.plugins.duels.localization.Localization
-import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.extensions.bukkit.heal
 import net.axay.kspigot.items.itemStack
@@ -13,13 +12,12 @@ import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 
 object StaffInventory {
     fun unvanishItem(player: Player) = itemStack(Material.RED_DYE) {
         amount = 1
         meta {
-            name = Localization.INSTANCE.getMessage("staff.inventory.item.unvanish.name", player)
+            name = Localization.getMessage("staff.inventory.item.unvanish.name", player)
         }
         mark("unvanishitem")
     }
@@ -27,7 +25,7 @@ object StaffInventory {
     fun vanishItem(player: Player) = itemStack(Material.SCUTE) {
         amount = 1
         meta {
-            name = Localization.INSTANCE.getMessage("staff.inventory.item.vanish.name", player)
+            name = Localization.getMessage("staff.inventory.item.vanish.name", player)
         }
         mark("vanishitem")
     }
@@ -54,7 +52,7 @@ object StaffInventory {
         p.inventory.setItem(5, itemStack(Material.BOOK) {
             amount = 1
             meta {
-                name = Localization.INSTANCE.getMessage("staff.inventory.item.invsee.name", p)
+                name = Localization.getMessage("staff.inventory.item.invsee.name", p)
             }
             mark("invseeitem")
         })

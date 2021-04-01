@@ -1,7 +1,5 @@
 package de.hglabor.plugins.duels.arenas
 
-import com.boydti.fawe.FaweAPI
-import com.boydti.fawe.`object`.RelightMode
 import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.bukkit.BukkitWorld
 import com.sk89q.worldedit.extent.clipboard.Clipboard
@@ -39,6 +37,7 @@ class Arena(var loc: Pair<Int, Int>, val arenaName: String) {
 
     var spawn1Loc: Location
     var spawn2Loc: Location
+    val clipboard = Arenas.getClipboard(arenaName)
 
     init {
         bukkitWorld = BukkitWorld(world)
@@ -65,15 +64,6 @@ class Arena(var loc: Pair<Int, Int>, val arenaName: String) {
                 .build()
             Operations.complete(operation)
         }
-
-        val v1: BlockVector3 =
-            Vector3.at(loc.first * Data.locationMultiplier, 100.0, loc.second * Data.locationMultiplier).toBlockPoint()
-        val v2: BlockVector3 =
-            Vector3.at(loc.first * Data.locationMultiplier + getInfo(arenaName).second.dimensions?.x!!,
-                100.0 + getInfo(arenaName).second.dimensions?.y!!, loc.second * Data.locationMultiplier + getInfo(arenaName).second.dimensions?.z!!).toBlockPoint()
-        val region = CuboidRegion(v1, v2)
-        FaweAPI.fixLighting(bukkitWorld, region, null, RelightMode.OPTIMAL)
-        FaweAPI.fixLighting(bukkitWorld, region, null, RelightMode.ALL)
     }
 
 

@@ -5,12 +5,11 @@ import de.hglabor.plugins.duels.arenas.Arenas
 import de.hglabor.plugins.duels.functionality.MainInventory
 import de.hglabor.plugins.duels.functionality.PartyInventory
 import de.hglabor.plugins.duels.kits.AbstractKit
-import de.hglabor.plugins.duels.kits.Kits
-import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.localization.sendMsg
 import de.hglabor.plugins.duels.party.Party
 import de.hglabor.plugins.duels.party.Partys.hasParty
 import de.hglabor.plugins.duels.party.Partys.isInParty
+import de.hglabor.plugins.duels.player.DuelsPlayer
 import de.hglabor.plugins.duels.scoreboard.LobbyScoreboard
 import de.hglabor.plugins.duels.spawn.SpawnUtils
 import de.hglabor.plugins.staff.functionality.StaffInventory
@@ -22,29 +21,17 @@ import net.axay.kspigot.extensions.bukkit.feedSaturate
 import net.axay.kspigot.extensions.bukkit.heal
 import net.axay.kspigot.extensions.onlinePlayers
 import net.md_5.bungee.api.chat.ClickEvent
-import net.md_5.bungee.api.chat.HoverEvent
 import net.md_5.bungee.api.chat.TextComponent
-import net.md_5.bungee.api.chat.hover.content.Text
 import org.bukkit.GameMode
 import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
-import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
 
 object PlayerFunctions {
-
-    fun Player.isInFight(): Boolean {
-        return Data.inFight.contains(player)
-    }
-
-    fun Player.isSpectator(): Boolean {
-        return Data.duelFromSpec.contains(player)
-    }
-
-    fun Player.duel(target: Player, kit: AbstractKit) {
+    fun Player.challenge(target: Player, kit: AbstractKit) {
         val player: Player = player!!
 
         if (!Arenas.arenaWithTagExists(kit.arenaTag)) {
@@ -52,7 +39,7 @@ object PlayerFunctions {
             return
         }
 
-        player.sendMsg("duel.dueledPlayer", mutableMapOf("playerName" to target.displayName, "kit" to kit.name))
+        player.sendMsg("duel.dueledPlayer", mutableMapOf("playerName" to target.name, "kit" to kit.name))
         if (player.hasParty()) {
             target.sendMsg("duel.playerDueled", mutableMapOf("playerName" to "${player.name}'s ${KColors.CORNSILK}Party (${Party.get(player)!!.players.size})§7", "kit" to kit.name))
         } else {
@@ -78,7 +65,8 @@ object PlayerFunctions {
     }
 
     fun Player.reset() {
-        val player: Player = player!!
+        val player = this
+        DuelsPlayer.get(player)
         if (player.isInStaffMode)
             StaffInventory.giveItems(player)
         else if (player.isInParty())
@@ -101,8 +89,8 @@ object PlayerFunctions {
         Data.openedDuelGUI.remove(player)
         Data.challengeKit.remove(player)
         Data.challenged.remove(player)
-        Data.duelIDFromPlayer.remove(player)
-        Data.duelFromSpec.remove(player)
+        Data.duelOfSpec.remove(player)
+        Data.duelOfPlayer.remove(player)
         Data.inFight.remove(player)
         LobbyScoreboard.setScoreboard(player)
 
@@ -115,19 +103,5 @@ object PlayerFunctions {
 
     fun Player.localization(locale: String): Boolean {
         return player!!.locale.toLowerCase().contains(locale)
-    }
-
-    fun Player.sendLocalizedMessage(germanMessage: String, englishMessage: String) {
-        if (player!!.localization("de"))
-            player!!.sendMessage(germanMessage)
-        else
-            player!!.sendMessage(englishMessage)
-    }
-
-    fun Player.sendLocalizedMessage(germanMessage: String, englishMessage: String, toReplace: String, replacement: String) {
-        if (player!!.localization("de"))
-            player!!.sendMessage(germanMessage.replace(toReplace, replacement))
-        else
-            player!!.sendMessage(englishMessage.replace(toReplace, replacement))
     }
 }

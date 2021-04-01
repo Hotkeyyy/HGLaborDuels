@@ -2,8 +2,8 @@ package de.hglabor.plugins.duels.scoreboard
 
 import de.hglabor.plugins.duels.Manager
 import de.hglabor.plugins.duels.duel.GameState
+import de.hglabor.plugins.duels.player.DuelsPlayer
 import de.hglabor.plugins.duels.utils.Data
-import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import de.hglabor.plugins.staff.utils.StaffData
 import de.hglabor.plugins.staff.utils.StaffData.isInStaffMode
 import de.hglabor.plugins.staff.utils.StaffData.isStaff
@@ -14,7 +14,6 @@ import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Scoreboard
-import org.bukkit.scoreboard.Team
 
 object LobbyScoreboard {
 
@@ -94,18 +93,22 @@ object LobbyScoreboard {
     fun startRunnable() {
         Bukkit.getServer().scheduler.scheduleSyncRepeatingTask(Manager.INSTANCE, {
             for (all in Bukkit.getOnlinePlayers()) {
-                if (all.isInStaffMode)
+                val duelsPlayer = DuelsPlayer.get(all)
+                if (all.isInStaffMode) {
                     if (StaffScoreboard.hasScoreboard.contains(all))
                         StaffScoreboard.updateScoreboard(all)
                     else
                         StaffScoreboard.setScoreboard(all)
-                else if (all.isInFight())
-                    if (Data.duelFromPlayer(all).state == GameState.COUNTDOWN)
-                        FightSB.setCountdownScoreboard(Data.duelFromPlayer(all), all)
+
+                } else if (duelsPlayer.isInFight()) {
+                    val duel = duelsPlayer.currentDuel() ?: return@scheduleSyncRepeatingTask
+                    if (duel.state == GameState.COUNTDOWN)
+                        FightSB.setCountdownScoreboard(duel, all)
                     else
-                        FightSB.setGameScoreboard(Data.duelFromPlayer(all), all)
-                else
+                        FightSB.setGameScoreboard(duel, all)
+                } else {
                     updateScoreboard(all)
+                }
             }
         }, 10, 20)
     }

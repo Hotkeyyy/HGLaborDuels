@@ -29,7 +29,8 @@ object DuelOverviewGUI {
                         addLore { + "§7Click to open information about Team 1" }
                     }
                 }) {
-                    DuelTeamOverviewGUI.open(player, duelID, Data.duelFromID[duelID]!!.teamOne as ArrayList<OfflinePlayer>)
+                    val duel = Data.duelFromID[duelID] ?: return@button
+                    DuelTeamOverviewGUI.open(player, duelID, duel.teamOne as ArrayList<OfflinePlayer>)
                 }
 
                 button(Slots.RowTwoSlotSix, itemStack(Material.MAGENTA_CONCRETE) {
@@ -38,7 +39,8 @@ object DuelOverviewGUI {
                         addLore { + "§7Click to open information about Team 2" }
                     }
                 }) {
-                    DuelTeamOverviewGUI.open(player, duelID, Data.duelFromID[duelID]!!.teamTwo as ArrayList<OfflinePlayer>)
+                    val duel = Data.duelFromID[duelID] ?: return@button
+                    DuelTeamOverviewGUI.open(player, duelID, duel.teamTwo as ArrayList<OfflinePlayer>)
                 }
             }
         }

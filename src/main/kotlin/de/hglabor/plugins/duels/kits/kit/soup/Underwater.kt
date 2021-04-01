@@ -1,15 +1,12 @@
 package de.hglabor.plugins.duels.kits.kit.soup
 
 import de.hglabor.plugins.duels.arenas.ArenaTags
-import de.hglabor.plugins.duels.guis.KitsGUI
 import de.hglabor.plugins.duels.kits.*
-import de.hglabor.plugins.duels.kits.kit.`fun`.HardJumpAndRun
-import de.hglabor.plugins.duels.kits.kit.cooldown.Classic
+import de.hglabor.plugins.duels.utils.KitUtils
 import net.axay.kspigot.items.flag
 import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
 import org.bukkit.Material
-import org.bukkit.attribute.Attribute
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
@@ -17,10 +14,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
-class Underwater : AbstractKit() {
-    companion object {
-        val INSTANCE = Underwater()
-    }
+object Underwater : AbstractKit() {
 
     override val name = "Underwater"
     override val itemInGUI = Kits.guiItem(Material.TROPICAL_FISH_BUCKET, name)
@@ -28,29 +22,25 @@ class Underwater : AbstractKit() {
     override val type = KitType.SOUP
     override val category = KitCategory.SOUP
 
-    override fun giveKit(player: Player) {
-        player.inventory.clear()
-        player.inventory.helmet = ItemStack(Material.TURTLE_HELMET)
-        player.inventory.setItem(0, KitUtils.sword(Material.IRON_SWORD, true))
-        val trident = itemStack(Material.TRIDENT) {
+    override val defaultInventory = mutableMapOf(
+        0 to KitUtils.sword(Material.IRON_SWORD, true),
+        1 to itemStack(Material.TRIDENT) {
             addEnchantment(Enchantment.LOYALTY, 3)
             meta {
                 flag(ItemFlag.HIDE_ENCHANTS)
             }
-        }
-        player.inventory.setItem(1, trident)
-        KitUtils.giveRecraft(player, 16)
-        KitUtils.fillEmptySlotsWithSoup(player)
+        },
+        13 to ItemStack(Material.BROWN_MUSHROOM, 32),
+        14 to ItemStack(Material.RED_MUSHROOM, 32),
+        15 to ItemStack(Material.BOWL, 32)
+    )
 
-        player.addPotionEffect(PotionEffect(PotionEffectType.DOLPHINS_GRACE, Int.MAX_VALUE, 1))
-        player.addPotionEffect(PotionEffect(PotionEffectType.CONDUIT_POWER, Int.MAX_VALUE, 0))
-
-        player.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)?.baseValue = 0.0
-        player.getAttribute(Attribute.GENERIC_ATTACK_SPEED)?.baseValue = 100.0
+    override fun giveRest(player: Player) {
+        KitUtils.fillEmptySlotsWithItemStack(player, ItemStack(Material.MUSHROOM_STEW))
     }
 
-    fun enable() {
-        kits += INSTANCE
-
+    override fun setAttributes(player: Player) {
+        player.addPotionEffect(PotionEffect(PotionEffectType.DOLPHINS_GRACE, Int.MAX_VALUE, 1))
+        player.addPotionEffect(PotionEffect(PotionEffectType.CONDUIT_POWER, Int.MAX_VALUE, 0))
     }
 }

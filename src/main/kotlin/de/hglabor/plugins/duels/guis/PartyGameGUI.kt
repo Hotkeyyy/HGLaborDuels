@@ -15,7 +15,7 @@ import org.bukkit.entity.Player
 object PartyGameGUI {
     fun guiBuilder(player: Player) = kSpigotGUI(GUIType.THREE_BY_NINE) {
 
-        title = Localization.INSTANCE.getMessage("party.games.gui.title", player)
+        title = Localization.getMessage("party.games.gui.title", player)
 
         page(1) {
 
@@ -23,11 +23,11 @@ object PartyGameGUI {
 
             button(Slots.RowTwoSlotTwo, itemStack(Material.NETHERITE_SWORD) {
                 meta {
-                    name = Localization.INSTANCE.getMessage("party.games.splitTeamfight.name", player)
+                    name = Localization.getMessage("party.games.splitTeamfight.name", player)
                 }
             }) {
-                Data.openedKitInventory[player] = Data.KitInventories.SPLITPARTY
-                player.openGUI(KitsGUI.gui)
+                Data.openedKitInventory[player] = KitsGUI.KitInventories.SPLITPARTY
+                player.openGUI(KitsGUI.guiBuilder())
             }
         }
     }

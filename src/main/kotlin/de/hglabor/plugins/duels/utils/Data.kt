@@ -1,13 +1,13 @@
 package de.hglabor.plugins.duels.utils
 
 import de.hglabor.plugins.duels.duel.Duel
+import de.hglabor.plugins.duels.guis.KitsGUI
 import de.hglabor.plugins.duels.kits.AbstractKit
-import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.soupsimulator.Soupsimulator
+import de.hglabor.plugins.staff.utils.StaffData
 import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
-import org.bukkit.inventory.Inventory
 
 object Data {
     val droppedItemInSoupsimulator = arrayListOf<Entity>()
@@ -21,16 +21,27 @@ object Data {
     val challenged = hashMapOf<Player, Player>() // Challenger Player
     val challengeKit: HashMap<Player, AbstractKit> = HashMap()
     val duel = hashMapOf<Player, Player>()
-    val duelIDFromPlayer = hashMapOf<Player, String>()
-    val duelFromSpec = hashMapOf<Player, Duel>()
+    val duelOfSpec = hashMapOf<Player, Duel>()
+    val duelOfPlayer = hashMapOf<Player, Duel>()
     val duelFromID = hashMapOf<String, Duel>()
-
-    fun duelFromPlayer(player: Player): Duel {
-        return duelFromID[duelIDFromPlayer[player]!!]!!
-    }
 
     val usedLocationMultipliersXZ = arrayListOf<Pair<Int, Int>>()
     const val locationMultiplier = 5000.0
+
+    fun clear(player: Player) {
+        openedDuelGUI.remove(player)
+        challenged.remove(player)
+        challengeKit.remove(player)
+        duel.remove(player)
+        duelOfSpec.remove(player)
+        duelOfPlayer.remove(player)
+        soupsimulator.remove(player)
+        openedKitInventory.remove(player)
+        StaffData.playersInStaffmode.remove(player)
+        StaffData.vanishedPlayers.remove(player)
+        StaffData.followingStaffFromPlayer.remove(player)
+        StaffData.followedPlayerFromStaff.remove(player)
+    }
 
     fun getFreeLocation(): Pair<Int, Int> {
         var x = -15
@@ -67,7 +78,6 @@ object Data {
             .joinToString("")
     }
 
-    val openedKitInventory = hashMapOf<Player, KitInventories>()
-    enum class KitInventories { DUEL, TOURNAMENT, SPLITPARTY }
+    val openedKitInventory = hashMapOf<Player, KitsGUI.KitInventories>()
 }
 

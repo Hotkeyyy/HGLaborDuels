@@ -38,30 +38,44 @@ plugins {
 repositories {
     mavenLocal()
     mavenCentral()
+    jcenter()
+
+    // Paper
     maven("https://papermc.io/repo/repository/maven-public/")
     // FAWE
     maven("https://mvn.intellectualsites.com/content/repositories/releases/")
+    // ProtocolLib
     maven("https://repo.dmulloy2.net/nexus/repository/public/")
-    maven("https://jitpack.io")
+    // LIbsDisguise
+    maven("https://repo.md-5.net/content/groups/public/")
+    // AnvilGUI
+    maven("https://repo.codemc.io/repository/maven-snapshots/")
 }
 
 dependencies {
     implementation(kotlin("reflect"))
 
-    // SPIGOT
-    // compileOnly("org.spigotmc", "spigot", "1.16.5-R0.1-SNAPSHOT")
+    // CraftBukkit
+    compileOnly("org.bukkit", "craftbukkit", "1.16.5-R0.1-SNAPSHOT")
 
     // PAPER
     compileOnly("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT")
 
     // KSPIGOT
-    implementation("net.axay:kspigot:1.16.25")
+    implementation("net.axay:kspigot:1.16.26")
 
     // KMONGO and MONGODB
     implementation("org.litote.kmongo", "kmongo-core", "4.2.3")
     implementation("org.litote.kmongo", "kmongo-serialization-mapping", "4.2.3")
 
+    // FAWE
     implementation("com.intellectualsites.fawe:FAWE-Bukkit:1.16-583")
+
+    // ProtocolLib
+    implementation("com.comphenix.protocol:ProtocolLib:4.5.0-SNAPSHOT")
+
+    // LibsDisguise
+    implementation("LibsDisguises:LibsDisguises:10.0.24")
 }
 
 /*

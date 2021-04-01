@@ -19,18 +19,21 @@ import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.potion.PotionData
 import org.bukkit.potion.PotionType
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 object DuelPlayerDataOverviewGUI {
-    fun open(whoOpens: Player, gameID: String, dataOfPlayer: OfflinePlayer) {
+    fun open(whoOpens: Player, gameID: String, uuid: UUID) {
         val duel = Data.duelFromID[gameID]
-        val file = File("${duel!!.path}//playerdata//${dataOfPlayer.uniqueId}.yml")
+        val file = File("${duel!!.path}//playerdata//${uuid}.yml")
         val yamlConfiguration = YamlConfiguration.loadConfiguration(file)
+        val offlinePlayer = Bukkit.getOfflinePlayer(uuid)
 
         val inventory = Bukkit.createInventory(
             null,
             54,
-            "${KColors.DODGERBLUE} ${dataOfPlayer.name}'s Inventory ${KColors.DARKGRAY}|${KColors.GRAY} $gameID"
+            "${KColors.DODGERBLUE} ${offlinePlayer.name}'s Inventory ${KColors.DARKGRAY}|${KColors.GRAY} $gameID"
         )
 
         val placeholder = itemStack(Material.WHITE_STAINED_GLASS_PANE) { meta { name = null } }

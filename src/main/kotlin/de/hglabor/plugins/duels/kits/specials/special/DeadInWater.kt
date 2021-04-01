@@ -4,8 +4,7 @@ import de.hglabor.plugins.duels.duel.GameState
 import de.hglabor.plugins.duels.events.events.duel.DuelDeathReason
 import de.hglabor.plugins.duels.events.events.duel.PlayerDeathInDuelEvent
 import de.hglabor.plugins.duels.kits.specials.Specials
-import de.hglabor.plugins.duels.utils.Data
-import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
+import de.hglabor.plugins.duels.player.DuelsPlayer
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.isFeetInWater
 import org.bukkit.Bukkit
@@ -15,21 +14,18 @@ object DeadInWater {
     init {
         listen<PlayerMoveEvent> {
             val player = it.player
-            if (player.isInFight()) {
-                val duel = Data.duelFromID[Data.duelIDFromPlayer[player]]
-                if (duel?.state == GameState.COUNTDOWN)
-                    it.isCancelled = true
-                if (duel?.kit?.specials?.contains(Specials.DEADINWATER) == true) {
-                    if (duel.state == GameState.RUNNING) {
-                        if (player.isFeetInWater) {
-                            Bukkit.getPluginManager().callEvent(PlayerDeathInDuelEvent(player, duel, DuelDeathReason.WATER))
-                        }
-                    }
-                } else if (duel?.kit?.specials?.contains(Specials.JUMPANDRUN) == true) {
-                    if (duel.state == GameState.RUNNING) {
-                        if (player.isFeetInWater) {
-                            Bukkit.getPluginManager().callEvent(PlayerDeathInDuelEvent(player, duel, DuelDeathReason.WATER))
-                        }
+            val duelsPlayer = DuelsPlayer.get(player)
+            val duel = duelsPlayer.currentDuel() ?: return@listen
+
+            if (duel.state == GameState.COUNTDOWN) {
+                it.isCancelled = true
+                return@listen
+            }
+
+            if (duel.kit.hasSpecial(Specials.DEADINWATER) || duel.kit.hasSpecial(Specials.JUMPANDRUN)) {
+                if (duel.state == GameState.INGAME) {
+                    if (player.isFeetInWater) {
+                        Bukkit.getPluginManager().callEvent(PlayerDeathInDuelEvent(player, duel, DuelDeathReason.WATER))
                     }
                 }
             }

@@ -1,15 +1,12 @@
 package de.hglabor.plugins.duels.events.listeners
 
 import de.hglabor.plugins.duels.Manager
-import de.hglabor.plugins.duels.data.PlayerSettings
-import de.hglabor.plugins.duels.data.PlayerStats
-import de.hglabor.plugins.duels.guis.ChooseKnockbackGUI
+import de.hglabor.plugins.duels.player.DuelsPlayer
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
 import de.hglabor.plugins.staff.utils.StaffData
 import de.hglabor.plugins.staff.utils.StaffData.isStaff
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
-import net.axay.kspigot.gui.openGUI
 import net.axay.kspigot.runnables.async
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerJoinEvent
@@ -20,18 +17,15 @@ object OnPlayerJoin {
         listen<PlayerJoinEvent>(EventPriority.HIGHEST) {
             it.joinMessage = null
             val player = it.player
+
             if (!player.isStaff)
                 StaffData.vanishedPlayers.forEach { vanished -> player.hidePlayer(Manager.INSTANCE, vanished) }
 
             player.reset()
             player.setPlayerListHeaderFooter(header, footer)
 
-            /*if (!PlayerSettings.exist(player.uniqueId)) {
-                player.openGUI(ChooseKnockbackGUI.guiBuilder(player))
-            }*/
             async {
-                PlayerStats.get(player)
-                PlayerSettings.get(player)
+                DuelsPlayer.get(player)
             }
         }
     }

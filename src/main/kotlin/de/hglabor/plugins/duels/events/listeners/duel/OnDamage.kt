@@ -4,9 +4,7 @@ import de.hglabor.plugins.duels.data.DataHolder
 import de.hglabor.plugins.duels.duel.GameState
 import de.hglabor.plugins.duels.kits.AbstractKit
 import de.hglabor.plugins.duels.kits.specials.Specials
-import de.hglabor.plugins.duels.soupsimulator.Soupsim.isInSoupsimulator
-import de.hglabor.plugins.duels.utils.Data
-import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
+import de.hglabor.plugins.duels.player.DuelsPlayer
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.runnables.async
 import org.bukkit.Bukkit
@@ -28,9 +26,11 @@ object OnDamage {
             }
             if (it.entity is Player) {
                 val player = it.entity as Player
-                if (player.isInFight()) {
-                    val duel = Data.duelFromPlayer(player)
-                    if (duel.state == GameState.RUNNING) {
+                val duelsPlayer = DuelsPlayer.get(player)
+                if (duelsPlayer.isInFight()) {
+                    val duel = duelsPlayer.currentDuel() ?: return@listen
+
+                    if (duel.state == GameState.INGAME) {
                         if (duel.kit.specials.contains(Specials.INVINICIBLE)) {
                             it.isCancelled = true
                             return@listen
@@ -42,7 +42,7 @@ object OnDamage {
                     }
                 }
                 if (player.location.world != Bukkit.getWorld("FightWorld"))
-                    if (!player.isInSoupsimulator())
+                    if (!duelsPlayer.isInSoupsimulator())
                         it.isCancelled = true
             }
         }
@@ -53,16 +53,18 @@ object OnDamage {
             }
             if (it.entity is Player) {
                 val player = it.entity as Player
-                if (player.isInFight()) {
+                val duelsPlayer = DuelsPlayer.get(player)
+                if (duelsPlayer.isInFight()) {
                     var damager: Player? = null
                     var damage = it.damage
-                    val duel = Data.duelFromPlayer(player)
+                    val duel = duelsPlayer.currentDuel() ?: return@listen
 
                     if (it.cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
                         if (it.damager is Player) {
                             damager = it.damager as Player
-                            if (damager.isInFight()) {
-                                if (duel.state == GameState.RUNNING) {
+                            val duelsDamager = DuelsPlayer.get(damager)
+                            if (duelsDamager.isInFight()) {
+                                if (duel.state == GameState.INGAME) {
                                     damage = getFinalDamage(duel.kit, damage, damager.inventory.itemInMainHand.type)
                                 } else {
                                     it.isCancelled = true
@@ -84,15 +86,15 @@ object OnDamage {
                     if (!it.isCancelled) {
                         it.damage = damage
                         if (damager != null) {
-                            duel.hits[damager] = duel.hits[damager]!! + 1
+                            duel.hits[damager] = (duel.hits[damager]?: 0) + 1
 
                             duel.lastHitOfPlayer[damager] = player
                             duel.lastAttackerOfPlayer[player] = damager
 
-                            duel.currentCombo[damager] = duel.currentCombo[damager]!! + 1
+                            duel.currentCombo[damager] = (duel.currentCombo[damager]?: 0) + 1
                             duel.currentCombo[player] = 0
-                            if (duel.longestCombo[damager]!! < duel.currentCombo[damager]!!) {
-                                duel.longestCombo[damager] = duel.currentCombo[damager]!!
+                            if (duel.longestCombo[damager]?: 0 < duel.currentCombo[damager]?: 0) {
+                                duel.longestCombo[damager] = duel.currentCombo[damager]?: 0
                             }
 
                             async { DataHolder.playerStats[damager]?.addTotalHit() }

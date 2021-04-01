@@ -1,11 +1,9 @@
 package de.hglabor.plugins.staff
 
 import de.hglabor.plugins.duels.Manager
-import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.localization.sendMsg
-import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
+import de.hglabor.plugins.duels.player.DuelsPlayer
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
-import de.hglabor.plugins.duels.utils.PlayerFunctions.sendLocalizedMessage
 import de.hglabor.plugins.staff.functionality.StaffInventory
 import de.hglabor.plugins.staff.utils.StaffData
 import de.hglabor.plugins.staff.utils.StaffData.followedPlayerFromStaff
@@ -65,8 +63,9 @@ object Staffmode {
 
     private fun Player.teleportToFollowedPlayer() {
         if (followedPlayerFromStaff.containsKey(this)) {
-            val target = followedPlayerFromStaff[this]
-            if (!target!!.isInFight()) {
+            val target = followedPlayerFromStaff[this] ?: return
+            val duelsTarget = DuelsPlayer.get(target)
+            if (!duelsTarget.isInFight()) {
                 this.sendMsg("staff.follow.playerAtSpawn", mutableMapOf("playerName" to target.name))
             } else {
                 this.sendMsg("staff.follow.playerStartedFight", mutableMapOf("playerName" to target.name))

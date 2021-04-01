@@ -25,7 +25,7 @@ object CreateArenaGUI {
         val arena = arenaFromPlayer[player]
         return kSpigotGUI(GUIType.THREE_BY_NINE) {
 
-            title = Localization.INSTANCE.getMessage("createArenaGUI.name", player)
+            title = Localization.getMessage("createArenaGUI.name", player)
 
             page(1) {
 
@@ -38,7 +38,7 @@ object CreateArenaGUI {
 
                 button(Slots.RowTwoSlotFive, itemStack(Material.NAME_TAG) {
                     meta {
-                        name = Localization.INSTANCE.getMessage("createArenaGUI.item.setName.name", player)
+                        name = Localization.getMessage("createArenaGUI.item.setName.name", player)
 
                         if (arena?.name != "") {
                             addLore {
@@ -47,7 +47,7 @@ object CreateArenaGUI {
                         }
                     }
                 }) {
-                    player.awaitAnvilInput(Localization.INSTANCE.getMessage("createArenaGUI.nameInput.title", player)) { servername ->
+                    player.awaitAnvilInput(Localization.getMessage("createArenaGUI.nameInput.title", player)) { servername ->
                         val name = servername.input ?: kotlin.run {
                             player.sendMsg("createArenaGUI.nameInput.abort")
                             return@awaitAnvilInput
@@ -58,13 +58,13 @@ object CreateArenaGUI {
 
                 button(Slots.RowTwoSlotThree, itemStack(Material.NETHERITE_PICKAXE) {
                     meta {
-                        name = Localization.INSTANCE.getMessage("createArenaGUI.item.setCorner.name", player)
+                        name = Localization.getMessage("createArenaGUI.item.setCorner.name", player)
                         addLore {
-                            +Localization.INSTANCE.getMessage("createArenaGUI.item.lore.getTool", player)
+                            +Localization.getMessage("createArenaGUI.item.lore.getTool", player)
                             if (arena?.corner1 != null)
-                                +Localization.INSTANCE.getMessage("createArenaGUI.item.lore.pos", mutableMapOf("n" to "1"), player)
+                                +Localization.getMessage("createArenaGUI.item.lore.pos", mutableMapOf("n" to "1"), player)
                             if (arena?.corner2 != null)
-                                +Localization.INSTANCE.getMessage("createArenaGUI.item.lore.pos", mutableMapOf("n" to "2"), player)
+                                +Localization.getMessage("createArenaGUI.item.lore.pos", mutableMapOf("n" to "2"), player)
                         }
                     }
                 }) {
@@ -74,13 +74,13 @@ object CreateArenaGUI {
 
                 button(Slots.RowTwoSlotSeven, itemStack(Material.NETHERITE_SHOVEL) {
                     meta {
-                        name = Localization.INSTANCE.getMessage("createArenaGUI.item.setSpawn.name", player)
+                        name = Localization.getMessage("createArenaGUI.item.setSpawn.name", player)
                         addLore {
-                            +Localization.INSTANCE.getMessage("createArenaGUI.item.lore.getTool", player)
+                            +Localization.getMessage("createArenaGUI.item.lore.getTool", player)
                             if (arena?.corner1 != null)
-                                +Localization.INSTANCE.getMessage("createArenaGUI.item.lore.pos", mutableMapOf("n" to "1"), player)
+                                +Localization.getMessage("createArenaGUI.item.lore.pos", mutableMapOf("n" to "1"), player)
                             if (arena?.corner2 != null)
-                                +Localization.INSTANCE.getMessage("createArenaGUI.item.lore.pos", mutableMapOf("n" to "2"), player)
+                                +Localization.getMessage("createArenaGUI.item.lore.pos", mutableMapOf("n" to "2"), player)
                         }
                     }
                 }) {
@@ -90,7 +90,7 @@ object CreateArenaGUI {
 
                 button(Slots.RowThreeSlotFive, itemStack(Material.PAPER) {
                     meta {
-                        name = Localization.INSTANCE.getMessage("createArenaGUI.item.setTag.name", player)
+                        name = Localization.getMessage("createArenaGUI.item.setTag.name", player)
                         addLore {
                             addLore {
                                 +"${KColors.CORNSILK}${arena?.tag}"
@@ -103,7 +103,7 @@ object CreateArenaGUI {
 
                 button(Slots.RowOneSlotFour, itemStack(Material.SCUTE) {
                     meta {
-                        name = Localization.INSTANCE.getMessage("createArenaGUI.item.save.name", player)
+                        name = Localization.getMessage("createArenaGUI.item.save.name", player)
                     }
                 }) {
                     it.player.closeInventory()
@@ -113,9 +113,9 @@ object CreateArenaGUI {
 
                 button(Slots.RowOneSlotSix, itemStack(Material.BARRIER) {
                     meta {
-                        name = Localization.INSTANCE.getMessage("createArenaGUI.item.abort.name", player)
+                        name = Localization.getMessage("createArenaGUI.item.abort.name", player)
                         addLore {
-                            +Localization.INSTANCE.getMessage("createArenaGUI.item.abort.lore", player)
+                            +Localization.getMessage("createArenaGUI.item.abort.lore", player)
                         }
                     }
                 }) {
@@ -130,10 +130,10 @@ object CreateArenaGUI {
     private fun cornerItem(player: Player): ItemStack {
         return itemStack(Material.NETHERITE_PICKAXE) {
             meta {
-                name = Localization.INSTANCE.getMessage("createArenaGUI.item.setCorner.name", player)
+                name = Localization.getMessage("createArenaGUI.item.setCorner.name", player)
                 addLore {
-                    + Localization.INSTANCE.getMessage("createArenaGUI.itemInInventory.corner.lore.leftClick", player)
-                    + Localization.INSTANCE.getMessage("createArenaGUI.itemInInventory.corner.lore.rightClick", player)
+                    + Localization.getMessage("createArenaGUI.itemInInventory.corner.lore.leftClick", player)
+                    + Localization.getMessage("createArenaGUI.itemInInventory.corner.lore.rightClick", player)
                 }
             }
             mark("corner")
@@ -144,10 +144,10 @@ object CreateArenaGUI {
     private fun spawnItem(player: Player): ItemStack {
         return itemStack(Material.NETHERITE_SHOVEL) {
             meta {
-                name = Localization.INSTANCE.getMessage("createArenaGUI.item.setName.name", player)
+                name = Localization.getMessage("createArenaGUI.item.setName.name", player)
                 addLore {
-                    + Localization.INSTANCE.getMessage("createArenaGUI.itemInInventory.spawn.lore.leftClick", player)
-                    + Localization.INSTANCE.getMessage("createArenaGUI.itemInInventory.spawn.lore.rightClick", player)
+                    + Localization.getMessage("createArenaGUI.itemInInventory.spawn.lore.leftClick", player)
+                    + Localization.getMessage("createArenaGUI.itemInInventory.spawn.lore.rightClick", player)
                 }
             }
             mark("spawn")

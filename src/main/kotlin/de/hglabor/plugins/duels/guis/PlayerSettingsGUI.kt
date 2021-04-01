@@ -2,10 +2,13 @@ package de.hglabor.plugins.duels.guis
 
 import de.hglabor.plugins.duels.data.PlayerSettings
 import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.localization.sendMsg
+import de.hglabor.plugins.duels.utils.Data
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.gui.GUIType
 import net.axay.kspigot.gui.Slots
 import net.axay.kspigot.gui.kSpigotGUI
+import net.axay.kspigot.gui.openGUI
 import net.axay.kspigot.items.addLore
 import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
@@ -18,7 +21,7 @@ object PlayerSettingsGUI {
 
     fun guiBuilder(player: Player) = kSpigotGUI(GUIType.THREE_BY_NINE) {
 
-        title = Localization.INSTANCE.getMessage("settingsgui.title", player)
+        title = Localization.getMessage("settingsgui.title", player)
 
         page(1) {
 
@@ -37,12 +40,23 @@ object PlayerSettingsGUI {
                 it.guiInstance[Slots.RowTwoSlotFour] = allowSpectatorsItem(player)
                 player.playSound(player.location, Sound.UI_BUTTON_CLICK, 5f, 1f)
             }
+
+            button(Slots.RowTwoSlotSix, itemStack(Material.CHEST) {
+                meta {
+                    name = Localization.getMessage("settingsgui.item.inventorysorting.name", player)
+                }
+            }) {
+                Data.openedKitInventory[player] = KitsGUI.KitInventories.INVENTORYSORTING
+                player.openGUI(KitsGUI.guiBuilder())
+                player.sendMsg("inventorysort.warn.inventoryWillFill.1")
+                player.sendMsg("inventorysort.warn.inventoryWillFill.2")
+            }
         }
     }
 
     private fun knockbackItem(player: Player) = itemStack(Material.PISTON) {
         meta {
-            name = Localization.INSTANCE.getMessage("settingsgui.item.knockback.name", player)
+            name = Localization.getMessage("settingsgui.item.knockback.name", player)
 
             val settings = PlayerSettings.get(player)
             addLore {
@@ -54,12 +68,12 @@ object PlayerSettingsGUI {
 
     private fun allowSpectatorsItem(player: Player) = itemStack(Material.ENDER_EYE) {
         meta {
-            name = Localization.INSTANCE.getMessage("settingsgui.item.allowSpecs.name", player)
+            name = Localization.getMessage("settingsgui.item.allowSpecs.name", player)
 
             val settings = PlayerSettings.get(player)
             addLore {
-                +"${KColors.MEDIUMPURPLE}${Localization.INSTANCE.getMessage(settings.allowSpectators().key, player)}"
-                +"${KColors.MEDIUMPURPLE}${Localization.INSTANCE.getMessage(settings.allowSpectators().next().key, player)}"
+                +"${KColors.MEDIUMPURPLE}${Localization.getMessage(settings.allowSpectators().key, player)}"
+                +"${KColors.DIMGRAY}${Localization.getMessage(settings.allowSpectators().next().key, player)}"
             }
         }
     }

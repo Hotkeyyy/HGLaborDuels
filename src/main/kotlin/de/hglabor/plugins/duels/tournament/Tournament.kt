@@ -82,7 +82,7 @@ class Tournament {
                                 players.sendMsg("tournament.start", mutableMapOf("teamCount" to "${teams.size}"))
                             }
                         }
-                        state = GameState.RUNNING
+                        state = GameState.INGAME
                         startDuels()
                         it.cancel()
                         return@task

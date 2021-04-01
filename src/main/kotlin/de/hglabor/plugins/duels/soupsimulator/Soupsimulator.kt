@@ -1,11 +1,11 @@
 package de.hglabor.plugins.duels.soupsimulator
 
 import de.hglabor.plugins.duels.Manager
-import de.hglabor.plugins.duels.data.PlayerStats
 import de.hglabor.plugins.duels.duel.GameState
-import de.hglabor.plugins.duels.kits.KitUtils
+import de.hglabor.plugins.duels.utils.KitUtils
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.localization.sendMsg
+import de.hglabor.plugins.duels.player.DuelsPlayer
 import de.hglabor.plugins.duels.soupsimulator.Soupsim.endsAfterTime
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
@@ -53,7 +53,7 @@ class Soupsimulator(val player: Player) {
         sendCountdown()
 
         if (level == SoupsimulatorLevel.EASY)
-            player.sendTitle("${KColors.CORNSILK}/Surrender", Localization.INSTANCE.getMessage("soupsimulator.title.toLeave", player), 10, 30, 10)
+            player.sendTitle("${KColors.CORNSILK}/Surrender", Localization.getMessage("soupsimulator.title.toLeave", player), 10, 30, 10)
 
         Data.soupsimulator[player] = this
         player.inventory.setItem(0, ItemStack(Material.STONE_SWORD))
@@ -73,11 +73,11 @@ class Soupsimulator(val player: Player) {
                 player.sendTitle("§$colorcode$count", "§$colorcode", 3, 13, 3)
                 player.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_PLING, 3f, 2f)
             } else {
-                player.sendTitle(Localization.INSTANCE.getMessage("soupsimulator.title.go", player), "§b", 3, 13, 3)
+                player.sendTitle(Localization.getMessage("soupsimulator.title.go", player), "§b", 3, 13, 3)
                 player.closeInventory()
                 runTimer()
                 nextTask()
-                state = GameState.RUNNING
+                state = GameState.INGAME
             }
             count--
         }
@@ -86,7 +86,7 @@ class Soupsimulator(val player: Player) {
     private fun runTimer() {
         object : BukkitRunnable() {
             override fun run() {
-                if (state != GameState.RUNNING) {
+                if (state != GameState.INGAME) {
                     cancel(); return
                 }
                 val s = timer / 10
@@ -193,8 +193,9 @@ class Soupsimulator(val player: Player) {
         player.sendMsg("soupsimulator.finish.wrongHotkeys", mutableMapOf("hotkeys" to "$wrongHotkeys"))
         player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
 
+        val duelsPlayer = DuelsPlayer.get(player)
         if (level == SoupsimulatorLevel.HARD) {
-            val stats = PlayerStats.get(player)
+            val stats = duelsPlayer.stats
             if (stats.soupsimulatorHighscore() < score) {
                 stats.setSoupsimulatorHighscore(score)
                 player.sendMsg("soupsimulator.finish.newRecord")

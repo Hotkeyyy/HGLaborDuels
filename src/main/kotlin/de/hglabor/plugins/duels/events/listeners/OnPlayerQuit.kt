@@ -1,17 +1,14 @@
 package de.hglabor.plugins.duels.events.listeners
 
 import de.hglabor.plugins.duels.data.DataHolder
-import de.hglabor.plugins.duels.data.PlayerSettings
-import de.hglabor.plugins.duels.data.PlayerStats
 import de.hglabor.plugins.duels.events.events.duel.DuelDeathReason
 import de.hglabor.plugins.duels.events.events.duel.PlayerDeathInDuelEvent
-import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.party.Party
 import de.hglabor.plugins.duels.party.Partys.isInParty
 import de.hglabor.plugins.duels.party.Partys.isPartyMember
+import de.hglabor.plugins.duels.player.DuelsPlayer
 import de.hglabor.plugins.duels.tournament.Tournaments
 import de.hglabor.plugins.duels.utils.Data
-import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
 import de.hglabor.plugins.staff.utils.StaffData
 import de.hglabor.plugins.staff.utils.StaffData.isVanished
 import net.axay.kspigot.event.listen
@@ -26,27 +23,38 @@ object OnPlayerQuit {
 
         listen<PlayerQuitEvent>(EventPriority.HIGHEST) {
             val player = it.player
+            val duelsPlayer = DuelsPlayer.get(player)
             it.quitMessage = null
 
             async {
-                val playerStats = PlayerStats.get(player)
-                playerStats.update()
+                duelsPlayer.stats.update()
+                duelsPlayer.settings.update()
+                duelsPlayer.inventorySorting.update()
                 DataHolder.playerStats.remove(player)
-
-                val playerSettings = PlayerSettings.get(player)
-                playerSettings.update()
                 DataHolder.playerSettings.remove(player)
+                DataHolder.inventorySorting.remove(player)
             }
 
             if (player.isVanished)
                 StaffData.vanishedPlayers.remove(player)
 
-            if (player.isInFight()) {
-                val duel = Data.duelFromPlayer(player)
+            if (duelsPlayer.isInFight()) {
+                val duel = duelsPlayer.currentDuel() ?: return@listen
                 Bukkit.getPluginManager().callEvent(PlayerDeathInDuelEvent(player, duel, DuelDeathReason.QUIT))
             }
 
-            if (Kits.playerQueue.containsKey(player)) {
+            duelsPlayer.rankedQueues.forEach { kit ->
+                kit.rankedQueue -= player
+                duelsPlayer.rankedQueues -= kit
+            }
+
+            duelsPlayer.unrankedQueues.forEach { kit ->
+                kit.unrankedQueue -= player
+                duelsPlayer.unrankedQueues -= kit
+            }
+
+
+            /*if (Kits.playerQueue.containsKey(player)) {
                 val kitSet = Kits.playerQueue[player]
                 if (kitSet != null) {
                     for (kit in kitSet) {
@@ -54,10 +62,9 @@ object OnPlayerQuit {
                         playerList.remove(player)
                         Kits.playerQueue.remove(player)
                         Kits.queue[kit] = playerList
-                        //QueueGUI.updateContents()
                     }
                 }
-            }
+            }*/
 
             if (player.isInParty()) {
                 if (player.isPartyMember()) {
@@ -67,10 +74,14 @@ object OnPlayerQuit {
                 }
             }
 
-            if (Tournaments.publicTournament != null)
+            if (Tournaments.publicTournament != null) {
                 if (Tournaments.publicTournament!!.players.contains(player)) {
                     Tournaments.publicTournament!!.players.remove(player)
                 }
+            }
+
+            DuelsPlayer.duelsPlayers.remove(player)
+            Data.clear(player)
         }
     }
 }

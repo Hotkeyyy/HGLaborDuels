@@ -6,8 +6,7 @@ import de.hglabor.plugins.duels.functionality.MainInventory
 import de.hglabor.plugins.duels.functionality.PartyInventory
 import de.hglabor.plugins.duels.localization.Localization
 import de.hglabor.plugins.duels.localization.sendMsg
-import de.hglabor.plugins.duels.utils.Data
-import de.hglabor.plugins.duels.utils.PlayerFunctions.isInFight
+import de.hglabor.plugins.duels.player.DuelsPlayer
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.chat.sendMessage
@@ -70,10 +69,10 @@ class Party(val leader: Player) {
         val message = TextComponent("")
         val one = TextComponent("  [")
         one.color = KColors.DARKGRAY
-        val text = TextComponent(Localization.INSTANCE.getMessage("party.clickToJoin.message", invited))
+        val text = TextComponent(Localization.getMessage("party.clickToJoin.message", invited))
         message.color = KColors.MEDIUMPURPLE
         message.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND,
-            Localization.INSTANCE.getMessage("party.clickToJoin.hover", mutableMapOf("leaderName" to leader.name), invited))
+            Localization.getMessage("party.clickToJoin.hover", mutableMapOf("leaderName" to leader.name), invited))
         val two = TextComponent("]")
         two.color = KColors.DARKGRAY
         message.addExtra(one)
@@ -97,18 +96,21 @@ class Party(val leader: Player) {
         Partys.playerParty.remove(player)
         sendMsg("party.playerLeft", mutableMapOf("playerName" to player.name))
         player.sendMsg("party.left")
-        if (!player.isInFight())
+        if (!DuelsPlayer.get(player).isInFight())
             player.reset()
     }
 
     fun kick(player: Player) {
+        val duelsPlayer = DuelsPlayer.get(player)
         players.remove(player)
         Partys.playerParty.remove(player)
         sendMsg("party.playerWasKicked", mutableMapOf("playerName" to player.name))
         player.sendMsg("party.wereKicked")
 
-        if (player.isInFight())
-            Bukkit.getPluginManager().callEvent(PlayerDeathInDuelEvent(player, Data.duelFromPlayer(player), DuelDeathReason.QUIT))
+        if (duelsPlayer.isInFight()) {
+            val duel = duelsPlayer.currentDuel() ?: return
+            Bukkit.getPluginManager().callEvent(PlayerDeathInDuelEvent(player, duel, DuelDeathReason.QUIT))
+        }
 
         if (player.world.name != "world")
             player.reset()
@@ -137,8 +139,10 @@ class Party(val leader: Player) {
         isPublic = false
         sendMsg("party.delted")
         players.forEach {
-            if (!it.isInFight())
+            val duelsPlayer = DuelsPlayer.get(it)
+            if (!duelsPlayer.isInFight()) {
                 MainInventory.giveItems(it)
+            }
             Partys.playerParty.remove(it)
         }
         players.clear()

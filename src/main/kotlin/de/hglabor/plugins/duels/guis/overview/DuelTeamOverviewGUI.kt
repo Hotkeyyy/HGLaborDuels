@@ -74,9 +74,9 @@ object DuelTeamOverviewGUI {
             if (it.view.title.contains("${KColors.DODGERBLUE}Duel §8| §r")) {
                 if (it.currentItem?.type == Material.PLAYER_HEAD) {
                     val item = it.currentItem!!.itemMeta as SkullMeta
-                    val owner = item.owningPlayer as Player
+                    val owner = item.owningPlayer ?: return@listen
                     val gameID = it.view.title.split(" §8| §7")[1]
-                    DuelPlayerDataOverviewGUI.open(player, gameID, owner)
+                    DuelPlayerDataOverviewGUI.open(player, gameID, owner.uniqueId)
                 }
 
                 if (it.currentItem?.type == Material.ARROW) {

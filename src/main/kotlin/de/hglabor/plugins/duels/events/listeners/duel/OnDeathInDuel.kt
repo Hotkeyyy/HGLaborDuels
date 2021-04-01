@@ -31,7 +31,7 @@ object OnDeathInDuel {
                 }
             }
 
-            Data.duelFromSpec[player] = duel
+            Data.duelOfSpec[player] = duel
             Data.inFight.remove(player)
             duel.alivePlayers.remove(player)
             val newAlivePlayers = duel.alivePlayers
@@ -65,7 +65,7 @@ object OnDeathInDuel {
             }
 
             task(true, 2) {
-                if (Data.duelFromSpec.containsKey(player)) {
+                if (Data.duelOfSpec.containsKey(player)) {
                     val arena = duel.arena
                     duel.addSpectator(player, false)
                     val spawnOne = arena.spawn1Loc
@@ -83,9 +83,6 @@ object OnDeathInDuel {
                 duel.winner = duel.getOtherTeam(player)
                 duel.stop()
             }
-
-            /*val stats = PlayerStats.get(player)
-            stats.addDeath()*/
         }
     }
 }

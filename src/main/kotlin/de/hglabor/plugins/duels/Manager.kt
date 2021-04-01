@@ -3,9 +3,7 @@ package de.hglabor.plugins.duels
 import de.hglabor.plugins.duels.arenas.ArenaTags
 import de.hglabor.plugins.duels.arenas.Arenas
 import de.hglabor.plugins.duels.commands.*
-import de.hglabor.plugins.duels.data.DataHolder
-import de.hglabor.plugins.duels.data.PlayerSettings
-import de.hglabor.plugins.duels.data.PlayerStats
+import de.hglabor.plugins.duels.data.InventorySorting
 import de.hglabor.plugins.duels.database.MongoManager
 import de.hglabor.plugins.duels.events.listeners.*
 import de.hglabor.plugins.duels.events.listeners.arena.CreateArenaListener
@@ -20,6 +18,7 @@ import de.hglabor.plugins.duels.guis.overview.DuelTeamOverviewGUI
 import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.kits.specials.Specials
 import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.player.DuelsPlayer
 import de.hglabor.plugins.duels.protection.Protection
 import de.hglabor.plugins.duels.scoreboard.LobbyScoreboard
 import de.hglabor.plugins.duels.spawn.SetSpawnCommand
@@ -75,13 +74,13 @@ class Manager : KSpigot() {
     }
 
     override fun startup() {
+        connectMongo()
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord")
         ArenaTags.enable()
         Kits.enable()
         register()
         LobbyScoreboard.startRunnable()
         CreateFiles
-        //connectMongo()
         WorldManager.createFightWorld()
         WorldManager.createBuildWorld()
         console.success("Duels plugin enabled.")
@@ -90,21 +89,16 @@ class Manager : KSpigot() {
     override fun shutdown() {
         broadcast("${Localization.PREFIX}${KColors.TOMATO}DISABLING PLUGIN ${KColors.DARKGRAY}(maybe a reload)")
         onlinePlayers.forEach {
-            val playerStats = PlayerStats.get(it)
-            playerStats.update()
-            DataHolder.playerStats.remove(it)
-
-            val playerSettings = PlayerSettings.get(it)
-            playerSettings.update()
-            DataHolder.playerSettings.remove(it)
-
+            val duelsPlayer = DuelsPlayer.get(it)
+            duelsPlayer.stats.update()
+            duelsPlayer.settings.update()
             it.sound(Sound.BLOCK_BEACON_DEACTIVATE)
         }
         MongoManager.disconnect()
     }
 
     private fun register() {
-        Localization()
+        Localization
         SoupHealing
         OnPlayerChat
         OnPlayerQuit
@@ -131,12 +125,13 @@ class Manager : KSpigot() {
         OnArrowPickUp
         OnDeathInDuel
         OnDuelStart
+        OnProjectileLaunch
         Specials.enable()
 
         DuelPlayerDataOverviewGUI.enable()
         DuelTeamOverviewGUI.enable()
         KitsGUI.enable()
-        //QueueGUI.enable()
+        InventorySorting.enable()
 
         getCommand("challenge")!!.setExecutor(ChallengeCommand)
         getCommand("setspawn")!!.setExecutor(SetSpawnCommand)
