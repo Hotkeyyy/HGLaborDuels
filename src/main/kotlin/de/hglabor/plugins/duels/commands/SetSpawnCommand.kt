@@ -1,7 +1,7 @@
-package de.hglabor.plugins.duels.spawn
+package de.hglabor.plugins.duels.commands
 
-import de.hglabor.plugins.duels.localization.sendMsg
-import de.hglabor.plugins.duels.spawn.SpawnUtils.setSpawn
+import de.hglabor.plugins.duels.utils.SpawnUtils.setSpawn
+import de.hglabor.plugins.duels.utils.sendMsg
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender

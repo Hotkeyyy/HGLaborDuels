@@ -2,9 +2,9 @@ package de.hglabor.plugins.duels.commands
 
 import de.hglabor.plugins.duels.events.events.duel.DuelDeathReason
 import de.hglabor.plugins.duels.events.events.duel.PlayerDeathInDuelEvent
-import de.hglabor.plugins.duels.localization.sendMsg
+import de.hglabor.plugins.duels.utils.sendMsg
 import de.hglabor.plugins.duels.player.DuelsPlayer
-import de.hglabor.plugins.duels.soupsimulator.Soupsimulator
+import de.hglabor.plugins.soupsimulator.Soupsimulator
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor

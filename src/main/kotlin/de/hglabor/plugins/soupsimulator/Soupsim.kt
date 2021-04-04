@@ -1,4 +1,4 @@
-package de.hglabor.plugins.duels.soupsimulator
+package de.hglabor.plugins.soupsimulator
 
 object Soupsim {
     val SoupsimulatorLevel.endsAfterTime get() = when(this) {

@@ -1,8 +1,8 @@
 package de.hglabor.plugins.duels.player
 
-import de.hglabor.plugins.duels.data.InventorySorting
-import de.hglabor.plugins.duels.data.PlayerSettings
-import de.hglabor.plugins.duels.data.PlayerStats
+import de.hglabor.plugins.duels.database.data.InventorySorting
+import de.hglabor.plugins.duels.database.data.PlayerSettings
+import de.hglabor.plugins.duels.database.data.PlayerStats
 import de.hglabor.plugins.duels.duel.Duel
 import de.hglabor.plugins.duels.kits.AbstractKit
 import de.hglabor.plugins.duels.utils.Data

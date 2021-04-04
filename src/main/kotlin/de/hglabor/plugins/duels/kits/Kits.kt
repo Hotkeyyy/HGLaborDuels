@@ -17,7 +17,7 @@ import de.hglabor.plugins.duels.kits.kit.trash.OnlySword
 import de.hglabor.plugins.duels.kits.kit.trash.SG
 import de.hglabor.plugins.duels.kits.kit.trash.Sumo
 import de.hglabor.plugins.duels.kits.kit.uhc.UHC
-import de.hglabor.plugins.duels.localization.sendMsg
+import de.hglabor.plugins.duels.utils.sendMsg
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.extensions.bukkit.feedSaturate
 import net.axay.kspigot.extensions.bukkit.heal

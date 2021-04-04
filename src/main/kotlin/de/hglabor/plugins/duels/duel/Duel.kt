@@ -8,7 +8,7 @@ import com.sk89q.worldedit.regions.CuboidRegion
 import de.hglabor.plugins.duels.Manager
 import de.hglabor.plugins.duels.arenas.Arena
 import de.hglabor.plugins.duels.arenas.Arenas
-import de.hglabor.plugins.duels.data.PlayerSettings
+import de.hglabor.plugins.duels.database.data.PlayerSettings
 import de.hglabor.plugins.duels.events.events.duel.DuelStartEvent
 import de.hglabor.plugins.duels.kits.AbstractKit
 import de.hglabor.plugins.duels.kits.KitType
@@ -16,13 +16,13 @@ import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.kits.Kits.giveKit
 import de.hglabor.plugins.duels.kits.kit.Random
 import de.hglabor.plugins.duels.kits.kit.soup.Anchor
-import de.hglabor.plugins.duels.localization.Localization
-import de.hglabor.plugins.duels.localization.sendMsg
+import de.hglabor.plugins.duels.utils.Localization
+import de.hglabor.plugins.duels.utils.sendMsg
 import de.hglabor.plugins.duels.party.Party
 import de.hglabor.plugins.duels.party.Partys.isInParty
 import de.hglabor.plugins.duels.player.DuelsPlayer
-import de.hglabor.plugins.duels.soupsimulator.Soupsimulator
-import de.hglabor.plugins.duels.spawn.SpawnUtils
+import de.hglabor.plugins.soupsimulator.Soupsimulator
+import de.hglabor.plugins.duels.utils.SpawnUtils
 import de.hglabor.plugins.duels.tournament.Tournament
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
@@ -423,23 +423,15 @@ class Duel {
 
         sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                        ")
         if (winner == teamOne) {
-            sendMsg(
-                "duel.result.winner.teamOne",
-                mutableMapOf("teamColor" to teamColor(teamOne.first()).toString(), "teamPlayers" to teamOnePlayers)
-            )
-            sendMsg(
-                "duel.result.loser.teamTwo",
-                mutableMapOf("teamColor" to teamColor(teamTwo.first()).toString(), "teamPlayers" to teamTwoPlayers)
-            )
+            sendMsg("duel.result.winner.teamOne",
+                mutableMapOf("teamColor" to teamColor(teamOne.first()).toString(), "teamPlayers" to teamOnePlayers))
+            sendMsg("duel.result.loser.teamTwo",
+                mutableMapOf("teamColor" to teamColor(teamTwo.first()).toString(), "teamPlayers" to teamTwoPlayers))
         } else {
-            sendMsg(
-                "duel.result.winner.teamTwo",
-                mutableMapOf("teamColor" to teamColor(teamTwo.first()).toString(), "teamPlayers" to teamTwoPlayers)
-            )
-            sendMsg(
-                "duel.result.loser.teamOne",
-                mutableMapOf("teamColor" to teamColor(teamOne.first()).toString(), "teamPlayers" to teamOnePlayers)
-            )
+            sendMsg("duel.result.winner.teamTwo",
+                mutableMapOf("teamColor" to teamColor(teamTwo.first()).toString(), "teamPlayers" to teamTwoPlayers))
+            sendMsg("duel.result.loser.teamOne",
+                mutableMapOf("teamColor" to teamColor(teamOne.first()).toString(), "teamPlayers" to teamOnePlayers))
         }
 
         val message = TextComponent("Click to open the duel overview")

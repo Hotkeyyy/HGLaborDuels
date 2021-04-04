@@ -2,7 +2,7 @@ package de.hglabor.plugins.duels.events.listeners.duel
 
 import de.hglabor.plugins.duels.duel.GameState
 import de.hglabor.plugins.duels.kits.specials.Specials
-import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.utils.Localization
 import de.hglabor.plugins.duels.player.DuelsPlayer
 import net.axay.kspigot.event.listen
 import org.bukkit.Material

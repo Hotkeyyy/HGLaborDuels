@@ -1,4 +1,4 @@
-package de.hglabor.plugins.duels.data
+package de.hglabor.plugins.duels.database.data
 
 import org.bukkit.entity.Player
 

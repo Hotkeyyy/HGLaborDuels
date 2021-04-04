@@ -3,7 +3,7 @@ package de.hglabor.plugins.duels.utils
 import de.hglabor.plugins.duels.duel.Duel
 import de.hglabor.plugins.duels.guis.KitsGUI
 import de.hglabor.plugins.duels.kits.AbstractKit
-import de.hglabor.plugins.duels.soupsimulator.Soupsimulator
+import de.hglabor.plugins.soupsimulator.Soupsimulator
 import de.hglabor.plugins.staff.utils.StaffData
 import org.bukkit.block.Block
 import org.bukkit.entity.Entity

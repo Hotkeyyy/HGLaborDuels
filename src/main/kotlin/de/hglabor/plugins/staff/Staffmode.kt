@@ -1,7 +1,7 @@
 package de.hglabor.plugins.staff
 
 import de.hglabor.plugins.duels.Manager
-import de.hglabor.plugins.duels.localization.sendMsg
+import de.hglabor.plugins.duels.utils.sendMsg
 import de.hglabor.plugins.duels.player.DuelsPlayer
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
 import de.hglabor.plugins.staff.functionality.StaffInventory

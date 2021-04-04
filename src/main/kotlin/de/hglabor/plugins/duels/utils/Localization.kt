@@ -1,4 +1,4 @@
-package de.hglabor.plugins.duels.localization
+package de.hglabor.plugins.duels.utils
 
 import com.google.gson.Gson
 import com.google.gson.stream.JsonReader

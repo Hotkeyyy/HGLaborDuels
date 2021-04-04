@@ -9,7 +9,7 @@ import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.math.Vector3
 import com.sk89q.worldedit.regions.CuboidRegion
-import de.hglabor.plugins.duels.localization.sendMsg
+import de.hglabor.plugins.duels.utils.sendMsg
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.configuration.file.YamlConfiguration

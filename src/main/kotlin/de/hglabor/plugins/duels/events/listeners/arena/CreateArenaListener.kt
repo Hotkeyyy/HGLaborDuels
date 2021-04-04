@@ -1,7 +1,7 @@
 package de.hglabor.plugins.duels.events.listeners.arena
 
 import de.hglabor.plugins.duels.arenas.*
-import de.hglabor.plugins.duels.localization.sendMsg
+import de.hglabor.plugins.duels.utils.sendMsg
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.events.isLeftClick
 import net.axay.kspigot.extensions.events.isRightClick

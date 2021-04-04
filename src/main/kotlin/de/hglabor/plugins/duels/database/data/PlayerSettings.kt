@@ -1,4 +1,4 @@
-package de.hglabor.plugins.duels.data
+package de.hglabor.plugins.duels.database.data
 
 import com.mongodb.client.model.Filters
 import de.hglabor.plugins.duels.database.MongoManager

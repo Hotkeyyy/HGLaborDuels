@@ -3,10 +3,10 @@ package de.hglabor.plugins.duels.events.listeners
 import de.hglabor.plugins.duels.guis.PartyGameGUI
 import de.hglabor.plugins.duels.guis.PlayerSettingsGUI
 import de.hglabor.plugins.duels.guis.QueueGUI
-import de.hglabor.plugins.duels.localization.sendMsg
+import de.hglabor.plugins.duels.utils.sendMsg
 import de.hglabor.plugins.duels.party.Party
 import de.hglabor.plugins.duels.player.DuelsPlayer
-import de.hglabor.plugins.duels.protection.Protection.isRestricted
+import de.hglabor.plugins.duels.functionality.Protection.isRestricted
 import de.hglabor.plugins.staff.utils.StaffData.isInStaffMode
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.events.isRightClick

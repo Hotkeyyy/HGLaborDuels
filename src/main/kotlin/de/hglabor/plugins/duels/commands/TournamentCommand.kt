@@ -2,7 +2,7 @@ package de.hglabor.plugins.duels.commands
 
 import de.hglabor.plugins.duels.duel.GameState
 import de.hglabor.plugins.duels.guis.KitsGUI
-import de.hglabor.plugins.duels.localization.sendMsg
+import de.hglabor.plugins.duels.utils.sendMsg
 import de.hglabor.plugins.duels.tournament.Tournaments
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.staff.utils.StaffData.isStaff

@@ -1,12 +1,12 @@
-package de.hglabor.plugins.duels.soupsimulator
+package de.hglabor.plugins.soupsimulator
 
 import de.hglabor.plugins.duels.Manager
 import de.hglabor.plugins.duels.duel.GameState
 import de.hglabor.plugins.duels.utils.KitUtils
-import de.hglabor.plugins.duels.localization.Localization
-import de.hglabor.plugins.duels.localization.sendMsg
+import de.hglabor.plugins.duels.utils.Localization
+import de.hglabor.plugins.duels.utils.sendMsg
 import de.hglabor.plugins.duels.player.DuelsPlayer
-import de.hglabor.plugins.duels.soupsimulator.Soupsim.endsAfterTime
+import de.hglabor.plugins.soupsimulator.Soupsim.endsAfterTime
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset

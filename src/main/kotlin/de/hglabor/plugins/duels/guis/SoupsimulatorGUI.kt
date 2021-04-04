@@ -1,8 +1,8 @@
 package de.hglabor.plugins.duels.guis
 
-import de.hglabor.plugins.duels.localization.Localization
-import de.hglabor.plugins.duels.soupsimulator.Soupsimulator
-import de.hglabor.plugins.duels.soupsimulator.SoupsimulatorLevel
+import de.hglabor.plugins.duels.utils.Localization
+import de.hglabor.plugins.soupsimulator.Soupsimulator
+import de.hglabor.plugins.soupsimulator.SoupsimulatorLevel
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.gui.GUIType
 import net.axay.kspigot.gui.Slots

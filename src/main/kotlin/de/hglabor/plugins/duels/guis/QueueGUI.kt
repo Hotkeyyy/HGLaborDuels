@@ -5,7 +5,7 @@ import de.hglabor.plugins.duels.kits.AbstractKit
 import de.hglabor.plugins.duels.kits.KitCategory
 import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.kits.kits
-import de.hglabor.plugins.duels.localization.sendMsg
+import de.hglabor.plugins.duels.utils.sendMsg
 import de.hglabor.plugins.duels.player.DuelsPlayer
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.gui.*

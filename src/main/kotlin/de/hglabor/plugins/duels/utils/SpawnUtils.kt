@@ -1,6 +1,5 @@
-package de.hglabor.plugins.duels.spawn
+package de.hglabor.plugins.duels.utils
 
-import de.hglabor.plugins.duels.localization.sendMsg
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.configuration.file.YamlConfiguration

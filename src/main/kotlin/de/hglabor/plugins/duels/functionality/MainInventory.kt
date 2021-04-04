@@ -1,7 +1,7 @@
 package de.hglabor.plugins.duels.functionality
 
 import de.hglabor.plugins.duels.Manager
-import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.utils.Localization
 import net.axay.kspigot.extensions.bukkit.appear
 import net.axay.kspigot.extensions.bukkit.heal
 import net.axay.kspigot.items.flag

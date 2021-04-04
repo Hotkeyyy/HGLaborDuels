@@ -5,8 +5,8 @@ import de.hglabor.plugins.duels.arenas.CreateArena
 import de.hglabor.plugins.duels.arenas.arenaFromPlayer
 import de.hglabor.plugins.duels.functionality.CreateArenaInventory
 import de.hglabor.plugins.duels.guis.CreateArenaGUI
-import de.hglabor.plugins.duels.localization.Localization
-import de.hglabor.plugins.duels.localization.sendMsg
+import de.hglabor.plugins.duels.utils.Localization
+import de.hglabor.plugins.duels.utils.sendMsg
 import de.hglabor.plugins.duels.player.DuelsPlayer
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.gui.openGUI

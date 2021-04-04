@@ -1,6 +1,6 @@
 package de.hglabor.plugins.duels.functionality
 
-import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.utils.Localization
 import de.hglabor.plugins.duels.party.Partys.isInParty
 import de.hglabor.plugins.duels.party.Partys.playerParty
 import net.axay.kspigot.extensions.bukkit.appear

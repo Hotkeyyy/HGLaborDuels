@@ -1,7 +1,7 @@
 package de.hglabor.plugins.duels.commands
 
-import de.hglabor.plugins.duels.data.PlayerStats
-import de.hglabor.plugins.duels.localization.sendMsg
+import de.hglabor.plugins.duels.database.data.PlayerStats
+import de.hglabor.plugins.duels.utils.sendMsg
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.runnables.async
 import org.bukkit.Bukkit

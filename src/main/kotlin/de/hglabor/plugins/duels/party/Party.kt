@@ -4,8 +4,8 @@ import de.hglabor.plugins.duels.events.events.duel.DuelDeathReason
 import de.hglabor.plugins.duels.events.events.duel.PlayerDeathInDuelEvent
 import de.hglabor.plugins.duels.functionality.MainInventory
 import de.hglabor.plugins.duels.functionality.PartyInventory
-import de.hglabor.plugins.duels.localization.Localization
-import de.hglabor.plugins.duels.localization.sendMsg
+import de.hglabor.plugins.duels.utils.Localization
+import de.hglabor.plugins.duels.utils.sendMsg
 import de.hglabor.plugins.duels.player.DuelsPlayer
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
 import net.axay.kspigot.chat.KColors

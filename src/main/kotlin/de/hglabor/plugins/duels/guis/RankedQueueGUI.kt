@@ -3,7 +3,7 @@ package de.hglabor.plugins.duels.guis
 import de.hglabor.plugins.duels.duel.Duel
 import de.hglabor.plugins.duels.kits.AbstractKit
 import de.hglabor.plugins.duels.kits.kits
-import de.hglabor.plugins.duels.localization.sendMsg
+import de.hglabor.plugins.duels.utils.sendMsg
 import de.hglabor.plugins.duels.player.DuelsPlayer
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.gui.GUIType

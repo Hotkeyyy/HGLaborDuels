@@ -3,8 +3,8 @@ package de.hglabor.plugins.duels.tournament
 import de.hglabor.plugins.duels.duel.Duel
 import de.hglabor.plugins.duels.duel.GameState
 import de.hglabor.plugins.duels.kits.AbstractKit
-import de.hglabor.plugins.duels.localization.Localization
-import de.hglabor.plugins.duels.localization.sendMsg
+import de.hglabor.plugins.duels.utils.Localization
+import de.hglabor.plugins.duels.utils.sendMsg
 import de.hglabor.plugins.duels.party.Party
 import de.hglabor.plugins.duels.party.Partys.isInParty
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization

@@ -1,8 +1,8 @@
 package de.hglabor.plugins.duels.guis
 
 import de.hglabor.plugins.duels.arenas.arenaFromPlayer
-import de.hglabor.plugins.duels.localization.Localization
-import de.hglabor.plugins.duels.localization.sendMsg
+import de.hglabor.plugins.duels.utils.Localization
+import de.hglabor.plugins.duels.utils.sendMsg
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
 import net.axay.kspigot.chat.KColors

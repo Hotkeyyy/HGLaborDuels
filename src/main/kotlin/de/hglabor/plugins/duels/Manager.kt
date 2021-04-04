@@ -3,7 +3,7 @@ package de.hglabor.plugins.duels
 import de.hglabor.plugins.duels.arenas.ArenaTags
 import de.hglabor.plugins.duels.arenas.Arenas
 import de.hglabor.plugins.duels.commands.*
-import de.hglabor.plugins.duels.data.InventorySorting
+import de.hglabor.plugins.duels.database.data.InventorySorting
 import de.hglabor.plugins.duels.database.MongoManager
 import de.hglabor.plugins.duels.events.listeners.*
 import de.hglabor.plugins.duels.events.listeners.arena.CreateArenaListener
@@ -17,11 +17,11 @@ import de.hglabor.plugins.duels.guis.overview.DuelPlayerDataOverviewGUI
 import de.hglabor.plugins.duels.guis.overview.DuelTeamOverviewGUI
 import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.kits.specials.Specials
-import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.utils.Localization
 import de.hglabor.plugins.duels.player.DuelsPlayer
-import de.hglabor.plugins.duels.protection.Protection
+import de.hglabor.plugins.duels.functionality.Protection
 import de.hglabor.plugins.duels.scoreboard.LobbyScoreboard
-import de.hglabor.plugins.duels.spawn.SetSpawnCommand
+import de.hglabor.plugins.duels.commands.SetSpawnCommand
 import de.hglabor.plugins.duels.utils.CreateFiles
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
 import de.hglabor.plugins.duels.utils.WorldManager

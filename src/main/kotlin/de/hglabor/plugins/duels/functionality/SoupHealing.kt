@@ -1,7 +1,7 @@
 package de.hglabor.plugins.duels.functionality
 
 import de.hglabor.plugins.duels.Manager
-import de.hglabor.plugins.duels.data.DataHolder
+import de.hglabor.plugins.duels.database.data.DataHolder
 import de.hglabor.plugins.duels.player.DuelsPlayer
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.events.isRightClick

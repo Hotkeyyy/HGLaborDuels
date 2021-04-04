@@ -1,6 +1,6 @@
 package de.hglabor.plugins.staff.commands
 
-import de.hglabor.plugins.duels.localization.sendMsg
+import de.hglabor.plugins.duels.utils.sendMsg
 import de.hglabor.plugins.duels.player.DuelsPlayer
 import de.hglabor.plugins.staff.Staffmode
 import de.hglabor.plugins.staff.utils.StaffData.isStaff

@@ -1,4 +1,4 @@
-package de.hglabor.plugins.duels.data
+package de.hglabor.plugins.duels.database.data
 
 import InventorySerialization
 import com.mongodb.client.model.Filters
@@ -8,19 +8,16 @@ import de.hglabor.plugins.duels.guis.KitsGUI
 import de.hglabor.plugins.duels.kits.AbstractKit
 import de.hglabor.plugins.duels.kits.kits
 import de.hglabor.plugins.duels.kits.nameToKit
-import de.hglabor.plugins.duels.localization.sendMsg
+import de.hglabor.plugins.duels.utils.sendMsg
 import de.hglabor.plugins.duels.player.DuelsPlayer
 import de.hglabor.plugins.duels.utils.Data
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
-import net.axay.kspigot.extensions.broadcast
-import net.axay.kspigot.runnables.task
 import org.bson.Document
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
-import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import org.litote.kmongo.MongoOperator

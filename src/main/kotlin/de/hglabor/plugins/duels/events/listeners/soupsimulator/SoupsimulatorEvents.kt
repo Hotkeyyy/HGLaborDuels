@@ -1,12 +1,12 @@
 package de.hglabor.plugins.duels.events.listeners.soupsimulator
 
 import de.hglabor.plugins.duels.Manager
-import de.hglabor.plugins.duels.data.DataHolder
+import de.hglabor.plugins.duels.database.data.DataHolder
 import de.hglabor.plugins.duels.duel.GameState
 import de.hglabor.plugins.duels.guis.SoupsimulatorGUI
-import de.hglabor.plugins.duels.localization.sendMsg
+import de.hglabor.plugins.duels.utils.sendMsg
 import de.hglabor.plugins.duels.player.DuelsPlayer
-import de.hglabor.plugins.duels.soupsimulator.*
+import de.hglabor.plugins.soupsimulator.*
 import de.hglabor.plugins.duels.utils.Data
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.getHandItem

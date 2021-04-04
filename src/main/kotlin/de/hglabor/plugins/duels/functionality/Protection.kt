@@ -1,14 +1,13 @@
-package de.hglabor.plugins.duels.protection
+package de.hglabor.plugins.duels.functionality
 
 import de.hglabor.plugins.duels.guis.KitsGUI
 import de.hglabor.plugins.duels.kits.KitType
 import de.hglabor.plugins.duels.kits.specials.Specials
-import de.hglabor.plugins.duels.localization.sendMsg
+import de.hglabor.plugins.duels.utils.sendMsg
 import de.hglabor.plugins.duels.player.DuelsPlayer
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.staff.utils.StaffData.isInStaffMode
 import net.axay.kspigot.event.listen
-import net.axay.kspigot.extensions.broadcast
 import net.axay.kspigot.extensions.bukkit.getHandItem
 import net.axay.kspigot.utils.hasMark
 import org.bukkit.Bukkit

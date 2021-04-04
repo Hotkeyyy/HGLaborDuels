@@ -1,6 +1,6 @@
 package de.hglabor.plugins.duels.events.listeners
 
-import de.hglabor.plugins.duels.data.DataHolder
+import de.hglabor.plugins.duels.database.data.DataHolder
 import de.hglabor.plugins.duels.events.events.duel.DuelDeathReason
 import de.hglabor.plugins.duels.events.events.duel.PlayerDeathInDuelEvent
 import de.hglabor.plugins.duels.party.Party

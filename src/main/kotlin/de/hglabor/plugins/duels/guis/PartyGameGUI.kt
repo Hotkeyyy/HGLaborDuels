@@ -1,6 +1,6 @@
 package de.hglabor.plugins.duels.guis
 
-import de.hglabor.plugins.duels.localization.Localization
+import de.hglabor.plugins.duels.utils.Localization
 import de.hglabor.plugins.duels.utils.Data
 import net.axay.kspigot.gui.GUIType
 import net.axay.kspigot.gui.Slots

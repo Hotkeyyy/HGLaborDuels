@@ -1,6 +1,6 @@
 package de.hglabor.plugins.duels.events.listeners.duel
 
-import de.hglabor.plugins.duels.data.DataHolder
+import de.hglabor.plugins.duels.database.data.DataHolder
 import de.hglabor.plugins.duels.duel.GameState
 import de.hglabor.plugins.duels.kits.AbstractKit
 import de.hglabor.plugins.duels.kits.specials.Specials

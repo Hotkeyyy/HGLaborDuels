@@ -5,13 +5,11 @@ import de.hglabor.plugins.duels.arenas.Arenas
 import de.hglabor.plugins.duels.functionality.MainInventory
 import de.hglabor.plugins.duels.functionality.PartyInventory
 import de.hglabor.plugins.duels.kits.AbstractKit
-import de.hglabor.plugins.duels.localization.sendMsg
 import de.hglabor.plugins.duels.party.Party
 import de.hglabor.plugins.duels.party.Partys.hasParty
 import de.hglabor.plugins.duels.party.Partys.isInParty
 import de.hglabor.plugins.duels.player.DuelsPlayer
 import de.hglabor.plugins.duels.scoreboard.LobbyScoreboard
-import de.hglabor.plugins.duels.spawn.SpawnUtils
 import de.hglabor.plugins.staff.functionality.StaffInventory
 import de.hglabor.plugins.staff.utils.StaffData.isInStaffMode
 import de.hglabor.plugins.staff.utils.StaffData.isVanished

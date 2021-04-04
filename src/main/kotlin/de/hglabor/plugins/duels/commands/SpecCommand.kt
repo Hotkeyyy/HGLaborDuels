@@ -1,6 +1,6 @@
 package de.hglabor.plugins.duels.commands
 
-import de.hglabor.plugins.duels.localization.sendMsg
+import de.hglabor.plugins.duels.utils.sendMsg
 import de.hglabor.plugins.duels.player.DuelsPlayer
 import net.axay.kspigot.extensions.onlinePlayers
 import org.bukkit.Bukkit
