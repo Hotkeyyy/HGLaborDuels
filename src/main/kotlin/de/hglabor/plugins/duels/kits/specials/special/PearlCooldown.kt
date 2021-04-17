@@ -1,9 +1,9 @@
 package de.hglabor.plugins.duels.kits.specials.special
 
-import de.hglabor.plugins.duels.duel.GameState
 import de.hglabor.plugins.duels.kits.Kits
 import de.hglabor.plugins.duels.kits.specials.Specials
 import de.hglabor.plugins.duels.player.DuelsPlayer
+import de.hglabor.plugins.duels.utils.Data
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.events.isRightClick
 import org.bukkit.Material
@@ -18,7 +18,7 @@ object PearlCooldown {
                 if (duelsPlayer.isInFight()) {
                     val duel = duelsPlayer.currentDuel() ?: return@listen
                     if (it.item?.type == Material.ENDER_PEARL) {
-                        if (duel.state == GameState.INGAME) {
+                        if (duel.gameState == Data.GameState.INGAME) {
                             if (duel.kit.specials.contains(Specials.PEARLCOOLDOWN)) {
                                 if (!Kits.hasCooldown(player))
                                     Kits.setCooldown(player, 15)

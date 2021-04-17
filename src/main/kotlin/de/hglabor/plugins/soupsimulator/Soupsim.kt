@@ -3,6 +3,7 @@ package de.hglabor.plugins.soupsimulator
 object Soupsim {
     val SoupsimulatorLevel.endsAfterTime get() = when(this) {
         SoupsimulatorLevel.EASY -> false
+        SoupsimulatorLevel.MEDIUM -> false
         else -> true
     }
 }

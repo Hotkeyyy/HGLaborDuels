@@ -1,5 +1,6 @@
 package de.hglabor.plugins.duels.guis.overview
 
+import de.hglabor.plugins.duels.team.Team
 import de.hglabor.plugins.duels.utils.Data
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
@@ -16,8 +17,10 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 
 object DuelTeamOverviewGUI {
-    fun open(player: Player, duelID: String, team: ArrayList<OfflinePlayer>) {
-        val duel = Data.duelFromID[duelID]!!
+    // TODO
+
+    fun open(player: Player, duelID: String, players: OfflinePlayer) {
+        /*val duel = Data.duelFromID[duelID]!!
         val teamText = if (team == duel.teamOne) "${KColors.DEEPSKYBLUE}Team 1" else "${KColors.DEEPPINK}Team 2"
 
         val inventory = Bukkit.createInventory(null, 27, "${KColors.DODGERBLUE}Duel §8| §r$teamText §8| §7$duelID")
@@ -30,11 +33,11 @@ object DuelTeamOverviewGUI {
         for (i in 17..26)
             inventory.setItem(i, placeholder)
 
-        team.forEach {
+        team.members.forEach {
             val playerHead = ItemStack(Material.PLAYER_HEAD)
             val playerHeadMeta = playerHead.itemMeta as SkullMeta
             playerHeadMeta.owningPlayer = it
-            if (duel.alivePlayers.contains(it))
+            if (duel.competitors.contains(it))
                 playerHeadMeta.setDisplayName("${KColors.GREEN}${it.name}")
             else
                 playerHeadMeta.setDisplayName("${KColors.RED}${it.name}")
@@ -83,15 +86,15 @@ object DuelTeamOverviewGUI {
                     val gameID = it.view.title.split(" §8| §7")[1]
                     if (it.currentItem!!.itemMeta!!.name!!.contains("Other Team")) {
                         if (it.view.title.contains("1")) {
-                            open(player, gameID, Data.duelFromID[gameID]!!.teamTwo as ArrayList<OfflinePlayer>)
+                            open(player, gameID, Data.duelFromID[gameID]!!.teamTwo)
                         } else {
-                            open(player, gameID, Data.duelFromID[gameID]!!.teamOne as ArrayList<OfflinePlayer>)
+                            open(player, gameID, Data.duelFromID[gameID]!!.teamOne)
                         }
                     } else {
                         DuelOverviewGUI.open(player, gameID)
                     }
                 }
             }
-        }
+        }*/
     }
 }

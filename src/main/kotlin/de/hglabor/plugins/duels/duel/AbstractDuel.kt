@@ -1,15 +1,12 @@
 package de.hglabor.plugins.duels.duel
 
 import InventorySerialization.SerializeItemStack
-import com.boydti.fawe.FaweAPI
-import com.boydti.fawe.`object`.RelightMode
-import com.sk89q.worldedit.bukkit.BukkitWorld
-import com.sk89q.worldedit.math.Vector3
-import com.sk89q.worldedit.regions.CuboidRegion
 import de.hglabor.plugins.duels.Manager
 import de.hglabor.plugins.duels.arenas.Arena
 import de.hglabor.plugins.duels.arenas.Arenas
 import de.hglabor.plugins.duels.database.data.PlayerSettings
+import de.hglabor.plugins.duels.events.events.duel.DuelPrepareEvent
+import de.hglabor.plugins.duels.events.events.duel.TournamentDuelEndEvent
 import de.hglabor.plugins.duels.kits.AbstractKit
 import de.hglabor.plugins.duels.kits.KitType
 import de.hglabor.plugins.duels.kits.Kits
@@ -17,17 +14,18 @@ import de.hglabor.plugins.duels.kits.Kits.giveKit
 import de.hglabor.plugins.duels.kits.kit.soup.Anchor
 import de.hglabor.plugins.duels.player.DuelsPlayer
 import de.hglabor.plugins.duels.team.Team
+import de.hglabor.plugins.duels.team.TeamColor
 import de.hglabor.plugins.duels.utils.*
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
 import de.hglabor.plugins.soupsimulator.Soupsimulator
 import de.hglabor.plugins.staff.utils.StaffData
-import me.libraryaddict.disguise.utilities.json.SerializerItemStack
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.chat.sendMessage
 import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
 import net.axay.kspigot.items.name
 import net.axay.kspigot.runnables.KSpigotRunnable
+import net.axay.kspigot.runnables.async
 import net.axay.kspigot.runnables.task
 import net.axay.kspigot.runnables.taskRunLater
 import net.axay.kspigot.utils.mark
@@ -36,7 +34,6 @@ import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.*
 import org.bukkit.block.Block
 import org.bukkit.configuration.file.YamlConfiguration
-import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.potion.PotionEffect
@@ -44,20 +41,22 @@ import org.bukkit.potion.PotionEffectType
 import java.io.File
 import java.io.IOException
 
-abstract class AbstractDuel(val teamOne: Team, val teamTwo: Team, val kit: AbstractKit) {
+abstract class AbstractDuel(teamOne: Team, teamTwo: Team, val kit: AbstractKit) {
     companion object {
         enum class DuelKnockback(val key: String) { OLD("1.8"), NEW("1.16"), ANCHOR("Anchor") }
-        enum class GameState { STARTING, COUNTDOWN, INGAME, ENDED }
         enum class GameType { UNRANKED, RANKED, LMS, TOURNAMENT }
     }
 
+    val teamOne = teamOne//.clone()
+    val teamTwo = teamTwo//.clone()
+
     val gameID = Data.getFreeGameID()
     val path = File("plugins//HGLaborDuels//temp//duels//$gameID//")
-    var gameState = GameState.STARTING
-    val knockback = getDuelKnockback()
+    var gameState = Data.GameState.STARTING
+    lateinit var knockback: DuelKnockback
     var countdownTask: KSpigotRunnable? = null
 
-    val competitors = mutableListOf<LivingEntity>()
+    val players = mutableListOf<Player>()
     val spectators = mutableListOf<Player>()
 
     val arenaLocation = Data.getFreeLocation()
@@ -67,45 +66,49 @@ abstract class AbstractDuel(val teamOne: Team, val teamTwo: Team, val kit: Abstr
     val stats = mutableMapOf<Player, MutableMap<String, Any>>()
 
     init {
-        competitors.addAll(teamOne.members)
-        competitors.addAll(teamTwo.members)
-        //TODO async { Bukkit.getPluginManager().callEvent(DuelStartEvent(this)) }
-        competitors.filterIsInstance<Player>().forEach { competitor ->
-            competitor.closeInventory()
-            Soupsimulator.get(competitor)?.stop()
-            competitor.isGlowing = false
-            competitor.inventory.clear()
+        setTeamColorsIfNeeded()
+        players.addAll(teamOne.members)
+        players.addAll(teamTwo.members)
+        knockback = getDuelKnockback()
+        players.forEach { player ->
+            player.closeInventory()
+            Soupsimulator.get(player)?.stop()
+            player.isGlowing = false
+            player.isFlying = false
+            player.allowFlight = false
+            player.inventory.clear()
 
             if (knockback == DuelKnockback.OLD)
-                competitor.setMetadata("oldKnockback", FixedMetadataValue(Manager.INSTANCE, ""))
+                player.setMetadata("oldKnockback", FixedMetadataValue(Manager.INSTANCE, ""))
             else
-                competitor.removeMetadata("oldKnockback", Manager.INSTANCE)
+                player.removeMetadata("oldKnockback", Manager.INSTANCE)
         }
-        //TODO Data.duelFromID[gameID] = this
+        Data.duelFromID[gameID] = this
+        prepareGame()
     }
 
-    fun prepareGame() {
-        competitors.forEach { competitor ->
-            competitor.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 40, 200))
+    private fun prepareGame() {
+        async { Bukkit.getPluginManager().callEvent(DuelPrepareEvent(this)) }
+        players.forEach { player ->
+            player.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 40, 200))
         }
         arena.pasteSchematic()
-
-        taskRunLater(20L, true) {
-            competitors.forEach { competitor ->
-                if (competitor is Player) {
-                    competitor.gameMode = GameMode.SURVIVAL
-                    competitor.giveKit(kit)
-                }
-                sendCountdown()
-                teleportPlayersToSpawns()
+        taskRunLater(40L, true) {
+            players.forEach { player ->
+                player.gameMode = GameMode.SURVIVAL
+                player.giveKit(kit)
+                teleportAllPlayersToSpawns()
             }
         }
     }
 
-    open fun start() {}
+    fun start(): AbstractDuel {
+        sendCountdown()
+        return this
+    }
 
     private fun sendCountdown() {
-        gameState = GameState.COUNTDOWN
+        gameState = Data.GameState.COUNTDOWN
         var count = 3
         var colorcode = 'a'
         countdownTask = task(true, 20, period = 20, howOften = 4) {
@@ -124,28 +127,32 @@ abstract class AbstractDuel(val teamOne: Team, val teamTwo: Team, val kit: Abstr
                     player.removePotionEffect(PotionEffectType.SLOW)
                     player.removePotionEffect(PotionEffectType.JUMP)
                 }
-                gameState = GameState.INGAME
+                gameState = Data.GameState.INGAME
                 start()
             }
             count--
         }
     }
 
-    private fun teleportPlayersToSpawns() {
-        competitors.forEach { competitor ->
-            if (teamOne.members.contains(competitor)) {
-                competitor.teleport(arena.spawn1Loc)
-                LocationUtils.setDirection(competitor, arena.spawn2Loc)
-            } else {
-                competitor.teleport(arena.spawn2Loc)
-                LocationUtils.setDirection(competitor, arena.spawn1Loc)
-            }
-
-            competitor.addPotionEffect(PotionEffect(PotionEffectType.SLOW, Int.MAX_VALUE, 200, false, false))
-            competitor.addPotionEffect(PotionEffect(PotionEffectType.JUMP, Int.MAX_VALUE, 200, false, false))
-            //player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 200, false, false))
+    private fun teleportAllPlayersToSpawns() {
+        players.forEach { player ->
+            teleportPlayerToSpawn(player)
         }
-        val v1 =
+    }
+
+    fun teleportPlayerToSpawn(player: Player) {
+        if (teamOne.members.contains(player)) {
+            player.teleport(arena.spawn1Loc)
+            LocationUtils.setDirection(player, arena.spawn2Loc)
+        } else {
+            player.teleport(arena.spawn2Loc)
+            LocationUtils.setDirection(player, arena.spawn1Loc)
+        }
+
+        player.addPotionEffect(PotionEffect(PotionEffectType.SLOW, Int.MAX_VALUE, 200, false, false))
+        player.addPotionEffect(PotionEffect(PotionEffectType.JUMP, Int.MAX_VALUE, 200, false, false))
+        //player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 200, false, false))
+        /*val v1 =
             Vector3.at(
                 arenaLocation.first * Data.locationMultiplier,
                 100.0,
@@ -158,7 +165,7 @@ abstract class AbstractDuel(val teamOne: Team, val teamTwo: Team, val kit: Abstr
         ).toBlockPoint()
         val region = CuboidRegion(v1, v2)
         val bukkitWorld = BukkitWorld(Bukkit.getWorld("FightWorld")!!)
-        FaweAPI.fixLighting(bukkitWorld, region, null, RelightMode.OPTIMAL)
+        FaweAPI.fixLighting(bukkitWorld, region, null, RelightMode.OPTIMAL)*/
     }
 
     fun savePlayerdata(player: Player) {
@@ -170,12 +177,12 @@ abstract class AbstractDuel(val teamOne: Team, val teamTwo: Team, val kit: Abstr
 
         yamlConfiguration["data.playername"] = player.name
         yamlConfiguration["data.team"] = if (teamOne.members.contains(player)) "ONE" else "TWO"
-        if (competitors.contains(player))
+        if (players.contains(player))
             yamlConfiguration["data.health"] = player.health.toInt()
         else
             yamlConfiguration["data.health"] = 0
         yamlConfiguration["data.hits"] = stats[player]?.get("hits") ?: 0
-        yamlConfiguration["data.longestCombo"] = stats[player]?.get("longesCombo") ?: 0
+        yamlConfiguration["data.longestCombo"] = stats[player]?.get("longestCombo") ?: 0
 
         if (kit.type == KitType.SOUP) {
             var soupsLeft = 0
@@ -204,12 +211,13 @@ abstract class AbstractDuel(val teamOne: Team, val teamTwo: Team, val kit: Abstr
         }
 
         for (slot in 0..35) {
-            yamlConfiguration["inventory.slot.$slot.itemStack"] = SerializeItemStack(player.inventory.getItem(slot))
+            yamlConfiguration["inventory.slot.$slot.itemStack"] =
+                SerializeItemStack(player.inventory.getItem(slot))
         }
         yamlConfiguration["inventory.slot.helmet.itemStack"] = SerializeItemStack(player.inventory.helmet)
-         yamlConfiguration["inventory.slot.chestplate.itemStack"] = SerializeItemStack(player.inventory.chestplate)
-         yamlConfiguration["inventory.slot.leggings.itemStack"] = SerializeItemStack(player.inventory.leggings)
-         yamlConfiguration["inventory.slot.boots.itemStack"] = SerializeItemStack(player.inventory.boots)
+        yamlConfiguration["inventory.slot.chestplate.itemStack"] = SerializeItemStack(player.inventory.chestplate)
+        yamlConfiguration["inventory.slot.leggings.itemStack"] = SerializeItemStack(player.inventory.leggings)
+        yamlConfiguration["inventory.slot.boots.itemStack"] = SerializeItemStack(player.inventory.boots)
 
         try {
             yamlConfiguration.save(file)
@@ -218,8 +226,8 @@ abstract class AbstractDuel(val teamOne: Team, val teamTwo: Team, val kit: Abstr
         }
     }
 
-    fun addSpectator(player: Player, notifyPlayers: Boolean){
-        //TODO Data.duelOfSpec[player] = this
+    fun addSpectator(player: Player, notifyPlayers: Boolean) {
+        Data.duelOfSpec[player] = this
         spectators.add(player)
 
         if (notifyPlayers) {
@@ -257,10 +265,22 @@ abstract class AbstractDuel(val teamOne: Team, val teamTwo: Team, val kit: Abstr
             sendMsg("duel.playerStoppedSpectating", mutableMapOf("playerName" to player.name))
     }
 
+    fun setWinner(winnerTeam: Team) {
+        winnerTeam.winner = true
+        getOtherTeam(winnerTeam).loser = true
+        stop()
+    }
+
+    fun setLoser(loserTeam: Team) {
+        loserTeam.loser = true
+        getOtherTeam(loserTeam).winner = true
+        stop()
+    }
+
     fun stop() {
-        gameState = GameState.ENDED
+        gameState = Data.GameState.ENDED
         countdownTask?.cancel()
-        competitors.filterIsInstance<Player>().forEach { savePlayerdata(it); Kits.removeCooldown(it) }
+        players.forEach { player -> savePlayerdata(player); Kits.removeCooldown(player) }
         results()
 
         taskRunLater(45, true) {
@@ -272,34 +292,58 @@ abstract class AbstractDuel(val teamOne: Team, val teamTwo: Team, val kit: Abstr
                         }
                     }
                 }
-                it.reset()
+                if (this is TournamentDuel) {
+                    Bukkit.getPluginManager().callEvent(TournamentDuelEndEvent(this))
+                    if (tournament.duels.isNotEmpty()) {
+                        allPlayers().forEach { player ->
+                            tournament.duels.random().addSpectator(player, true)
+                        }
+                    }
+                } else {
+                    it.reset()
+                }
                 Data.inFight.remove(it)
                 Data.duelOfSpec.remove(it)
             }
             arena.removeSchematic()
-            // TODO
-            /*if (ifTournament) {
-                tournament?.duelEnded(this)
-                if (tournament!!.duels.size > 0) {
-                    specs.forEach { tournament!!.duels.random().addSpectator(it, true) }
-                    alivePlayers.forEach { tournament!!.duels.random().addSpectator(it, true) }
-                }
-            }*/
         }
     }
+
+    fun getWinner() = if (teamOne.winner) teamOne else teamTwo
+    fun getLoser() = if (teamTwo.winner) teamOne else teamTwo
 
     open fun results() {
         sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                        ")
         if (teamOne.winner) {
-            sendMsg("duel.result.winner.teamOne",
-                mutableMapOf("teamColor" to "${teamOne.teamColor.mainColor}", "teamPlayers" to teamOne.playerListString()))
-            sendMsg("duel.result.loser.teamTwo",
-                mutableMapOf("teamColor" to "${teamTwo.teamColor.mainColor}", "teamPlayers" to teamTwo.playerListString()))
+            sendMsg(
+                "duel.result.winner.teamOne",
+                mutableMapOf(
+                    "teamColor" to "${teamOne.teamColor.mainColor}",
+                    "teamPlayers" to teamOne.playerListString()
+                )
+            )
+            sendMsg(
+                "duel.result.loser.teamTwo",
+                mutableMapOf(
+                    "teamColor" to "${teamTwo.teamColor.mainColor}",
+                    "teamPlayers" to teamTwo.playerListString()
+                )
+            )
         } else {
-            sendMsg("duel.result.winner.teamTwo",
-                mutableMapOf("teamColor" to "${teamTwo.teamColor.mainColor}", "teamPlayers" to teamTwo.playerListString()))
-            sendMsg("duel.result.loser.teamOne",
-                mutableMapOf("teamColor" to "${teamOne.teamColor.mainColor}", "teamPlayers" to teamOne.playerListString()))
+            sendMsg(
+                "duel.result.winner.teamTwo",
+                mutableMapOf(
+                    "teamColor" to "${teamTwo.teamColor.mainColor}",
+                    "teamPlayers" to teamTwo.playerListString()
+                )
+            )
+            sendMsg(
+                "duel.result.loser.teamOne",
+                mutableMapOf(
+                    "teamColor" to "${teamOne.teamColor.mainColor}",
+                    "teamPlayers" to teamOne.playerListString()
+                )
+            )
         }
 
         val message = TextComponent("Click to open the duel overview")
@@ -318,21 +362,33 @@ abstract class AbstractDuel(val teamOne: Team, val teamTwo: Team, val kit: Abstr
         var oldKB = 0
         var newKB = 0
 
-        competitors.filterIsInstance<Player>().forEach {
-            val duelsPlayer = DuelsPlayer.get(it)
+        players.forEach { player ->
+            val duelsPlayer = DuelsPlayer.get(player)
             if (duelsPlayer.settings.knockback() == PlayerSettings.Companion.Knockback.OLD) oldKB++
             else newKB++
         }
 
-        val oldPercentage = 100.0 / competitors.filterIsInstance<Player>().size * oldKB
+        val oldPercentage = 100.0 / players.size * oldKB
 
         return if (oldPercentage > 66) DuelKnockback.OLD
         else DuelKnockback.NEW
     }
 
+    private fun setTeamColorsIfNeeded() {
+        if (teamOne.teamColor == teamTwo.teamColor) {
+            teamOne.teamColor = TeamColor.randomColor()
+            teamTwo.teamColor = TeamColor.randomColor(teamOne.teamColor)
+        }
+    }
+
+    fun getTeamOfPlayer(player: Player) =
+        if (teamOne.members.contains(player)) teamOne else teamTwo
+
+    fun getOtherTeam(team: Team) = if (team == teamOne) teamTwo else teamOne
+
     fun allPlayers(): MutableList<Player> {
         val players = mutableListOf<Player>()
-        players.addAll(competitors.filterIsInstance<Player>())
+        players.addAll(players)
         players.addAll(spectators)
         return players
     }

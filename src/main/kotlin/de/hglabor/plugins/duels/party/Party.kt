@@ -42,7 +42,7 @@ class Party(val leader: Player) {
     }
 
     var isPublic = false
-    val players = arrayListOf<Player>()
+    val players = mutableListOf<Player>()
     val invitedPlayers = arrayListOf<Player>()
 
     init { players.add(leader) }
@@ -148,8 +148,8 @@ class Party(val leader: Player) {
         players.clear()
     }
 
-    fun getSplitTeams(): Pair<ArrayList<Player>, ArrayList<Player>> {
-        val allPlayers: ArrayList<Player> = players
+    fun getSplitTeams(): Pair<MutableList<Player>, MutableList<Player>> {
+        val allPlayers: MutableList<Player> = players
         allPlayers.shuffle()
 
         val teamOne = ArrayList<Player>()

@@ -1,6 +1,6 @@
 package de.hglabor.plugins.duels.commands
 
-import de.hglabor.plugins.duels.duel.Duel
+import de.hglabor.plugins.duels.duel.UnrankedDuel
 import de.hglabor.plugins.duels.guis.KitsGUI
 import de.hglabor.plugins.duels.utils.sendMsg
 import de.hglabor.plugins.duels.party.Party
@@ -60,7 +60,7 @@ object ChallengeCommand : CommandExecutor {
                         return false
                     }
                     if (Data.challenged[target] == sender) {
-                        Duel.create(sender, target, Data.challengeKit[target]!!)
+                        UnrankedDuel.create(sender, target, Data.challengeKit[target]!!).start()
                     }
                 } else {
                     player.sendMsg("playerNotOnline", mutableMapOf("playerName" to args[0]))

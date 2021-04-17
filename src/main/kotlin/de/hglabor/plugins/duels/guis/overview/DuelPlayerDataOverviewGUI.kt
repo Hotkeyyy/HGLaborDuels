@@ -24,7 +24,8 @@ import kotlin.collections.ArrayList
 
 
 object DuelPlayerDataOverviewGUI {
-    fun open(whoOpens: Player, gameID: String, uuid: UUID) {
+    // TODO
+    /*fun open(whoOpens: Player, gameID: String, uuid: UUID) {
         val duel = Data.duelFromID[gameID]
         val file = File("${duel!!.path}//playerdata//${uuid}.yml")
         val yamlConfiguration = YamlConfiguration.loadConfiguration(file)
@@ -130,14 +131,14 @@ object DuelPlayerDataOverviewGUI {
                     if (it.currentItem!!.type == Material.ARROW) {
                         val gameID = it.view.title.split(" ")[4]
                         val currentPlayer = (it.view.title.split(" ")[1]).split("'")[0]
-                        val duel = Data.duelFromID[gameID]
-                        if (duel!!.teamOne.contains(Bukkit.getPlayer(currentPlayer)))
-                            DuelTeamOverviewGUI.open(it.whoClicked as Player, gameID, duel.teamOne as ArrayList<OfflinePlayer>)
+                        val duel = Data.duelFromID[gameID] ?: return@listen
+                        if (duel.teamOne.members.contains(Bukkit.getPlayer(currentPlayer)))
+                            DuelTeamOverviewGUI.open(it.whoClicked as Player, gameID, duel.teamOne.members as ArrayList<OfflinePlayer>)
                         else
                             DuelTeamOverviewGUI.open(it.whoClicked as Player, gameID, duel.teamTwo as ArrayList<OfflinePlayer>)
                     }
                 }
             }
         }
-    }
+    }*/
 }

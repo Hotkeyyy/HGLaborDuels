@@ -1,6 +1,6 @@
 package de.hglabor.plugins.duels.guis
 
-import de.hglabor.plugins.duels.duel.Duel
+import de.hglabor.plugins.duels.duel.UnrankedDuel
 import de.hglabor.plugins.duels.kits.AbstractKit
 import de.hglabor.plugins.duels.kits.KitCategory
 import de.hglabor.plugins.duels.kits.Kits
@@ -110,7 +110,7 @@ object QueueGUI {
         if (kit.unrankedQueue.size >= 2) {
             val first = kit.unrankedQueue.first()
             val last = kit.unrankedQueue.last()
-            Duel.create(first, last, kit)
+            UnrankedDuel.create(first, last, kit).start()
             updateQueueItem(kit)
         }
     }

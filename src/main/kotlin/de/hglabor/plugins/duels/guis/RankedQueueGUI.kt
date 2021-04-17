@@ -1,6 +1,6 @@
 package de.hglabor.plugins.duels.guis
 
-import de.hglabor.plugins.duels.duel.Duel
+import de.hglabor.plugins.duels.duel.RankedDuel
 import de.hglabor.plugins.duels.kits.AbstractKit
 import de.hglabor.plugins.duels.kits.kits
 import de.hglabor.plugins.duels.utils.sendMsg
@@ -82,7 +82,7 @@ object RankedQueueGUI {
         if (kit.rankedQueue.size >= 2) {
             val first = kit.rankedQueue.first()
             val last = kit.rankedQueue.last()
-            Duel.create(first, last, kit)
+            RankedDuel(first, last, kit).start()
             updateQueueItem(kit)
         }
     }

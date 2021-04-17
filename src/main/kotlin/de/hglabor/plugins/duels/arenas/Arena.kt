@@ -1,15 +1,12 @@
 package de.hglabor.plugins.duels.arenas
 
-import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.bukkit.BukkitWorld
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat
-import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
-import com.sk89q.worldedit.math.Vector3
 import com.sk89q.worldedit.regions.CuboidRegion
-import com.sk89q.worldedit.session.ClipboardHolder
 import de.hglabor.plugins.duels.utils.Data
+import de.hglabor.plugins.duels.utils.SchematicUtils
 import net.axay.kspigot.extensions.bukkit.info
 import net.axay.kspigot.extensions.console
 import net.axay.kspigot.runnables.taskRunLater
@@ -20,6 +17,13 @@ import org.bukkit.World
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 import java.io.FileInputStream
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader
+
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats
+
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat
+
+
 
 
 class Arena(var loc: Pair<Int, Int>, val arenaName: String) {
@@ -29,7 +33,7 @@ class Arena(var loc: Pair<Int, Int>, val arenaName: String) {
             return Arenas.allArenas[arenaName]!!
         }
     }
-    val file = File("arenas//arenas.yml")
+    val file = File("arenas//$arenaName.schem")
     private val yamlConfiguration = YamlConfiguration.loadConfiguration(file)
 
     var bukkitWorld: BukkitWorld
@@ -37,8 +41,8 @@ class Arena(var loc: Pair<Int, Int>, val arenaName: String) {
 
     var spawn1Loc: Location
     var spawn2Loc: Location
-    val clipboard = Arenas.getClipboard(arenaName)
 
+    var location: Location
     init {
         bukkitWorld = BukkitWorld(world)
 
@@ -51,11 +55,12 @@ class Arena(var loc: Pair<Int, Int>, val arenaName: String) {
             yamlConfiguration["${arenaName}.spawns.spawnTwo.z"] as Double)
         spawn1Loc = Location(world, loc.first * Data.locationMultiplier, 100.0, loc.second * Data.locationMultiplier).subtract(spawn1Loc).add(0.0, 2.0, 0.0)
         spawn2Loc = Location(world, loc.first * Data.locationMultiplier, 100.0, loc.second * Data.locationMultiplier).subtract(spawn2Loc).add(0.0, 2.0, 0.0)
+        location = Location(world, loc.first * Data.locationMultiplier, 100.0, loc.second * Data.locationMultiplier)
         Data.usedLocationMultipliersXZ.add(loc)
     }
 
     fun pasteSchematic() {
-        WorldEdit.getInstance().editSessionFactory.getEditSession(bukkitWorld, -1).use { editSession ->
+        /*WorldEdit.getInstance().editSessionFactory.getEditSession(bukkitWorld, -1).use { editSession ->
             val operation = ClipboardHolder(Arenas.allArenas[arenaName]?.second)
                 .createPaste(editSession)
                 .to(BlockVector3.at(loc.first * Data.locationMultiplier, 100.0, loc.second * Data.locationMultiplier))
@@ -63,17 +68,18 @@ class Arena(var loc: Pair<Int, Int>, val arenaName: String) {
                 .copyEntities(true)
                 .build()
             Operations.complete(operation)
-        }
+        }*/
+
+        SchematicUtils.pasteSchematic(this, location)
     }
 
 
     fun removeSchematic() {
         console.info(arenaName)
-        val v1: BlockVector3 =
-            Vector3.at(loc.first * Data.locationMultiplier, 100.0, loc.second * Data.locationMultiplier).toBlockPoint()
-        val v2: BlockVector3 =
-            Vector3.at(loc.first * Data.locationMultiplier + getInfo(arenaName).second.dimensions?.x!!,
-                100.0 + getInfo(arenaName).second.dimensions?.y!!, loc.second * Data.locationMultiplier + getInfo(arenaName).second.dimensions?.z!!).toBlockPoint()
+        val v1 = BlockVector3.at(loc.first * Data.locationMultiplier - 10, 100.0, loc.second * Data.locationMultiplier - 10)
+        val v2 = BlockVector3.at(loc.first * Data.locationMultiplier + (getInfo(arenaName).second.dimensions?.x!!) + 10,
+            100.0 + getInfo(arenaName).second.dimensions?.y!!,
+            loc.second * Data.locationMultiplier + (getInfo(arenaName).second.dimensions?.z!!) + 10)
         val region = CuboidRegion(bukkitWorld, v1, v2)
 
         for (bv: BlockVector3 in region) {
@@ -108,11 +114,10 @@ object Arenas {
     }
 
     fun getClipboard(arenaName: String): Clipboard {
-        val schemfile = File("arenas//$arenaName.schematic")
-        val clipboard: Clipboard
-        BuiltInClipboardFormat.SPONGE_SCHEMATIC.getReader(FileInputStream(schemfile)).use { reader ->
-            clipboard = reader.read()
-        }
+        val schematicFile = File("arenas//$arenaName.schem")
+        var clipboard: Clipboard
+        val format = ClipboardFormats.findByFile(schematicFile)
+        format!!.getReader(FileInputStream(schematicFile)).use { reader -> clipboard = reader.read() }
         return clipboard
     }
 

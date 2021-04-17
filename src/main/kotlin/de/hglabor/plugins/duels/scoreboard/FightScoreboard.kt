@@ -1,7 +1,7 @@
 package de.hglabor.plugins.duels.scoreboard
 
 import de.hglabor.plugins.duels.Manager
-import de.hglabor.plugins.duels.duel.Duel
+import de.hglabor.plugins.duels.duel.AbstractDuel
 import net.axay.kspigot.chat.KColors
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -11,10 +11,10 @@ import org.bukkit.scoreboard.Scoreboard
 import org.bukkit.scoreboard.Team
 
 object FightSB {
-    fun setCountdownScoreboard(duel: Duel, player: Player) {
+    fun setCountdownScoreboard(duel: AbstractDuel, player: Player) {
         val sb = Bukkit.getScoreboardManager()?.newScoreboard ?: return
 
-        if (duel.alivePlayers.contains(player)) {
+        if (duel.players.contains(player)) {
             var obj = sb.getObjective("aaa")
             if (obj == null) {
                 obj = sb.registerNewObjective("aaa", "bbb", "${KColors.DEEPSKYBLUE}${KColors.BOLD}Duel")
@@ -23,10 +23,11 @@ object FightSB {
             obj.displayName = "${KColors.DEEPSKYBLUE}${KColors.BOLD}Duel"
             obj.displaySlot = DisplaySlot.SIDEBAR
 
-            val ownTeamSize = duel.getTeam(player).size
-            val enemyTeamSize = duel.getOtherTeam(player).size
+            val ownTeam = duel.getTeamOfPlayer(player)
+            val ownTeamSize = ownTeam.members.size
+            val enemyTeamSize = duel.getOtherTeam(ownTeam).members.size
             val kit = duel.kit.name
-            val knockback = duel.knockbackType?.version
+            val knockback = duel.knockback.key
 
             obj.getScore(updateTeam(sb, "lineone", "${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                  §a",
                 "", ChatColor.GREEN)).score = 7
@@ -54,13 +55,13 @@ object FightSB {
 
         }
 
-        val teamOne = getTeam(sb, "0001teamOne", ChatColor.AQUA)
-        val teamTwo = getTeam(sb, "0002teamTwo", ChatColor.LIGHT_PURPLE)
+        val teamOne = getTeam(sb, "0001teamOne", duel.teamOne.teamColor.bukkitColor)
+        val teamTwo = getTeam(sb, "0002teamTwo", duel.teamTwo.teamColor.bukkitColor)
         for (on in Bukkit.getOnlinePlayers()) {
-            if (duel.teamOne.contains(on))
+            if (duel.teamOne.members.contains(on))
                 teamOne.addEntry(on.name)
 
-            else if (duel.teamTwo.contains(on))
+            else if (duel.teamTwo.members.contains(on))
                 teamTwo.addEntry(on.name)
 
             else
@@ -69,14 +70,14 @@ object FightSB {
         player.scoreboard = sb
     }
 
-    fun setGameScoreboard(duel: Duel, player: Player) {
+    fun setGameScoreboard(duel: AbstractDuel, player: Player) {
         val sb = Bukkit.getScoreboardManager()?.newScoreboard ?: return
         val teamOne = getTeam(sb, "0001teamOne", ChatColor.AQUA)
         val teamTwo = getTeam(sb, "0002teamTwo", ChatColor.LIGHT_PURPLE)
         for (on in Bukkit.getOnlinePlayers()) {
-        if (duel.teamOne.contains(on))
+        if (duel.teamOne.members.contains(on))
             teamOne.addEntry(on.name)
-        else if (duel.teamTwo.contains(on))
+        else if (duel.teamTwo.members.contains(on))
             teamTwo.addEntry(on.name)
         else
             player.hidePlayer(Manager.INSTANCE, on)

@@ -23,7 +23,7 @@ version = "1.0.0"
 
 plugins {
 
-    kotlin("jvm") version "1.4.21"
+    kotlin("jvm") version "1.4.10"
 
     id("com.github.johnrengelman.shadow") version "6.1.0"
 
@@ -43,7 +43,11 @@ repositories {
     // Paper
     maven("https://papermc.io/repo/repository/maven-public/")
     // FAWE
-    maven("https://mvn.intellectualsites.com/content/repositories/releases/")
+    //maven("https://mvn.intellectualsites.com/content/repositories/releases/")
+    // AWE
+    maven("https://raw.githubusercontent.com/SBPrime/AsyncWorldEdit/maven-artifact/")
+    //maven("https://oss.sonatype.org/content/groups/public/")
+    maven("http://maven.enginehub.org/repo/")
     // ProtocolLib
     maven("https://repo.dmulloy2.net/nexus/repository/public/")
     // LIbsDisguise
@@ -69,13 +73,15 @@ dependencies {
     implementation("org.litote.kmongo", "kmongo-serialization-mapping", "4.2.3")
 
     // FAWE
-    implementation("com.intellectualsites.fawe:FAWE-Bukkit:1.16-583")
+    //implementation("com.intellectualsites.fawe:FAWE-Bukkit:1.16-583")
 
-    // ProtocolLib
-    implementation("com.comphenix.protocol:ProtocolLib:4.5.0-SNAPSHOT")
+    // AWE
+    compileOnly("org.primesoft.asyncworldedit:AsyncWorldEdit-API:[2.2.0-rc-01, 2.2.0)")
+    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.4-SNAPSHOT")
+    compileOnly("it.unimi.dsi:fastutil:8.5.4")
 
     // LibsDisguise
-    implementation("LibsDisguises:LibsDisguises:10.0.24")
+    compileOnly("LibsDisguises:LibsDisguises:10.0.24")
 }
 
 /*

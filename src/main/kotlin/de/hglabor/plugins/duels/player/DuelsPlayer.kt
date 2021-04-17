@@ -3,7 +3,7 @@ package de.hglabor.plugins.duels.player
 import de.hglabor.plugins.duels.database.data.InventorySorting
 import de.hglabor.plugins.duels.database.data.PlayerSettings
 import de.hglabor.plugins.duels.database.data.PlayerStats
-import de.hglabor.plugins.duels.duel.Duel
+import de.hglabor.plugins.duels.duel.AbstractDuel
 import de.hglabor.plugins.duels.kits.AbstractKit
 import de.hglabor.plugins.duels.utils.Data
 import org.bukkit.entity.Player
@@ -41,7 +41,7 @@ class DuelsPlayer(val bukkitPlayer: Player) {
     fun currentDuel() = Data.duelOfPlayer[bukkitPlayer]
     fun spectatingDuel() = Data.duelOfSpec[bukkitPlayer]
 
-    fun spectateDuel(duel: Duel, notifyPlayers: Boolean) {
+    fun spectateDuel(duel: AbstractDuel, notifyPlayers: Boolean) {
         duel.addSpectator(bukkitPlayer, notifyPlayers)
     }
 }

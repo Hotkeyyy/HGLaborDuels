@@ -13,7 +13,8 @@ import org.bukkit.entity.Player
 
 object DuelOverviewGUI {
     fun open(player: Player, duelID: String) {
-        val gui = kSpigotGUI(GUIType.THREE_BY_NINE) {
+        //TODO
+        /*val gui = kSpigotGUI(GUIType.THREE_BY_NINE) {
 
             title = "${KColors.DODGERBLUE}Duel §8| §7$duelID"
 
@@ -44,6 +45,6 @@ object DuelOverviewGUI {
                 }
             }
         }
-        player.openGUI(gui)
+        player.openGUI(gui)*/
     }
 }

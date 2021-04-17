@@ -1,9 +1,6 @@
 package de.hglabor.plugins.duels.kits.specials
 
-import de.hglabor.plugins.duels.kits.specials.special.DeadInWater
-import de.hglabor.plugins.duels.kits.specials.special.NinjaSpecial
-import de.hglabor.plugins.duels.kits.specials.special.PearlCooldown
-import de.hglabor.plugins.duels.kits.specials.special.ProjectileKnockback
+import de.hglabor.plugins.duels.kits.specials.special.*
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.utils.hasMark
 import org.bukkit.event.player.PlayerItemConsumeEvent
@@ -20,6 +17,7 @@ enum class Specials {
             ProjectileKnockback
             PearlCooldown
             DeadInWater
+            SpleefSpecial
 
             listen<PlayerItemConsumeEvent> {
                 if (it.item.itemMeta?.hasMark("goldenHead") == true) {

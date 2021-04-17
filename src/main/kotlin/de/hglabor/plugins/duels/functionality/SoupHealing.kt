@@ -53,8 +53,8 @@ object SoupHealing {
                             player.inventory.itemInMainHand.type = Material.BOWL
                             async { DataHolder.playerStats[player]?.addEatenSoup() }
                             if (presouped) {
-                                duel.presoups[player] = (duel.presoups[player] ?: 0) + 1
-                                duel.wastedHealth[player] = (duel.wastedHealth[player] ?: 0) + wastedHealth
+                                duel.stats[player]?.set("presoups", (duel.stats[player]?.get("presoups") ?: 0) as Int + 1)
+                                duel.stats[player]?.set("wastedHealth", (duel.stats[player]?.get("wastedHealth") ?: 0) as Int + wastedHealth)
                             }
                         }
                     }
@@ -64,7 +64,6 @@ object SoupHealing {
 
         val cocoSoup = ShapelessRecipe(NamespacedKey(Manager.INSTANCE, "cocoSoup"), ItemStack(Material.STICK))
             .addIngredient(Material.BOWL).addIngredient(Material.COCOA_BEANS)
-        Manager.INSTANCE.server.addRecipe(cocoSoup);
-
+        Manager.INSTANCE.server.addRecipe(cocoSoup)
     }
 }

@@ -1,6 +1,6 @@
 package de.hglabor.plugins.duels.utils
 
-import de.hglabor.plugins.duels.duel.Duel
+import de.hglabor.plugins.duels.duel.AbstractDuel
 import de.hglabor.plugins.duels.guis.KitsGUI
 import de.hglabor.plugins.duels.kits.AbstractKit
 import de.hglabor.plugins.soupsimulator.Soupsimulator
@@ -10,6 +10,8 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 
 object Data {
+    enum class GameState { STARTING, COUNTDOWN, INGAME, ENDED }
+
     val droppedItemInSoupsimulator = arrayListOf<Entity>()
     val soupsimulator = hashMapOf<Player, Soupsimulator>()
 
@@ -21,9 +23,9 @@ object Data {
     val challenged = hashMapOf<Player, Player>() // Challenger Player
     val challengeKit: HashMap<Player, AbstractKit> = HashMap()
     val duel = hashMapOf<Player, Player>()
-    val duelOfSpec = hashMapOf<Player, Duel>()
-    val duelOfPlayer = hashMapOf<Player, Duel>()
-    val duelFromID = hashMapOf<String, Duel>()
+    val duelOfSpec = hashMapOf<Player, AbstractDuel>()
+    val duelOfPlayer = hashMapOf<Player, AbstractDuel>()
+    val duelFromID = hashMapOf<String, AbstractDuel>()
 
     val usedLocationMultipliersXZ = arrayListOf<Pair<Int, Int>>()
     const val locationMultiplier = 5000.0
@@ -57,7 +59,6 @@ object Data {
                 z++
             }
         } while (true)
-
         return Pair(x, z)
     }
 

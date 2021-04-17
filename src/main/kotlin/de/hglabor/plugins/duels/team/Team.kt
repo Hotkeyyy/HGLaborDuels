@@ -1,15 +1,19 @@
 package de.hglabor.plugins.duels.team
 
-import org.bukkit.entity.LivingEntity
+import com.google.gson.Gson
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
-class Team(val members: MutableList<LivingEntity>, val teamColor: TeamColor) {
-    companion object {
-        val teamOfPlayer = mutableMapOf<LivingEntity, Team>()
+class Team(val members: MutableList<Player>, var teamColor: TeamColor) {
 
-        fun get(player: Player) = teamOfPlayer[player]
+    constructor(member: Player, teamColor: TeamColor): this(mutableListOf(member), teamColor)
+
+    companion object {
+        val teamOfPlayer = mutableMapOf<Player, Team>()
+
+        fun get(livingEntity: Player) = teamOfPlayer[livingEntity]
     }
-    val livingMembers: MutableList<LivingEntity> = ArrayList(members)
+    val livingMembers: MutableList<Player> = ArrayList(members)
     var winner = false
     var loser = false
 
