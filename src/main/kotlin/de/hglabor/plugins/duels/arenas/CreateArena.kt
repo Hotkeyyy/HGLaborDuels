@@ -1,21 +1,21 @@
 package de.hglabor.plugins.duels.arenas
 
-import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.bukkit.BukkitWorld
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard
-import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat
-import com.sk89q.worldedit.function.operation.ForwardExtentCopy
-import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.math.Vector3
 import com.sk89q.worldedit.regions.CuboidRegion
+import com.sk89q.worldedit.regions.factory.CuboidRegionFactory
+import com.sk89q.worldedit.regions.selector.CuboidRegionSelector
+import de.hglabor.plugins.duels.utils.SchematicUtils
 import de.hglabor.plugins.duels.utils.sendMsg
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
+import org.primesoft.asyncworldedit.api.IAsyncWorldEdit
 import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
 
 
@@ -45,9 +45,8 @@ class CreateArena(val creator: Player) {
     }
 
     fun name(string: String) {
-        name = string.toLowerCase().capitalize().trim()
+        name = string.trim()
     }
-
 
     fun save() {
         if (name == "" || world == null || corner1 == null || corner2 == null || spawn1 == null || spawn2 == null) {
@@ -55,7 +54,7 @@ class CreateArena(val creator: Player) {
             return
         }
 
-        val schemfile = File("arenas//$name.schematic")
+        val schemfile = File("arenas//$name.schem")
         creator.sendMsg("arena.creation.saving")
 
         if (schemfile.exists()) {
@@ -93,13 +92,12 @@ class CreateArena(val creator: Player) {
         }
 
         // SAVE SCHEMATIC
-        val weWorld = BukkitWorld(world)
-        val pos1: BlockVector3 = Vector3.at(corner2!!.x, corner2!!.y, corner2!!.z).toBlockPoint()
-        val pos2: BlockVector3 = Vector3.at(corner1!!.x, corner1!!.y, corner1!!.z).toBlockPoint()
-        val region = CuboidRegion(weWorld, pos1, pos2)
-        val clipboard = BlockArrayClipboard(region)
-
-        try {
+        /*val pos1 = BlockVector3.at(corner2!!.x, corner2!!.y, corner2!!.z)
+        val pos2 = BlockVector3.at(corner1!!.x, corner1!!.y, corner1!!.z)*/
+        val region = CuboidRegion(BlockVector3.at(corner2!!.x, corner2!!.y, corner2!!.z),
+            BlockVector3.at(corner1!!.x, corner1!!.y, corner1!!.z))
+        /*val awe = Bukkit.getPluginManager().getPlugin("AsyncWorldEdit") as IAsyncWorldEdit?
+            try {
             WorldEdit.getInstance().editSessionFactory.getEditSession(weWorld, -1).use { editSession ->
                 val forwardExtentCopy = ForwardExtentCopy(editSession, region, clipboard, region.minimumPoint)
                 forwardExtentCopy.isCopyingBiomes = true
@@ -107,7 +105,7 @@ class CreateArena(val creator: Player) {
                 Operations.complete(forwardExtentCopy)
             }
 
-            val schematicFile = File("arenas//$name.schematic")
+            val schematicFile = File("arenas//$name.schem")
             BuiltInClipboardFormat.SPONGE_SCHEMATIC.getWriter(FileOutputStream(schematicFile)).use { writer ->
                 writer.write(clipboard)
             }
@@ -116,14 +114,12 @@ class CreateArena(val creator: Player) {
             e.printStackTrace()
             creator.sendMsg("arena.creation.failed.schematic")
             return
-        } finally {
-            try {
-                creator.sendMsg("arena.creation.success")
-                arenaFromPlayer.remove(creator)
-                Arenas.allArenas[name] = Pair(tag, Arenas.getClipboard(name))
-            } catch (ignore: IOException) {
-            }
-        }
+        }*/
+        SchematicUtils.saveSchematic(region, name)
+
+        creator.sendMsg("arena.creation.success")
+        arenaFromPlayer.remove(creator)
+        Arenas.allArenas[name] = Pair(tag, Arenas.getClipboard(name))
     }
 }
 

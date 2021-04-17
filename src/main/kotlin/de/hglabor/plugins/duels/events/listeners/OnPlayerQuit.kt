@@ -7,7 +7,7 @@ import de.hglabor.plugins.duels.party.Party
 import de.hglabor.plugins.duels.party.Partys.isInParty
 import de.hglabor.plugins.duels.party.Partys.isPartyMember
 import de.hglabor.plugins.duels.player.DuelsPlayer
-import de.hglabor.plugins.duels.tournament.Tournaments
+import de.hglabor.plugins.duels.tournament.Tournament.Companion.publicTournament
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.staff.utils.StaffData
 import de.hglabor.plugins.staff.utils.StaffData.isVanished
@@ -20,7 +20,6 @@ import org.bukkit.event.player.PlayerQuitEvent
 object OnPlayerQuit {
 
     init {
-
         listen<PlayerQuitEvent>(EventPriority.HIGHEST) {
             val player = it.player
             val duelsPlayer = DuelsPlayer.get(player)
@@ -74,11 +73,8 @@ object OnPlayerQuit {
                 }
             }
 
-            if (Tournaments.publicTournament != null) {
-                if (Tournaments.publicTournament!!.players.contains(player)) {
-                    Tournaments.publicTournament!!.players.remove(player)
-                }
-            }
+            if (publicTournament?.players?.contains(player) == true)
+                publicTournament?.leave(player)
 
             DuelsPlayer.duelsPlayers.remove(player)
             Data.clear(player)

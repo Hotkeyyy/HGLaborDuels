@@ -1,69 +1,57 @@
 package de.hglabor.plugins.duels.tournament
 
-import de.hglabor.plugins.duels.duel.Duel
-import de.hglabor.plugins.duels.duel.GameState
+import de.hglabor.plugins.duels.duel.TournamentDuel
 import de.hglabor.plugins.duels.kits.AbstractKit
-import de.hglabor.plugins.duels.utils.Localization
-import de.hglabor.plugins.duels.utils.sendMsg
 import de.hglabor.plugins.duels.party.Party
 import de.hglabor.plugins.duels.party.Partys.isInParty
+import de.hglabor.plugins.duels.team.Team
+import de.hglabor.plugins.duels.team.TeamColor
+import de.hglabor.plugins.duels.utils.Data
+import de.hglabor.plugins.duels.utils.Localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.localization
 import de.hglabor.plugins.duels.utils.PlayerFunctions.reset
+import de.hglabor.plugins.duels.utils.sendMsg
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.extensions.onlinePlayers
 import net.axay.kspigot.runnables.async
 import net.axay.kspigot.runnables.task
-import net.axay.kspigot.runnables.taskRunLater
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 
-class Tournament {
+class Tournament(val host: Player, val teamSize: Int, val kit: AbstractKit) {
     companion object {
-        fun createPublic(host: Player, kit: AbstractKit) {
-            val tournament = Tournament()
-            tournament.host = host
-            tournament.type = TournamentType.PUBLIC
-            tournament.kit = kit
-            tournament.announce(true)
-            Tournaments.publicTournament = tournament
+        enum class TournamentType { PARTY, PUBLIC }
+        var publicTournament: Tournament? = null
+
+        fun create(host: Player, kit: AbstractKit) {
+            val tournament = Tournament(host, 1, kit)
+            tournament.announceTimer(true)
             tournament.startTimer()
         }
-
-        /*fun createParty(party: Party, kit: Kits) {
-            val tournament = Tournament()
-            tournament.host = party.leader
-            tournament.type = TournamentType.PARTY
-            tournament.kit = kit
-        }*/
     }
 
-    lateinit var host: Player
-    lateinit var kit: AbstractKit
-    lateinit var type: TournamentType
-    var state = GameState.COUNTDOWN
-    val players = arrayListOf<Player>()
-    val teams = arrayListOf<ArrayList<Player>>()
-    val fightingTeams = arrayListOf<ArrayList<Player>>()
-    val duels = arrayListOf<Duel>()
-
-    val teamSize = 1
-
+    var state = Data.GameState.COUNTDOWN
+    val teams = mutableListOf<Team>()
+    val fightingTeams = mutableListOf<Team>()
+    val players = mutableMapOf<Player, Team>()
+    val duels = mutableListOf<TournamentDuel>()
     var timeToStart = 120
 
-    fun announce(ifHost: Boolean) {
+    fun announceTimer(isCreation: Boolean) {
         val min = timeToStart / 60
         val sec = timeToStart % 60
 
         async {
             onlinePlayers.forEach {
-                if (ifHost) {
-                    it.playSound(it.location, Sound.ENTITY_ENDER_DRAGON_GROWL, 3f, 3f)
+                it.playSound(it.location, Sound.ENTITY_ENDER_DRAGON_GROWL, 3f, 3f)
+                if (isCreation) {
                     it.sendMsg("tournament.hosted", mutableMapOf("hostName" to host.name, "kit" to kit.name))
                 }
-                if (it.localization("de"))
+                if (it.localization("de")) {
                     it.sendMessage("${Localization.PREFIX}Das Turnier startet in ${KColors.MEDIUMPURPLE}$min${KColors.DARKGRAY}:${KColors.MEDIUMPURPLE}$sec ${(if (min == 1) "Minute" else "Minuten")}§7.")
-                else
+                } else {
                     it.sendMessage("${Localization.PREFIX}The tournament will start in ${KColors.MEDIUMPURPLE}$min${KColors.DARKGRAY}:${KColors.MEDIUMPURPLE}$sec ${(if (min == 1) "minute" else "minutes")}§7.")
+                }
             }
         }
     }
@@ -82,8 +70,8 @@ class Tournament {
                                 players.sendMsg("tournament.start", mutableMapOf("teamCount" to "${teams.size}"))
                             }
                         }
-                        state = GameState.INGAME
-                        startDuels()
+                        state = Data.GameState.INGAME
+                        prepareDuels()
                         it.cancel()
                         return@task
                     }
@@ -103,16 +91,18 @@ class Tournament {
             val party = Party.get(player)
             if (party!!.players.size > teamSize || party.players.size == 1) {
                 party.delete()
-                players.add(player)
-                teams.add(arrayListOf(player))
+                val team = Team(player, TeamColor.teamColors.random())
+                players[player] = team
+                teams.add(team)
                 async {
                     onlinePlayers.forEach { players ->
                         players.sendMsg("tournament.playerJoined", mutableMapOf("playerName" to player.name))
                     }
                 }
             } else {
-                players.addAll(party.players)
-                teams.add(party.players)
+                val team = Team(party.players, TeamColor.teamColors.random())
+                party.players.forEach { players[it] = team }
+                teams.add(team)
                 async {
                     onlinePlayers.forEach { players ->
                         players.sendMsg("tournament.partyJoined", mutableMapOf("leaderName" to player.name))
@@ -120,8 +110,8 @@ class Tournament {
                 }
             }
         } else {
-            players.add(player)
-            teams.add(arrayListOf(player))
+            val team = Team(player, TeamColor.teamColors.random())
+            players[player] = team
             async {
                 onlinePlayers.forEach { players ->
                     players.sendMsg("tournament.playerJoined", mutableMapOf("playerName" to player.name))
@@ -131,101 +121,62 @@ class Tournament {
     }
 
     fun leave(player: Player) {
-        for (team in teams) {
-            if (team.contains(player))
+        if (players.containsKey(player)) {
+            val team = players[player]!!
+            team.members.remove(player)
+            if (team.members.size == 0) {
                 teams.remove(team)
-            team.remove(player)
+            }
+            async {
+                onlinePlayers.forEach { players ->
+                    players.sendMsg("tournament.playerLeft", mutableMapOf("playerName" to player.name))
+                }
+            }
+            players.remove(player)
         }
-        async {
-            onlinePlayers.forEach { players ->
-                players.sendMsg("tournament.playerLeft", mutableMapOf("playerName" to player.name))
+    }
+
+    fun prepareDuels() {
+        val teamList = ArrayList(teams)
+        val duelCount = teams.size / 2.0 + 1
+        val tasks = if (duelCount - duelCount.toInt() != 0.0) duelCount.toLong() + 1 else duelCount.toLong()
+
+        task(false, 0, 10, tasks) {
+            players.keys.forEach { player -> player.sendTitle("Preparing duels", "Please wait...", 5, 21, 4) }
+
+            if (teamList.size > 1) {
+                val teamOne = teamList.random()
+                teamList.remove(teamOne)
+                val teamTwo = teamList.random()
+                teamList.remove(teamTwo)
+
+                TournamentDuel(this, teamOne, teamTwo, kit)
+            } else if (teamList.size == 1) {
+                teamList.forEach { team ->
+                    team.members.forEach { players ->
+                        players.sendMsg("tournament.noEnemyFound")
+                    }
+                    teamList.remove(team)
+                }
+            } else if (teamList.size == 0) {
+                startDuels()
+                it.cancel()
             }
         }
-        players.remove(player)
     }
 
     private fun startDuels() {
-        val teamlist = arrayListOf<ArrayList<Player>>()
-        teamlist.addAll(teams)
-
-        val duels = teams.size / 2.0
-        val tasks: Long
-        if (duels - duels.toInt() != 0.0)
-            tasks = teams.size / 2L + 1
-        else
-            tasks = teams.size / 2L
-
-        task(
-            sync = true,
-            delay = 0,
-            period = 5,
-            howOften = tasks
-        ) {
-            if (teamlist.size > 1) {
-                val teamOne = teamlist.random()
-                teamlist.remove(teamOne)
-                fightingTeams.add(teamOne)
-
-                val teamTwo = teamlist.random()
-                teamlist.remove(teamTwo)
-                fightingTeams.add(teamTwo)
-
-                Duel.createTournament(teamOne, teamTwo, kit, this)
-            } else {
-                async {
-                    teamlist.forEach {
-                        it.forEach { players ->
-                            players.sendMsg("tournament.noEnemyFound")
-                        }
-                        teamlist.remove(it)
-                    }
-                }
-            }
+        for (duel in duels) {
+            duel.start()
         }
     }
 
-    fun duelEnded(duel: Duel) {
-        duel.loser.forEach { players.remove(it) }
-        teams.remove(duel.loser)
-        fightingTeams.remove(duel.loser)
-        fightingTeams.remove(duel.winner)
-        duels.remove(duel)
-        taskRunLater(
-            sync = true,
-            delay = 60
-        ) {
-            if (fightingTeams.isEmpty()) {
-                roundEnded()
-                async {
-                    onlinePlayers.forEach { players ->
-                        players.sendMsg("tournament.roundEnded")
-                    }
-                }
-            }
-        }
-    }
-
-    fun roundEnded() {
-        if (teams.size == 1) {
-            endTournament()
-            return
-
-        } else if (teams.size > 1) {
-            async {
-                onlinePlayers.forEach { players ->
-                    players.sendMsg("tournament.nextRoundStarting")
-                }
-            }
-            taskRunLater(60L, false) { startDuels() }
-        }
-    }
-
-    private fun endTournament() {
-        state = GameState.ENDED
+    fun endTournament() {
+        state = Data.GameState.ENDED
         var winners = ""
-        for (i in 0 until teams.first().size) {
-            winners += teams.first()[i].name
-            if (i < teams.first().size)
+        for (i in 0 until teams.first().members.size) {
+            winners += teams.first().members[i].name
+            if (i < teams.first().members.size)
                 winners += ", "
         }
         async {
@@ -233,26 +184,10 @@ class Tournament {
                 players.sendMsg("tournament.teamWins", mutableMapOf("winner" to winners))
             }
         }
-        Tournaments.publicTournament = null
+        publicTournament = null
 
-        players.forEach {
+        players.keys.forEach {
             it.reset()
-        }
-    }
-
-    fun sendMessage(message: String) {
-        if (type == TournamentType.PUBLIC) {
-            async {
-                onlinePlayers.forEach {
-                    it.sendMessage(message)
-                }
-            }
-        } else {
-            async {
-                players.forEach {
-                    it.sendMessage(message)
-                }
-            }
         }
     }
 }

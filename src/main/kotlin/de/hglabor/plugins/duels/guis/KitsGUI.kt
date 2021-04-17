@@ -1,6 +1,6 @@
 package de.hglabor.plugins.duels.guis
 
-import de.hglabor.plugins.duels.duel.Duel
+import de.hglabor.plugins.duels.duel.UnrankedDuel
 import de.hglabor.plugins.duels.kits.*
 import de.hglabor.plugins.duels.kits.kit.`fun`.HardJumpAndRun
 import de.hglabor.plugins.duels.kits.kit.`fun`.JumpAndRun
@@ -113,13 +113,13 @@ object KitsGUI {
                         }
                     }
                     val party = Party.get(player)!!
-                    Duel.create(party.getSplitTeams().first, party.getSplitTeams().second, kit)
+                    UnrankedDuel.create(party.getSplitTeams().first, party.getSplitTeams().second, kit)
                     Data.openedKitInventory.remove(player)
                     player.closeInventory()
                 }
 
                 KitInventories.TOURNAMENT -> {
-                    Tournament.createPublic(player, kit)
+                    Tournament.create(player, kit)
                     Data.openedKitInventory.remove(player)
                     player.closeInventory()
                 }

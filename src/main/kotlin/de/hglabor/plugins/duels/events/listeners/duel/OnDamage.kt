@@ -1,10 +1,10 @@
 package de.hglabor.plugins.duels.events.listeners.duel
 
 import de.hglabor.plugins.duels.database.data.DataHolder
-import de.hglabor.plugins.duels.duel.GameState
 import de.hglabor.plugins.duels.kits.AbstractKit
 import de.hglabor.plugins.duels.kits.specials.Specials
 import de.hglabor.plugins.duels.player.DuelsPlayer
+import de.hglabor.plugins.duels.utils.Data
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.runnables.async
 import org.bukkit.Bukkit
@@ -30,7 +30,7 @@ object OnDamage {
                 if (duelsPlayer.isInFight()) {
                     val duel = duelsPlayer.currentDuel() ?: return@listen
 
-                    if (duel.state == GameState.INGAME) {
+                    if (duel.gameState == Data.GameState.INGAME) {
                         if (duel.kit.specials.contains(Specials.INVINICIBLE)) {
                             it.isCancelled = true
                             return@listen
@@ -64,7 +64,7 @@ object OnDamage {
                             damager = it.damager as Player
                             val duelsDamager = DuelsPlayer.get(damager)
                             if (duelsDamager.isInFight()) {
-                                if (duel.state == GameState.INGAME) {
+                                if (duel.gameState == Data.GameState.INGAME) {
                                     damage = getFinalDamage(duel.kit, damage, damager.inventory.itemInMainHand.type)
                                 } else {
                                     it.isCancelled = true
@@ -86,15 +86,18 @@ object OnDamage {
                     if (!it.isCancelled) {
                         it.damage = damage
                         if (damager != null) {
-                            duel.hits[damager] = (duel.hits[damager]?: 0) + 1
+                            duel.stats[damager]?.set("hits", (duel.stats[damager]?.get("hits")?: 0) as Int + 1)
 
-                            duel.lastHitOfPlayer[damager] = player
-                            duel.lastAttackerOfPlayer[player] = damager
+                            duel.stats[damager]?.set("lastHit", player)
+                            duel.stats[damager]?.set("hits", (duel.stats[damager]?.get("hits")?: 0) as Int + 1)
+                            var currentCombo = (duel.stats[damager]?.get("currentCombo")?: 0) as Int
+                            duel.stats[damager]?.set("currentCombo", ++currentCombo)
 
-                            duel.currentCombo[damager] = (duel.currentCombo[damager]?: 0) + 1
-                            duel.currentCombo[player] = 0
-                            if (duel.longestCombo[damager]?: 0 < duel.currentCombo[damager]?: 0) {
-                                duel.longestCombo[damager] = duel.currentCombo[damager]?: 0
+                            duel.stats[player]?.set("lastAttacker", damager)
+                            duel.stats[player]?.set("currentCombo", 0)
+
+                            if (((duel.stats[damager]?.get("longestCombo")?: 0) as Int) < currentCombo) {
+                                duel.stats[damager]?.set("longestCombo", currentCombo)
                             }
 
                             async { DataHolder.playerStats[damager]?.addTotalHit() }

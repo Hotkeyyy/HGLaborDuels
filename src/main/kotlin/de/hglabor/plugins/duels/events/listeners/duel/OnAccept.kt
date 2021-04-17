@@ -1,6 +1,6 @@
 package de.hglabor.plugins.duels.events.listeners.duel
 
-import de.hglabor.plugins.duels.duel.Duel
+import de.hglabor.plugins.duels.duel.UnrankedDuel
 import de.hglabor.plugins.duels.player.DuelsPlayer
 import de.hglabor.plugins.duels.utils.Data
 import net.axay.kspigot.event.listen
@@ -27,7 +27,7 @@ object OnAccept {
                     if (Data.challenged[target] == damager) {
                         it.isCancelled = true
                         val kit = Data.challengeKit[target] ?: return@listen
-                        Duel.create(damager, target, kit)
+                        UnrankedDuel.create(damager, target, kit).start()
                     }
                 }
             }

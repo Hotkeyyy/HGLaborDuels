@@ -1,7 +1,7 @@
 package de.hglabor.plugins.soupsimulator
 
 import de.hglabor.plugins.duels.Manager
-import de.hglabor.plugins.duels.duel.GameState
+import de.hglabor.plugins.duels.duel.AbstractDuel
 import de.hglabor.plugins.duels.utils.KitUtils
 import de.hglabor.plugins.duels.utils.Localization
 import de.hglabor.plugins.duels.utils.sendMsg
@@ -34,7 +34,7 @@ class Soupsimulator(val player: Player) {
 
     lateinit var level: SoupsimulatorLevel
     lateinit var Task: SoupsimulatorTasks
-    var state = GameState.STARTING
+    var state = Data.GameState.STARTING
 
     var timer = 0
     var taskStart: Long? = null
@@ -60,11 +60,11 @@ class Soupsimulator(val player: Player) {
     }
 
     private fun sendCountdown() {
-        state = GameState.COUNTDOWN
+        state = Data.GameState.COUNTDOWN
         var count = 3
         var colorcode = 'a'
         task(true, 20, 20, 4) {
-            if (state != GameState.COUNTDOWN) {
+            if (state != Data.GameState.COUNTDOWN) {
                 it.cancel(); return@task
             }
             if (count == 2) colorcode = 'e'
@@ -77,7 +77,7 @@ class Soupsimulator(val player: Player) {
                 player.closeInventory()
                 runTimer()
                 nextTask()
-                state = GameState.INGAME
+                state = Data.GameState.INGAME
             }
             count--
         }
@@ -86,7 +86,7 @@ class Soupsimulator(val player: Player) {
     private fun runTimer() {
         object : BukkitRunnable() {
             override fun run() {
-                if (state != GameState.INGAME) {
+                if (state != Data.GameState.INGAME) {
                     cancel(); return
                 }
                 val s = timer / 10
@@ -183,7 +183,7 @@ class Soupsimulator(val player: Player) {
     }
 
     fun stop() {
-        state = GameState.ENDED
+        state = Data.GameState.ENDED
         player.sendMessage("${KColors.DARKGRAY}${KColors.STRIKETHROUGH}                         ")
         player.sendMsg("soupsimulator.finish.score", mutableMapOf("score" to "$score"))
         if (level == SoupsimulatorLevel.BONUS) {

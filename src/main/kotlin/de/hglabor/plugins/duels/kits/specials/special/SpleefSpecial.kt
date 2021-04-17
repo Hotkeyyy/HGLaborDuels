@@ -19,7 +19,7 @@ object SpleefSpecial {
             val duel = duelsPlayer.currentDuel() ?: return@listen
 
             if (duel.kit.specials.contains(Specials.SPLEEF)) {
-                if (duel.alivePlayers.contains(player)) {
+                if (duel.players.contains(player)) {
                     val clickedBlock = it.clickedBlock ?: return@listen
                     if (clickedBlock.type == Material.SNOW_BLOCK) {
                         clickedBlock.type = Material.AIR
@@ -35,7 +35,7 @@ object SpleefSpecial {
                 val duelsPlayer = DuelsPlayer.get(shooter)
                 val duel = duelsPlayer.currentDuel() ?: return@listen
                 if (duel.kit.specials.contains(Specials.SPLEEF)) {
-                    if (duel.alivePlayers.contains(shooter)) {
+                    if (duel.players.contains(shooter)) {
                         val hitBlock = it.hitBlock ?: return@listen
                         if (hitBlock.type == Material.SNOW_BLOCK) {
                             hitBlock.type = Material.AIR

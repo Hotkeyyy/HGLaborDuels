@@ -18,10 +18,10 @@ object OnPotionSplash {
                     if (duel.kit.type == KitType.POT) {
                         val healed = 8 * it.getIntensity(player).toInt()
                         val missed = 8 - healed
-                        if (missed > 2)
-                            duel.missedPots[player] = (duel.missedPots[player]?: 0) + 1
-
-                        duel.wastedHealth[player] = (duel.wastedHealth[player]?: 0) + missed
+                        if (missed > 2) {
+                            duel.stats[player]?.set("missedPots", (duel.stats[player]?.get("missedPots") ?: 0) as Int + 1)
+                        }
+                        duel.stats[player]?.set("wastedHealth", (duel.stats[player]?.get("wastedHealth") ?: 0) as Int + missed)
                     }
                 }
             }

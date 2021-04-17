@@ -1,17 +1,17 @@
 package de.hglabor.plugins.duels.events.listeners.duel
 
-import de.hglabor.plugins.duels.events.events.duel.DuelStartEvent
+import de.hglabor.plugins.duels.events.events.duel.DuelPrepareEvent
 import de.hglabor.plugins.duels.player.DuelsPlayer
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.staff.utils.StaffData
 import net.axay.kspigot.event.listen
 
-object OnDuelStart {
+object OnDuelPrepare {
 
     init {
-        listen<DuelStartEvent> {
+        listen<DuelPrepareEvent> {
             val duel = it.duel
-            duel.alivePlayers.forEach { player ->
+            duel.allPlayers().forEach { player ->
                 val duelsPlayer = DuelsPlayer.get(player)
                 Data.challengeKit.remove(player)
                 Data.challenged.remove(player)

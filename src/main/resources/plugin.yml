@@ -6,7 +6,7 @@ main: de.hglabor.plugins.duels.Manager
 api-version: 1.16
 
 depend:
-  - FastAsyncWorldEdit
+  - AsyncWorldEdit
 commands:
   arena:
   challenge:

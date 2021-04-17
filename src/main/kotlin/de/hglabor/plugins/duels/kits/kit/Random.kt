@@ -5,11 +5,7 @@ import de.hglabor.plugins.duels.kits.AbstractKit
 import de.hglabor.plugins.duels.kits.Kits
 import org.bukkit.Material
 
-class Random : AbstractKit() {
-    companion object {
-        val INSTANCE = Random()
-    }
-
+object Random : AbstractKit() {
     override val name = "Random"
     override val itemInGUI = Kits.guiItem(Material.REPEATING_COMMAND_BLOCK, name)
     override val arenaTag = ArenaTags.NONE

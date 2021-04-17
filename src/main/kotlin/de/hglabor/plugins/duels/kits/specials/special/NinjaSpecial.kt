@@ -17,18 +17,16 @@ object NinjaSpecial {
             val duel = duelsPlayer.currentDuel() ?: return@listen
 
             if (duel.kit.specials.contains(Specials.NINJA)) {
-                if (duel.lastHitOfPlayer.containsKey(player)) {
-                    val target = duel.lastHitOfPlayer[player]
-                    if (duel.alivePlayers.contains(target)) {
-                        if (!Kits.hasCooldown(player)) {
-                            Kits.setCooldown(player, 13)
-                            var nang: Float = target!!.location.yaw + 90
-                            if (nang < 0) nang += 360f
-                            val nX = cos(Math.toRadians(nang.toDouble()))
-                            val nZ = sin(Math.toRadians(nang.toDouble()))
-                            val loc = target.location.clone().subtract(nX, 0.0, nZ)
-                            player.teleport(loc)
-                        }
+                val target = (duel.stats[player]?.get("lastHit") ?: return@listen) as Player
+                if (duel.players.contains(target)) {
+                    if (!Kits.hasCooldown(player)) {
+                        Kits.setCooldown(player, 13)
+                        var nang: Float = target.location.yaw + 90
+                        if (nang < 0) nang += 360f
+                        val nX = cos(Math.toRadians(nang.toDouble()))
+                        val nZ = sin(Math.toRadians(nang.toDouble()))
+                        val loc = target.location.clone().subtract(nX, 0.0, nZ)
+                        player.teleport(loc)
                     }
                 }
             }

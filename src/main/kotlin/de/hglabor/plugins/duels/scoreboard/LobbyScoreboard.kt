@@ -1,7 +1,6 @@
 package de.hglabor.plugins.duels.scoreboard
 
 import de.hglabor.plugins.duels.Manager
-import de.hglabor.plugins.duels.duel.GameState
 import de.hglabor.plugins.duels.player.DuelsPlayer
 import de.hglabor.plugins.duels.utils.Data
 import de.hglabor.plugins.staff.utils.StaffData
@@ -102,7 +101,7 @@ object LobbyScoreboard {
 
                 } else if (duelsPlayer.isInFight()) {
                     val duel = duelsPlayer.currentDuel() ?: return@scheduleSyncRepeatingTask
-                    if (duel.state == GameState.COUNTDOWN)
+                    if (duel.gameState == Data.GameState.COUNTDOWN)
                         FightSB.setCountdownScoreboard(duel, all)
                     else
                         FightSB.setGameScoreboard(duel, all)

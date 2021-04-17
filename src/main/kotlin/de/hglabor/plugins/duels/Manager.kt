@@ -124,12 +124,13 @@ class Manager : KSpigot() {
         OnBlockForm
         OnArrowPickUp
         OnDeathInDuel
-        OnDuelStart
+        OnDuelPrepare
         OnProjectileLaunch
+        OnTournamentDuelEnd
         Specials.enable()
 
-        DuelPlayerDataOverviewGUI.enable()
-        DuelTeamOverviewGUI.enable()
+        /*DuelPlayerDataOverviewGUI.enable()
+        DuelTeamOverviewGUI.enable()*/
         KitsGUI.enable()
         InventorySorting.enable()
 

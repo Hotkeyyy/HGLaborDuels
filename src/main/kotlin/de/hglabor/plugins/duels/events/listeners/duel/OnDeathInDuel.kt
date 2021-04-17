@@ -10,6 +10,8 @@ import net.axay.kspigot.runnables.task
 import org.bukkit.Bukkit
 import org.bukkit.GameRule
 import org.bukkit.Location
+import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageEvent
 
 object OnDeathInDuel {
@@ -20,12 +22,10 @@ object OnDeathInDuel {
 
             if (it.duelDeathReason != DuelDeathReason.QUIT) {
                 if (duel.kit.allowsRespawn) {
-                    if (duel.teamOne.contains(player)) {
-                        player.teleport(duel.arena.spawn1Loc)
-                        duel.direction(player, duel.arena.spawn2Loc)
+                    if (duel.teamOne.members.contains(player)) {
+                        duel.teleportPlayerToSpawn(player)
                     } else {
-                        player.teleport(duel.arena.spawn2Loc)
-                        duel.direction(player, duel.arena.spawn1Loc)
+                        duel.teleportPlayerToSpawn(player)
                     }
                     return@listen
                 }
@@ -33,34 +33,31 @@ object OnDeathInDuel {
 
             Data.duelOfSpec[player] = duel
             Data.inFight.remove(player)
-            duel.alivePlayers.remove(player)
-            val newAlivePlayers = duel.alivePlayers
-            duel.alivePlayers = newAlivePlayers
+            duel.players.remove(player)
             duel.savePlayerdata(player)
             Kits.removeCooldown(player)
 
             if (it.duelDeathReason != null) {
                 duel.sendMsg("death.duel.${it.duelDeathReason.toString().toLowerCase()}",
-                    mutableMapOf("teamColor" to "${duel.teamColor(player)}", "playerName" to player.name))
-
-                if (it.duelDeathReason == DuelDeathReason.QUIT)
-                    player.reset()
+                    mutableMapOf("teamColor" to "${duel.getTeamOfPlayer(player).teamColor.mainColor}", "playerName" to player.name))
 
             } else if (it.bukkitDeathReason != null) {
                 player.world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true)
                 if (it.bukkitDeathReason == EntityDamageEvent.DamageCause.PROJECTILE || it.bukkitDeathReason == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-                    val killer = duel.lastAttackerOfPlayer[player]
+                    val killer = (duel.stats[player]?.get("lastHit"))
                     if (killer != null) {
-                        duel.sendMsg("death.bukkit.${it.bukkitDeathReason.toString().toLowerCase()}",
-                            mutableMapOf("teamColor" to "${duel.teamColor(player)}", "playerName" to player.name,
-                            "killerTeamColor" to "${duel.teamColor(killer)}", "killerName" to killer.name))
+                        if (killer is Player) {
+                            duel.sendMsg("death.bukkit.${it.bukkitDeathReason.toString().toLowerCase()}",
+                                mutableMapOf("teamColor" to "${duel.getTeamOfPlayer(player).teamColor.mainColor}",
+                                    "playerName" to player.name,
+                                    "killerTeamColor" to "${duel.getTeamOfPlayer(killer).teamColor.mainColor}",
+                                    "killerName" to killer.name))
+                        }
                     } else {
                         duel.sendMsg("death.bukkit.${it.bukkitDeathReason.toString().toLowerCase()}",
-                            mutableMapOf("teamColor" to "${duel.teamColor(player)}", "playerName" to player.name))
+                            mutableMapOf("teamColor" to "${duel.getTeamOfPlayer(player).teamColor.mainColor}",
+                                "playerName" to player.name))
                     }
-                } else {
-                    duel.sendMsg("death.bukkit.${it.bukkitDeathReason.toString().toLowerCase()}",
-                        mutableMapOf("teamColor" to "${duel.teamColor(player)}", "playerName" to player.name))
                 }
             }
 
@@ -78,10 +75,9 @@ object OnDeathInDuel {
                 }
             }
 
-            if (duel.ifTeamDied(duel.getTeam(player))) {
-                duel.loser = duel.getTeam(player)
-                duel.winner = duel.getOtherTeam(player)
-                duel.stop()
+            val teamOfPlayer = duel.getTeamOfPlayer(player)
+            if (teamOfPlayer.livingMembers.size == 0) {
+                duel.setLoser(teamOfPlayer)
             }
         }
     }

@@ -2,7 +2,6 @@ package de.hglabor.plugins.duels.events.listeners.soupsimulator
 
 import de.hglabor.plugins.duels.Manager
 import de.hglabor.plugins.duels.database.data.DataHolder
-import de.hglabor.plugins.duels.duel.GameState
 import de.hglabor.plugins.duels.guis.SoupsimulatorGUI
 import de.hglabor.plugins.duels.utils.sendMsg
 import de.hglabor.plugins.duels.player.DuelsPlayer
@@ -53,13 +52,13 @@ object SoupsimulatorEvents {
 
             if (duelsPlayer.isInSoupsimulator()) {
                 val simulator = Soupsimulator.get(player) ?: return@listen
-                if (simulator.state != GameState.INGAME) return@listen
+                if (simulator.state != Data.GameState.INGAME) return@listen
 
                 if (simulator.Task == SoupsimulatorTasks.SOUP) {
                     val newItemType = player.inventory.getItem(it.newSlot)?.type ?: Material.AIR
                     if (newItemType == Material.STONE_SWORD) {
                         var playerHasSoups = false
-                        for (item in player.inventory.contents) {
+                        for (item in player.inventory.contents.filterNotNull()) {
                             if (item.type != Material.AIR && item.type != Material.STONE_SWORD) {
                                 playerHasSoups = true
                                 break
@@ -71,9 +70,7 @@ object SoupsimulatorEvents {
                         }
                     } else {
                         if (player.inventory.getItem(it.newSlot)?.type == Material.MUSHROOM_STEW || player.inventory.getItem(
-                                it.newSlot
-                            )?.type == Material.BOWL
-                        )
+                                it.newSlot)?.type == Material.BOWL)
                             return@listen
 
                         simulator.wrongHotkeys += 1
@@ -97,7 +94,7 @@ object SoupsimulatorEvents {
             val duelsPlayer = DuelsPlayer.get(player)
             if (duelsPlayer.isInSoupsimulator()) {
                 val simulator = Soupsimulator.get(player) ?: return@listen
-                if (simulator.state == GameState.INGAME)
+                if (simulator.state == Data.GameState.INGAME)
                     if (simulator.Task == SoupsimulatorTasks.RECRAFT) {
                         if (it.currentItem?.type == Material.MUSHROOM_STEW && it.isShiftClick) {
                             simulator.score += 3
@@ -120,7 +117,7 @@ object SoupsimulatorEvents {
                 return@listen
             }
             val simulator = Soupsimulator.get(player) ?: return@listen
-            if (simulator.state == GameState.INGAME)
+            if (simulator.state == Data.GameState.INGAME)
                 if (simulator.Task == SoupsimulatorTasks.REFILL) {
                     var soupsInHotbar = 0
                     if (it.currentItem?.type == Material.MUSHROOM_STEW && it.isShiftClick) {
@@ -152,7 +149,7 @@ object SoupsimulatorEvents {
                 }
                 if (duelsPlayer.isInSoupsimulator()) {
                     val simulator = Soupsimulator.get(player) ?: return@listen
-                    if (simulator.state == GameState.INGAME)
+                    if (simulator.state == Data.GameState.INGAME)
                         if (player.getHandItem(it.hand)?.type == Material.MUSHROOM_STEW) {
                             if (simulator.Task == SoupsimulatorTasks.SOUP) {
                                 player.inventory.itemInMainHand.type = Material.BOWL

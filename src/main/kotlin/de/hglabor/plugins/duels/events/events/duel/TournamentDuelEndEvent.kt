@@ -1,11 +1,10 @@
 package de.hglabor.plugins.duels.events.events.duel
 
-import de.hglabor.plugins.duels.duel.Duel
+import de.hglabor.plugins.duels.duel.TournamentDuel
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
-class DuelStartEvent(val duel: Duel) : Event(true) {
-
+class TournamentDuelEndEvent(val duel: TournamentDuel) : Event(false) {
     companion object {
         @JvmStatic
         private val HANDLERS = HandlerList()
