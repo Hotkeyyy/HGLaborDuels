@@ -2,7 +2,7 @@ package de.hglabor.plugins.duels.arenas
 
 import com.sk89q.worldedit.bukkit.BukkitWorld
 import com.sk89q.worldedit.extent.clipboard.Clipboard
-import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.CuboidRegion
 import de.hglabor.plugins.duels.utils.Data
@@ -17,14 +17,6 @@ import org.bukkit.World
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 import java.io.FileInputStream
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader
-
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats
-
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat
-
-
-
 
 class Arena(var loc: Pair<Int, Int>, val arenaName: String) {
 
@@ -33,7 +25,7 @@ class Arena(var loc: Pair<Int, Int>, val arenaName: String) {
             return Arenas.allArenas[arenaName]!!
         }
     }
-    val file = File("arenas//$arenaName.schem")
+    private val file = File("arenas//arenas.yml")
     private val yamlConfiguration = YamlConfiguration.loadConfiguration(file)
 
     var bukkitWorld: BukkitWorld

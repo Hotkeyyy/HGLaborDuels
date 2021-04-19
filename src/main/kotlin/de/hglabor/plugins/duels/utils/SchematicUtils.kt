@@ -62,7 +62,7 @@ class PasteAction(private val arenaName: String, to: Location?) :
     private val to: BlockVector3 = BukkitAdapter.asBlockVector(to)
 
     override fun execute(editSession: ICancelabeEditSession?): Int {
-        /*(WorldEdit.getInstance().editSessionFactory as IAsyncEditSessionFactory).getEditSession(weWorld, -1).use { editSession ->
+        (WorldEdit.getInstance().editSessionFactory as IAsyncEditSessionFactory).getEditSession(weWorld, -1).use { editSession ->
             val operation = ClipboardHolder(Arenas.allArenas[arenaName]?.second)
                 .createPaste(editSession)
                 .to(to)
@@ -70,8 +70,9 @@ class PasteAction(private val arenaName: String, to: Location?) :
                 .copyEntities(false)
                 .build()
             Operations.complete(operation)
-        }*/
-        try {
+        }
+
+        /*try {
             val schematicFile = File("arenas//$arenaName.schem")
             val stream = FileInputStream(schematicFile)
             val reader = BuiltInClipboardFormat.SPONGE_SCHEMATIC.getReader(stream)
@@ -88,7 +89,7 @@ class PasteAction(private val arenaName: String, to: Location?) :
             e.printStackTrace()
         } catch (e: WorldEditException) {
             e.printStackTrace()
-        }
+        }*/
         return 0
     }
 }
