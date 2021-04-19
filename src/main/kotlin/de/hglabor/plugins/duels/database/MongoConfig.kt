@@ -8,7 +8,7 @@ object MongoConfig {
     var yamlConfiguration = YamlConfiguration.loadConfiguration(file)
 
     lateinit var host: String
-    var port = 27017
+    lateinit var port: Int
     lateinit var username: String
     lateinit var password: String
     lateinit var database: String
