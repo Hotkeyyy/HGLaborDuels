@@ -72,7 +72,6 @@ class Manager : KSpigot() {
         File("plugins//HGLaborDuels//temp//duels//").mkdir()
 
         broadcast("${Localization.PREFIX}${KColors.DODGERBLUE}ENABLED PLUGIN")
-
     }
 
     override fun startup() {
@@ -136,27 +135,24 @@ class Manager : KSpigot() {
         ChooseKitGUI.enable()
         QueueGUI.enable()
 
-        getCommand("challenge")!!.setExecutor(ChallengeCommand)
-        getCommand("setspawn")!!.setExecutor(SetSpawnCommand)
-        getCommand("spawn")!!.setExecutor(SpawnCommand)
-        getCommand("arena")!!.setExecutor(ArenaCommand)
-        getCommand("arena")!!.tabCompleter = ArenaCommand
-        getCommand("spec")!!.setExecutor(SpecCommand)
-        getCommand("spec")!!.tabCompleter = SpecCommand
-        getCommand("stats")!!.setExecutor(StatsCommand)
-        getCommand("dueloverview")!!.setExecutor(DuelOverviewCommand)
-        getCommand("leave")!!.setExecutor(LeaveCommand)
-        getCommand("party")!!.setExecutor(PartyCommand)
-        getCommand("party")!!.tabCompleter = PartyCommand
+        ChallengeCommand.register("challenge")
+        SetSpawnCommand.register("setspawn")
+        SpawnCommand.register("spawn")
+        ArenaCommand.register("arena")
+        SpecCommand.register("spec")
+        StatsCommand.register("stats")
+        DuelOverviewCommand("dueloverview")
+        LeaveCommand.register("leave")
+        PartyCommand.register("party")
 
         StaffOnItemDrop.enable()
         StaffOnInteract.enable()
         StaffOnInventoryClick.enable()
-        getCommand("follow")!!.setExecutor(FollowCommand)
-        getCommand("staffmode")!!.setExecutor(StaffmodeCommand)
+        FollowCommand.register("follow")
+        StaffmodeCommand.register("staffmode")
 
         Arenas.enable()
-        getCommand("tournament")!!.setExecutor(TournamentCommand)
+        TournamentCommand.register("tournament")
     }
 
     private fun connectMongo() {
