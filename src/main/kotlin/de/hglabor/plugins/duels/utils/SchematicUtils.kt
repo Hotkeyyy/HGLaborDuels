@@ -53,7 +53,7 @@ object SchematicUtils {
         val tsSession = (WorldEdit.getInstance().editSessionFactory as IAsyncEditSessionFactory).getThreadSafeEditSession(BukkitWorld(location.world), -1, null, player)
 
         val action = PasteAction(arena.arenaName, location)
-        awe.blockPlacer.performAsAsyncJob(tsSession, player, "loadWarGear:$arena.arenaName", action)
+        awe.blockPlacer.performAsAsyncJob(tsSession, player, "loadWarGear:${arena.arenaName}", action)
     }
 }
 
@@ -62,7 +62,7 @@ class PasteAction(private val arenaName: String, to: Location?) :
     private val to: BlockVector3 = BukkitAdapter.asBlockVector(to)
 
     override fun execute(editSession: ICancelabeEditSession?): Int {
-        (WorldEdit.getInstance().editSessionFactory as IAsyncEditSessionFactory).getEditSession(weWorld, -1).use { editSession ->
+        (WorldEdit.getInstance().editSessionFactory as IAsyncEditSessionFactory).getEditSession(weWorld, -1).use {
             val operation = ClipboardHolder(Arenas.allArenas[arenaName]?.second)
                 .createPaste(editSession)
                 .to(to)
@@ -71,25 +71,6 @@ class PasteAction(private val arenaName: String, to: Location?) :
                 .build()
             Operations.complete(operation)
         }
-
-        /*try {
-            val schematicFile = File("arenas//$arenaName.schem")
-            val stream = FileInputStream(schematicFile)
-            val reader = BuiltInClipboardFormat.SPONGE_SCHEMATIC.getReader(stream)
-            val clipboard: Clipboard = reader.read()
-            val holder = ClipboardHolder(clipboard)
-            val operation: Operation = holder
-                .createPaste(editSession)
-                .to(to)
-                .ignoreAirBlocks(true)
-                .copyEntities(false)
-                .build()
-            Operations.complete(operation)
-        } catch (e: IOException) {
-            e.printStackTrace()
-        } catch (e: WorldEditException) {
-            e.printStackTrace()
-        }*/
         return 0
     }
 }
