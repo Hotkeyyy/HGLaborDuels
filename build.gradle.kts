@@ -43,6 +43,9 @@ repositories {
     maven("https://mvn.intellectualsites.com/content/repositories/releases/")
     maven("https://repo.dmulloy2.net/nexus/repository/public/")
     maven("https://jitpack.io")
+    // BOTS
+    maven("https://repo.md-5.net/content/groups/public/")
+
 }
 
 dependencies {
@@ -54,6 +57,10 @@ dependencies {
     // PAPER
     compileOnly("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT")
 
+    // BOTS
+    compileOnly("org.bukkit:craftbukkit:1.16.5-R0.1-SNAPSHOT")
+    compileOnly("LibsDisguises:LibsDisguises:10.0.21")
+    implementation("de.hglabor:hglabor-utils:0.0.6")
 
     // KSPIGOT
     implementation("net.axay", "KSpigot", "v1.16.5_R23")
